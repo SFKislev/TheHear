@@ -19,17 +19,17 @@ export const metadata = {
   openGraph: {
     title: "The Hear",
     description: "A non-profit news observatory and archive",
-    url: "https://www.the-hear.com/",
+    url: "https://www.thehear.org/",
     siteName: "The Hear",
     images: [
       {
-        url: "https://www.the-hear.com/logo192.png",
+        url: "https://www.thehear.org/logo192.png",
         width: 192,
         height: 192,
         alt: "The Hear logo",
       },
       {
-        url: "https://www.the-hear.com/logo512.png",
+        url: "https://www.thehear.org/logo512.png",
         width: 512,
         height: 512,
         alt: "The Hear logo large",
@@ -42,7 +42,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "The Hear",
     description: "A non-profit news observatory and archive",
-    images: ["https://www.the-hear.com/logo512.png"],
+    images: ["https://www.thehear.org/logo512.png"],
     site: "@thehearnews"
   },
   icons: {
@@ -84,8 +84,8 @@ export default function RootLayout({ children }) {
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              "url": "https://www.the-hear.com",
-              "logo": "https://www.the-hear.com/RoundLogo-S.png"
+              "url": "https://www.thehear.org",
+              "logo": "https://www.thehear.org/RoundLogo-S.png"
             })
           }}
         />

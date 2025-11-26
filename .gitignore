@@ -52,3 +52,6 @@ indexing/service-account-key.json
 indexing/logs/
 
 indexing/submitted-urls.json
+
+/.claude
+.claude

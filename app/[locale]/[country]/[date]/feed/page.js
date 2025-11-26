@@ -55,7 +55,7 @@ export async function generateMetadata({ params }) {
         ? `${currentHeadline ? `${currentHeadline}. ` : ''}ארכיון מלא של כותרות חדשות מ-${countryName} ל-${formattedDate} - כל הכותרות כפי שהתפתחו במהלך היום עם סיכומי בינה מלאכותית בזמן אמת`
         : `An archive of news headlines from ${countryName} for ${formattedDate}; ${currentHeadline ? `${currentHeadline}. ` : ''}All headlines as they unfolded throughout the day, with real-time AI overviews`;
 
-    const url = `https://www.the-hear.com/${locale}/${country}/${date}/feed`;
+    const url = `https://www.thehear.org/${locale}/${country}/${date}/feed`;
 
     return {
         title,
@@ -84,7 +84,7 @@ export async function generateMetadata({ params }) {
             section: 'News Archive',
             tags: [countryName, 'news', 'headlines', formattedDate, 'archive', 'chronological'],
             images: [{
-                url: 'https://www.the-hear.com/logo192.png',
+                url: 'https://www.thehear.org/logo192.png',
                 width: 192,
                 height: 192,
                 alt: 'The Hear logo',
@@ -94,16 +94,16 @@ export async function generateMetadata({ params }) {
             card: 'summary_large_image',
             title,
             description,
-            images: ['https://www.the-hear.com/logo512.png'],
+            images: ['https://www.thehear.org/logo512.png'],
             site: '@thehearnews',
             creator: '@thehearnews'
         },
         alternates: {
             canonical: url, // Self-canonical - this is the version that should be indexed
             languages: {
-                'en': `https://www.the-hear.com/en/${country}/${date}/feed`,
-                'he': `https://www.the-hear.com/heb/${country}/${date}/feed`,
-                'x-default': `https://www.the-hear.com/en/${country}/${date}/feed`
+                'en': `https://www.thehear.org/en/${country}/${date}/feed`,
+                'he': `https://www.thehear.org/heb/${country}/${date}/feed`,
+                'x-default': `https://www.thehear.org/en/${country}/${date}/feed`
             }
         },
     };

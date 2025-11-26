@@ -1,5 +1,5 @@
 export function createMetadata() {
-    const url = 'https://www.the-hear.com/about';
+    const url = 'https://www.thehear.org/about';
     const siteName = 'The Hear';
     
     const title = 'About The Hear | News Observatory & Headlines Archive';
@@ -19,7 +19,7 @@ export function createMetadata() {
             locale: 'en_US',
             images: [
                 {
-                    url: 'https://www.the-hear.com/logo192.png',
+                    url: 'https://www.thehear.org/logo192.png',
                     width: 192,
                     height: 192,
                     alt: `${siteName} logo`,
@@ -30,7 +30,7 @@ export function createMetadata() {
             card: 'summary_large_image',
             title,
             description,
-            images: ['https://www.the-hear.com/logo512.png'],
+            images: ['https://www.thehear.org/logo512.png'],
         },
         robots: {
             index: true,
@@ -47,10 +47,10 @@ export function createMetadata() {
 }
 
 export function LdJson() {
-    const url = 'https://www.the-hear.com/about';
+    const url = 'https://www.thehear.org/about';
     const title = 'About The Hear | News Observatory & Headlines Archive';
     const description = 'The Hear is a news observatory and headlines archive. It displays main headlines from newspapers side by side in real time, creating a constantly changing newsstand that lets you monitor news as it evolves across countries and sources.';
-    const image = 'https://www.the-hear.com/logo192.png';
+    const image = 'https://www.thehear.org/logo192.png';
     
     // Create breadcrumb navigation
     const breadcrumbList = {
@@ -60,7 +60,7 @@ export function LdJson() {
                 '@type': 'ListItem',
                 'position': 1,
                 'name': 'The Hear',
-                'item': 'https://www.the-hear.com'
+                'item': 'https://www.thehear.org'
             },
             {
                 '@type': 'ListItem',
@@ -93,20 +93,20 @@ export function LdJson() {
                         '@type': 'ImageObject',
                         'url': image
                     },
-                    'url': 'https://www.the-hear.com'
+                    'url': 'https://www.thehear.org'
                 },
                 'about': {
                     '@type': 'NewsMediaOrganization',
                     'name': 'The Hear',
                     'description': 'News observatory and headlines archive tracking main headlines from newspapers worldwide in real time',
                     'foundingDate': '2024-07-04',
-                    'url': 'https://www.the-hear.com',
+                    'url': 'https://www.thehear.org',
                     'logo': {
                         '@type': 'ImageObject',
                         'url': image
                     },
                     'sameAs': [
-                        'https://www.the-hear.com'
+                        'https://www.thehear.org'
                     ]
                 }
             },

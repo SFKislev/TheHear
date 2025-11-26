@@ -10,10 +10,10 @@
       "has": [
         {
           "type": "host",
-          "value": "the-hear.com"
+          "value": "thehear.org"
         }
       ],
-      "destination": "https://www.the-hear.com/:path*",
+      "destination": "https://www.thehear.org/:path*",
       "permanent": true
     }
   ],

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 Disallow: /api/
-Sitemap: https://www.the-hear.com/sitemap.xml
+Sitemap: https://www.thehear.org/sitemap.xml

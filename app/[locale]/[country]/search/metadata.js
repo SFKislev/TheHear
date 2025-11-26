@@ -4,7 +4,7 @@ export function createMetadata({ country, locale }) {
     const countryData = countries[country] || {};
     const countryName = locale === 'heb' ? countryData.hebrew || country : countryData.english || country;
     const isHebrew = locale === 'heb';
-    const url = `https://www.the-hear.com/${locale}/${country}/search`;
+    const url = `https://www.thehear.org/${locale}/${country}/search`;
     const siteName = 'The Hear';
     
     const title = isHebrew 
@@ -32,7 +32,7 @@ export function createMetadata({ country, locale }) {
             locale: isHebrew ? 'he_IL' : 'en_US',
             images: [
                 {
-                    url: 'https://www.the-hear.com/logo192.png',
+                    url: 'https://www.thehear.org/logo192.png',
                     width: 192,
                     height: 192,
                     alt: `${siteName} logo`,
@@ -43,7 +43,7 @@ export function createMetadata({ country, locale }) {
             card: 'summary_large_image',
             title,
             description,
-            images: ['https://www.the-hear.com/logo512.png'],
+            images: ['https://www.thehear.org/logo512.png'],
         },
         robots: {
             index: true,
@@ -54,10 +54,10 @@ export function createMetadata({ country, locale }) {
             }
         },
         alternates: {
-            canonical: `https://www.the-hear.com/en/${country}/search`, // Always canonical to English
+            canonical: `https://www.thehear.org/en/${country}/search`, // Always canonical to English
             languages: {
-                'en': `https://www.the-hear.com/en/${country}/search`,
-                'x-default': `https://www.the-hear.com/en/${country}/search`
+                'en': `https://www.thehear.org/en/${country}/search`,
+                'x-default': `https://www.thehear.org/en/${country}/search`
                 // Removed Hebrew alternate since heb/search routes redirect to en/search
             }
         }
@@ -69,7 +69,7 @@ export function SearchLdJson({ country, locale }) {
     const countryData = countries[country] || {};
     const countryName = locale === 'heb' ? countryData.hebrew : countryData.english;
     const isHebrew = locale === 'heb';
-    const url = `https://www.the-hear.com/${locale}/${country}/search`;
+    const url = `https://www.thehear.org/${locale}/${country}/search`;
     
     const title = isHebrew 
         ? `חיפוש ארכיון חדשות ${countryName} | The Hear`
@@ -87,13 +87,13 @@ export function SearchLdJson({ country, locale }) {
                 '@type': 'ListItem',
                 'position': 1,
                 'name': 'The Hear',
-                'item': 'https://www.the-hear.com'
+                'item': 'https://www.thehear.org'
             },
             {
                 '@type': 'ListItem',
                 'position': 2,
                 'name': countryName,
-                'item': `https://www.the-hear.com/${locale}/${country}`
+                'item': `https://www.thehear.org/${locale}/${country}`
             },
             {
                 '@type': 'ListItem',
@@ -121,7 +121,7 @@ export function SearchLdJson({ country, locale }) {
                 'mainEntity': {
                     '@type': 'WebSite',
                     'name': 'The Hear',
-                    'url': 'https://www.the-hear.com',
+                    'url': 'https://www.thehear.org',
                     'potentialAction': {
                         '@type': 'SearchAction',
                         'target': {
@@ -136,9 +136,9 @@ export function SearchLdJson({ country, locale }) {
                     'name': 'The Hear',
                     'logo': {
                         '@type': 'ImageObject',
-                        'url': 'https://www.the-hear.com/logo192.png'
+                        'url': 'https://www.thehear.org/logo192.png'
                     },
-                    'url': 'https://www.the-hear.com'
+                    'url': 'https://www.thehear.org'
                 },
                 'about': {
                     '@type': 'Thing',

@@ -100,7 +100,7 @@ export async function createMetadata(params) {
         ? `ארכיון כותרות חדשות מ-${countryName} ל-${date} - כותרות ראשיות מכלי תקשורת מרכזיים כפי שהתפתחו בזמן אמת`
         : `News headlines archive from ${countryName} for ${date} - Major headlines from leading news sources as they unfolded in real time`;
 
-    const url = `https://www.the-hear.com/${locale}/${country}/${date}`;
+    const url = `https://www.thehear.org/${locale}/${country}/${date}`;
 
     return {
         title,
@@ -131,7 +131,7 @@ export async function createMetadata(params) {
             tags: [countryName, 'news', 'headlines', formattedDate],
             images: [
                 {
-                    url: 'https://www.the-hear.com/logo192.png',
+                    url: 'https://www.thehear.org/logo192.png',
                     width: 192,
                     height: 192,
                     alt: `${siteName} logo`,
@@ -142,16 +142,16 @@ export async function createMetadata(params) {
             card: 'summary_large_image',
             title,
             description,
-            images: ['https://www.the-hear.com/logo512.png'],
+            images: ['https://www.thehear.org/logo512.png'],
             site: '@thehearnews',
             creator: '@thehearnews'
         },
         alternates: {
             canonical: url,
             languages: {
-                'en': `https://www.the-hear.com/en/${country}/${date}`,
-                'he': `https://www.the-hear.com/heb/${country}/${date}`,
-                'x-default': `https://www.the-hear.com/en/${country}/${date}`
+                'en': `https://www.thehear.org/en/${country}/${date}`,
+                'he': `https://www.thehear.org/heb/${country}/${date}`,
+                'x-default': `https://www.thehear.org/en/${country}/${date}`
             }
         },
     };
@@ -168,7 +168,7 @@ export function LdJson({ country, locale, date, daySummary, headlines, initialSu
         `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;
 
     const title = `${flagEmoji} ${countryName} | ${formattedDate} | ${headline} | Headline Archive`;
-    const url = `https://www.the-hear.com/${locale}/${country}/${formattedDate}`;
+    const url = `https://www.thehear.org/${locale}/${country}/${formattedDate}`;
 
     const parsedDate = typeof date === 'string' ? parse(date, 'dd-MM-yyyy', new Date(2000, 0, 1)) : date;
     parsedDate.setHours(12, 0, 0, 0);
@@ -219,7 +219,7 @@ export function LdJson({ country, locale, date, daySummary, headlines, initialSu
         });
     }
 
-    const image = 'https://www.the-hear.com/logo192.png';
+    const image = 'https://www.thehear.org/logo192.png';
 
     // Create ItemList elements for all headlines
     const itemListElements = [];

@@ -42,7 +42,7 @@ export default function FeedJsonLd({ country, locale, date, daySummary, headline
         ? `${flagEmoji} ${countryName} | ${formattedDateDisplay} | ארכיון כותרות`
         : `${flagEmoji} ${countryName} | ${formattedDateDisplay} | Headline Archive`;
 
-    const url = `https://www.the-hear.com/${locale}/${country}/${formattedDate}/feed`;
+    const url = `https://www.thehear.org/${locale}/${country}/${formattedDate}/feed`;
 
     // Description for the feed page - emphasizing chronological archive
     const description = locale === 'heb'
@@ -103,7 +103,7 @@ export default function FeedJsonLd({ country, locale, date, daySummary, headline
                         'name': 'The Hear',
                         'logo': {
                             '@type': 'ImageObject',
-                            'url': 'https://www.the-hear.com/logo192.png'
+                            'url': 'https://www.thehear.org/logo192.png'
                         }
                     },
                     'about': `News from ${countryName}`,
@@ -113,7 +113,7 @@ export default function FeedJsonLd({ country, locale, date, daySummary, headline
         });
     }
 
-    const image = 'https://www.the-hear.com/logo192.png';
+    const image = 'https://www.thehear.org/logo192.png';
     const totalHeadlines = headlines?.length || 0;
 
     // Build comprehensive JSON-LD focused on summaries, not individual headlines
@@ -184,19 +184,19 @@ export default function FeedJsonLd({ country, locale, date, daySummary, headline
                         '@type': 'ListItem',
                         'position': 1,
                         'name': 'Home',
-                        'item': 'https://www.the-hear.com/'
+                        'item': 'https://www.thehear.org/'
                     },
                     {
                         '@type': 'ListItem',
                         'position': 2,
                         'name': countryName,
-                        'item': `https://www.the-hear.com/${locale}/${country}`
+                        'item': `https://www.thehear.org/${locale}/${country}`
                     },
                     {
                         '@type': 'ListItem',
                         'position': 3,
                         'name': formattedDateDisplay,
-                        'item': `https://www.the-hear.com/${locale}/${country}/${formattedDate}`
+                        'item': `https://www.thehear.org/${locale}/${country}/${formattedDate}`
                     },
                     {
                         '@type': 'ListItem',

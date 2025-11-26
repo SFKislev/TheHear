@@ -50,7 +50,7 @@ node indexing/inspect-url.js <URL>
 
 **Example:**
 ```bash
-node indexing/inspect-url.js https://www.the-hear.com/en/israel/15-11-2025/feed
+node indexing/inspect-url.js https://www.thehear.org/en/israel/15-11-2025/feed
 ```
 
 **Shows:**
@@ -119,7 +119,7 @@ All settings in `submit-urls-priority.js`:
 
 ```javascript
 const CONFIG = {
-  SITEMAP_URL: 'https://www.the-hear.com/sitemap-feed.xml',
+  SITEMAP_URL: 'https://www.thehear.org/sitemap-feed.xml',
   DAILY_QUOTA: 200,           // Google's limit
   BATCH_SIZE: 100,            // Requests per batch
   ENGLISH_ONLY: true,         // Switch to false for Hebrew
@@ -178,7 +178,7 @@ node indexing/submit-urls-priority.js
 
 **Check status:**
 ```bash
-node indexing/inspect-url.js https://www.the-hear.com/en/israel/15-11-2025/feed
+node indexing/inspect-url.js https://www.thehear.org/en/israel/15-11-2025/feed
 ```
 
 **View progress:**

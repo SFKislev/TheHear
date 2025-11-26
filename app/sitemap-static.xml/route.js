@@ -4,7 +4,7 @@ import { countries } from "@/utils/sources/countries"
 export const revalidate = 86400
 
 export async function GET() {
-    const baseUrl = 'https://www.the-hear.com'
+    const baseUrl = 'https://www.thehear.org'
     const res = []
 
     // MIGRATION STRATEGY: Initially only include About/Methodology

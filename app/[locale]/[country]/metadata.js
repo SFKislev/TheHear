@@ -41,7 +41,7 @@ export async function createMetadata(params) {
         ? `דוכן כותרות חי של עיתונים מ-${countryName}; ארכיון חדשות המעדכן בזמן אמת.`
         : `Live news headlines from ${countryName} - Real-time updates from major news sources displayed side by side.`;
     
-    const url = `https://www.the-hear.com/${locale}/${country}`;
+    const url = `https://www.thehear.org/${locale}/${country}`;
     return {
         title,
         description,
@@ -71,7 +71,7 @@ export async function createMetadata(params) {
             tags: [countryName, 'live news', 'headlines', 'real-time'],
             images: [
                 {
-                    url: 'https://www.the-hear.com/logo192.png',
+                    url: 'https://www.thehear.org/logo192.png',
                     width: 192,
                     height: 192,
                     alt: `${siteName} logo`,
@@ -82,16 +82,16 @@ export async function createMetadata(params) {
             card: 'summary_large_image',
             title,
             description,
-            images: ['https://www.the-hear.com/logo512.png'],
+            images: ['https://www.thehear.org/logo512.png'],
             site: '@thehearnews',
             creator: '@thehearnews'
         },
         alternates: {
             canonical: url,
             languages: {
-                'en': `https://www.the-hear.com/en/${country}`,
-                'he': `https://www.the-hear.com/heb/${country}`,
-                'x-default': `https://www.the-hear.com/en/${country}`
+                'en': `https://www.thehear.org/en/${country}`,
+                'he': `https://www.thehear.org/heb/${country}`,
+                'x-default': `https://www.thehear.org/en/${country}`
             }
         },
     };
@@ -101,14 +101,14 @@ export function LdJson({ country, locale, headlines, initialSummaries, sources, 
     const countryData = countries[country] || {};
     const countryName = locale === 'heb' ? countryData.hebrew || country : countryData.english || country;
     const flagEmoji = countryFlags[country] || '';
-    const url = `https://www.the-hear.com/${locale}/${country}`;
+    const url = `https://www.thehear.org/${locale}/${country}`;
     
     // Create concise description for CollectionPage
     const description = locale === 'heb'
         ? `דוכן כותרות חי של עיתונים מ-${countryName}; ארכיון חדשות המעדכן בזמן אמת.`
         : `Live news headlines from ${countryName} - Real-time updates from major news sources displayed side by side.`;
     
-    const image = 'https://www.the-hear.com/logo192.png';
+    const image = 'https://www.thehear.org/logo192.png';
     const title = locale === 'heb'
         ? `${flagEmoji} כותרות חיות מ${countryName} | דוכן עיתונים מתעדכן`
         : `${flagEmoji} Live Headlines from ${countryName} | Unfiltered news`;

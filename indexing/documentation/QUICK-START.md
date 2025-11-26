@@ -63,7 +63,7 @@
 1. **Go to Google Search Console**: https://search.google.com/search-console
 
 2. **Select your property**:
-   - Choose "www.the-hear.com" from the property dropdown (top left)
+   - Choose "www.thehear.org" from the property dropdown (top left)
 
 3. **Add user**:
    - Go to "Settings" (⚙️ in left sidebar)
@@ -102,7 +102,7 @@
    ========================================
    Starting Google Indexing API submission
    ========================================
-   Fetching sitemap from: https://www.the-hear.com/sitemap-feed.xml
+   Fetching sitemap from: https://www.thehear.org/sitemap-feed.xml
    Found 14382 URLs in sitemap
    Previously submitted: 0 URLs
    Unsubmitted URLs: 14382
@@ -111,8 +111,8 @@
    Authentication successful!
 
    Processing batch 1 (100 URLs)...
-   ✓ 1/200 - https://www.the-hear.com/en/us/15-08-2025/feed
-   ✓ 2/200 - https://www.the-hear.com/en/us/16-08-2025/feed
+   ✓ 1/200 - https://www.thehear.org/en/us/15-08-2025/feed
+   ✓ 2/200 - https://www.thehear.org/en/us/16-08-2025/feed
    ...
    ```
 
@@ -148,7 +148,7 @@ node indexing/submit-urls.js
 
 Check if a specific URL was submitted:
 ```bash
-node indexing/check-status.js https://www.the-hear.com/en/us/15-08-2025/feed
+node indexing/check-status.js https://www.thehear.org/en/us/15-08-2025/feed
 ```
 
 ## Troubleshooting

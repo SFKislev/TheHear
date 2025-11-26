@@ -1,5 +1,5 @@
 export function createMetadata() {
-    const url = 'https://www.the-hear.com/methodology';
+    const url = 'https://www.thehear.org/methodology';
     const siteName = 'The Hear';
     
     const title = 'Methodology | The Hear - How We Track & Analyze News Headlines';
@@ -19,7 +19,7 @@ export function createMetadata() {
             locale: 'en_US',
             images: [
                 {
-                    url: 'https://www.the-hear.com/logo192.png',
+                    url: 'https://www.thehear.org/logo192.png',
                     width: 192,
                     height: 192,
                     alt: `${siteName} logo`,
@@ -30,7 +30,7 @@ export function createMetadata() {
             card: 'summary_large_image',
             title,
             description,
-            images: ['https://www.the-hear.com/logo512.png'],
+            images: ['https://www.thehear.org/logo512.png'],
         },
         robots: {
             index: true,
@@ -47,10 +47,10 @@ export function createMetadata() {
 }
 
 export function LdJson() {
-    const url = 'https://www.the-hear.com/methodology';
+    const url = 'https://www.thehear.org/methodology';
     const title = 'Methodology | The Hear - How We Track & Analyze News Headlines';
     const description = 'Learn how The Hear tracks, aggregates, and analyzes news headlines in real time. Discover our methodology for monitoring main headlines from newspapers worldwide, AI-generated overviews, and archive creation process.';
-    const image = 'https://www.the-hear.com/logo192.png';
+    const image = 'https://www.thehear.org/logo192.png';
     
     // Create breadcrumb navigation
     const breadcrumbList = {
@@ -60,7 +60,7 @@ export function LdJson() {
                 '@type': 'ListItem',
                 'position': 1,
                 'name': 'The Hear',
-                'item': 'https://www.the-hear.com'
+                'item': 'https://www.thehear.org'
             },
             {
                 '@type': 'ListItem',
@@ -93,7 +93,7 @@ export function LdJson() {
                         '@type': 'ImageObject',
                         'url': image
                     },
-                    'url': 'https://www.the-hear.com'
+                    'url': 'https://www.thehear.org'
                 },
                 'about': [
                     {

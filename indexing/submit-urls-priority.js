@@ -7,7 +7,7 @@ const CONFIG = {
   SERVICE_ACCOUNT_KEY: path.join(__dirname, 'service-account-key.json'),
   SUBMITTED_URLS_FILE: path.join(__dirname, 'submitted-urls.json'),
   LOGS_DIR: path.join(__dirname, 'logs'),
-  SITEMAP_URL: 'https://www.the-hear.com/sitemap-feed.xml',
+  SITEMAP_URL: 'https://www.thehear.org/sitemap-feed.xml',
   DAILY_QUOTA: 200,
   BATCH_SIZE: 100,
   ENGLISH_ONLY: true, // Submit English first, Hebrew later

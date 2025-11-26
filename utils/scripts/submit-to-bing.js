@@ -42,14 +42,14 @@ async function main() {
     if (!targetCountry) {
         // Submit main sitemaps and static pages
         allUrls = [
-            'https://www.the-hear.com/sitemap.xml',
-            'https://www.the-hear.com/sitemap-static.xml',
-            'https://www.the-hear.com/sitemap-feed.xml',
-            'https://www.the-hear.com/sitemap-date-pages.xml',
-            'https://www.the-hear.com/sitemap-archives.xml',
-            'https://www.the-hear.com/sitemap-global-archives.xml',
-            'https://www.the-hear.com/about',
-            'https://www.the-hear.com/methodology'
+            'https://www.thehear.org/sitemap.xml',
+            'https://www.thehear.org/sitemap-static.xml',
+            'https://www.thehear.org/sitemap-feed.xml',
+            'https://www.thehear.org/sitemap-date-pages.xml',
+            'https://www.thehear.org/sitemap-archives.xml',
+            'https://www.thehear.org/sitemap-global-archives.xml',
+            'https://www.thehear.org/about',
+            'https://www.thehear.org/methodology'
         ];
 
         console.log('📋 Submitting sitemap URLs and static pages...\n');

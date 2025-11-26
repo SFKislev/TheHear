@@ -18,7 +18,7 @@ export function createMetadata({ country, locale, year, month }) {
     );
 
     const isHebrew = locale === 'heb';
-    const url = `https://www.the-hear.com/${locale}/${country}/history/${year}/${month}`;
+    const url = `https://www.thehear.org/${locale}/${country}/history/${year}/${month}`;
     const siteName = 'The Hear';
     
     const title = isHebrew 
@@ -46,7 +46,7 @@ export function createMetadata({ country, locale, year, month }) {
             locale: isHebrew ? 'he_IL' : 'en_US',
             images: [
                 {
-                    url: 'https://www.the-hear.com/logo192.png',
+                    url: 'https://www.thehear.org/logo192.png',
                     width: 192,
                     height: 192,
                     alt: `${siteName} logo`,
@@ -57,7 +57,7 @@ export function createMetadata({ country, locale, year, month }) {
             card: 'summary_large_image',
             title,
             description,
-            images: ['https://www.the-hear.com/logo512.png'],
+            images: ['https://www.thehear.org/logo512.png'],
         },
         robots: {
             index: true,
@@ -70,9 +70,9 @@ export function createMetadata({ country, locale, year, month }) {
         alternates: {
             canonical: url,
             languages: {
-                'en': `https://www.the-hear.com/en/${country}/history/${year}/${month}`,
-                'he': `https://www.the-hear.com/heb/${country}/history/${year}/${month}`,
-                'x-default': `https://www.the-hear.com/en/${country}/history/${year}/${month}`
+                'en': `https://www.thehear.org/en/${country}/history/${year}/${month}`,
+                'he': `https://www.thehear.org/heb/${country}/history/${year}/${month}`,
+                'x-default': `https://www.thehear.org/en/${country}/history/${year}/${month}`
             }
         }
     };
@@ -88,7 +88,7 @@ export function LdJson({ country, locale, year, month, dailySummaries, headlines
         { month: 'long', year: 'numeric' }
     );
     const isHebrew = locale === 'heb';
-    const url = `https://www.the-hear.com/${locale}/${country}/history/${year}/${month}`;
+    const url = `https://www.thehear.org/${locale}/${country}/history/${year}/${month}`;
     
     const title = isHebrew 
         ? `ארכיון חדשות ${countryName} - ${monthName} | The Hear`
@@ -98,7 +98,7 @@ export function LdJson({ country, locale, year, month, dailySummaries, headlines
         ? `דף זה מתעד את הסיפורים העיקריים שהתרחשו בתקשורת ${countryName} ב-${monthName}. הכותרות היומיות והסקירות, שנועדו לתפקד כשיא היסטורי מיקרו בזמן אמת של כותרות חדשות, נכתבו על ידי בינה מלאכותית. בחר תאריך כדי לראות את הכותרות האמיתיות כפי שהתרחשו, ללא עריכה.`
         : `This page chronicles the main stories that unfolded in ${countryName} media on ${monthName}. The daily titles and overviews, meant to function as a real time, micro-history record of news headlines, were written by an AI. Pick a date to see the actual headlines as they played out, unedited.`;
 
-    const image = 'https://www.the-hear.com/logo192.png';
+    const image = 'https://www.thehear.org/logo192.png';
     
     // Create abstracts from daily summaries
     const abstracts = [];
@@ -119,7 +119,7 @@ export function LdJson({ country, locale, year, month, dailySummaries, headlines
                         'name': 'The Hear - AI Overviews'
                     },
                     'about': `Daily news summary for ${countryName} - ${formattedDate}`,
-                    'url': `https://www.the-hear.com/${locale}/${country}/${formattedDate}`
+                    'url': `https://www.thehear.org/${locale}/${country}/${formattedDate}`
                 });
             }
         });
@@ -170,25 +170,25 @@ export function LdJson({ country, locale, year, month, dailySummaries, headlines
                 '@type': 'ListItem',
                 'position': 1,
                 'name': 'The Hear',
-                'item': 'https://www.the-hear.com'
+                'item': 'https://www.thehear.org'
             },
             {
                 '@type': 'ListItem',
                 'position': 2,
                 'name': countryName,
-                'item': `https://www.the-hear.com/${locale}/${country}`
+                'item': `https://www.thehear.org/${locale}/${country}`
             },
             {
                 '@type': 'ListItem',
                 'position': 3,
                 'name': isHebrew ? 'ארכיון' : 'Archive',
-                'item': `https://www.the-hear.com/${locale}/${country}/history`
+                'item': `https://www.thehear.org/${locale}/${country}/history`
             },
             {
                 '@type': 'ListItem',
                 'position': 4,
                 'name': year,
-                'item': `https://www.the-hear.com/${locale}/${country}/history/${year}`
+                'item': `https://www.thehear.org/${locale}/${country}/history/${year}`
             },
             {
                 '@type': 'ListItem',
@@ -227,7 +227,7 @@ export function LdJson({ country, locale, year, month, dailySummaries, headlines
                         '@type': 'ImageObject',
                         'url': image
                     },
-                    'url': 'https://www.the-hear.com'
+                    'url': 'https://www.thehear.org'
                 },
                 'about': {
                     '@type': 'Thing',

@@ -9,8 +9,8 @@ export function ServerHeadlineLinks({ headlines, locale, country, date }) {
         if (!headline.link) return false;
         
         // Check if link points to our own domain
-        const isInternalLink = headline.link.includes('the-hear.com') || 
-                              headline.link.includes('www.the-hear.com') ||
+        const isInternalLink = headline.link.includes('thehear.org') || 
+                              headline.link.includes('www.thehear.org') ||
                               headline.link.startsWith('/');
         
         return !isInternalLink;
@@ -51,7 +51,7 @@ export function ServerCountryNavigation({ locale, currentCountry }) {
                 .map(country => (
                     <a 
                         key={country}
-                        href={`https://www.the-hear.com/${locale}/${country}`}
+                        href={`https://www.thehear.org/${locale}/${country}`}
                         aria-hidden="true"
                     >
                         {countries[country].english} News
@@ -60,7 +60,7 @@ export function ServerCountryNavigation({ locale, currentCountry }) {
             {/* Always include global link unless we're already on global */}
             {currentCountry !== 'global' && (
                 <a 
-                    href={`https://www.the-hear.com/${locale}/global`}
+                    href={`https://www.thehear.org/${locale}/global`}
                     aria-hidden="true"
                 >
                     Global News
@@ -84,7 +84,7 @@ export function ServerYesterdayNavigation({ locale, country }) {
         <div style={{ display: 'none' }}>
             {/* Hidden server-rendered yesterday navigation for crawlers */}
             <a 
-                href={`https://www.the-hear.com/${locale}/${country}/${dateString}`}
+                href={`https://www.thehear.org/${locale}/${country}/${dateString}`}
                 aria-hidden="true"
             >
                 {country} news yesterday ({dateString})
@@ -115,7 +115,7 @@ export function ServerDateNavigation({ locale, country, date }) {
         <div style={{ display: 'none' }}>
             {/* Hidden server-rendered date navigation for crawlers */}
             <a 
-                href={`https://www.the-hear.com/${locale}/${country}/${createDateString(yesterday)}`}
+                href={`https://www.thehear.org/${locale}/${country}/${createDateString(yesterday)}`}
                 aria-hidden="true"
             >
                 Previous day: {createDateString(yesterday)}
@@ -123,7 +123,7 @@ export function ServerDateNavigation({ locale, country, date }) {
             
             {tomorrow <= today && (
                 <a 
-                    href={`https://www.the-hear.com/${locale}/${country}/${createDateString(tomorrow)}`}
+                    href={`https://www.thehear.org/${locale}/${country}/${createDateString(tomorrow)}`}
                     aria-hidden="true"
                 >
                     Next day: {createDateString(tomorrow)}
@@ -131,7 +131,7 @@ export function ServerDateNavigation({ locale, country, date }) {
             )}
             
             <a 
-                href={`https://www.the-hear.com/${locale}/${country}`}
+                href={`https://www.thehear.org/${locale}/${country}`}
                 aria-hidden="true"
             >
                 Back to current: {country}

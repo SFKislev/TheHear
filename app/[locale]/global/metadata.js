@@ -13,14 +13,14 @@ function getFlagEmoji(countryKey) {
 }
 
 export function GlobalLdJson({ locale, countrySummaries, globalOverview }) {
-    const url = `https://www.the-hear.com/${locale}/global`;
+    const url = `https://www.thehear.org/${locale}/global`;
     
     // Create description for global overview page
     const description = locale === 'heb'
         ? `סקירה גלובלית של כותרות העיתונים מכל העולם; דוכן חדשות בין־לאומי המעדכן בזמן אמת.`
         : `Global overview of live headlines from around the world; an international newsstand updating in real time.`;
     
-    const image = 'https://www.the-hear.com/logo192.png';
+    const image = 'https://www.thehear.org/logo192.png';
     const title = locale === 'heb'
         ? `🌍 סקירה גלובלית | The Hear`
         : `🌍 Global Overview | The news as they evolve | The Hear`;
@@ -54,10 +54,10 @@ export function GlobalLdJson({ locale, countrySummaries, globalOverview }) {
                         'publisher': {
                             '@type': 'NewsMediaOrganization',
                             'name': 'The Hear',
-                            'url': 'https://www.the-hear.com'
+                            'url': 'https://www.thehear.org'
                         },
                         'about': `Live news from ${countryName}`,
-                        'url': `https://www.the-hear.com/${locale}/${country}`
+                        'url': `https://www.thehear.org/${locale}/${country}`
                     });
                 }
             }
@@ -93,7 +93,7 @@ export function GlobalLdJson({ locale, countrySummaries, globalOverview }) {
         'publisher': {
             '@type': 'NewsMediaOrganization',
             'name': 'The Hear AI overviews',
-            'url': 'https://www.the-hear.com',
+            'url': 'https://www.thehear.org',
             'logo': {
                 '@type': 'ImageObject',
                 'url': image
@@ -117,7 +117,7 @@ export function GlobalLdJson({ locale, countrySummaries, globalOverview }) {
                     '@type': 'ListItem',
                     'position': 1,
                     'name': 'Home',
-                    'item': 'https://www.the-hear.com'
+                    'item': 'https://www.thehear.org'
                 },
                 {
                     '@type': 'ListItem',

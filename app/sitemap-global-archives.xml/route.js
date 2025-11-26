@@ -2,7 +2,7 @@
 export const revalidate = 86400
 
 export async function GET() {
-    const baseUrl = 'https://www.the-hear.com'
+    const baseUrl = 'https://www.thehear.org'
     const locales = ['en', 'heb']
     const today = new Date()
     const res = []

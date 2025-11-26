@@ -6,7 +6,7 @@
 export const revalidate = 86400 // 24 hours in seconds
 
 export default function sitemap() {
-    const baseUrl = 'https://www.the-hear.com'
+    const baseUrl = 'https://www.thehear.org'
 
     // Clean sitemap strategy for new domain migration:
     // - Feed pages (SSR, immutable, canonical)

@@ -5,7 +5,7 @@
  * notify Bing and other search engines about changes.
  *
  * POST /api/indexnow
- * Body: { urls: ["https://www.the-hear.com/page1", ...] }
+ * Body: { urls: ["https://www.thehear.org/page1", ...] }
  */
 
 export async function POST(request) {
@@ -22,9 +22,9 @@ export async function POST(request) {
         const INDEXNOW_KEY = '257bd493-6f33-4794-9014-6e0c079e01f9';
 
         const payload = {
-            host: "www.the-hear.com",
+            host: "www.thehear.org",
             key: INDEXNOW_KEY,
-            keyLocation: `https://www.the-hear.com/${INDEXNOW_KEY}.txt`,
+            keyLocation: `https://www.thehear.org/${INDEXNOW_KEY}.txt`,
             urlList: urls
         };
 

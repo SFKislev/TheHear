@@ -8,7 +8,7 @@
  */
 
 // Generate a random API key (you only need to do this once)
-// Save this key and host it at: https://www.the-hear.com/{key}.txt
+// Save this key and host it at: https://www.thehear.org/{key}.txt
 const INDEXNOW_KEY = crypto.randomUUID();
 
 console.log('\n=== BING INDEXNOW SETUP ===\n');
@@ -17,7 +17,7 @@ console.log(`   ${INDEXNOW_KEY}.txt`);
 console.log('\n2. The file should contain ONLY this text:');
 console.log(`   ${INDEXNOW_KEY}`);
 console.log('\n3. Verify it\'s accessible at:');
-console.log(`   https://www.the-hear.com/${INDEXNOW_KEY}.txt`);
+console.log(`   https://www.thehear.org/${INDEXNOW_KEY}.txt`);
 console.log('\n4. Then run the submission script below.');
 console.log('\n=====================\n');
 
@@ -28,9 +28,9 @@ console.log('\n=====================\n');
  */
 async function submitToIndexNow(urls, key) {
     const payload = {
-        host: "www.the-hear.com",
+        host: "www.thehear.org",
         key: key,
-        keyLocation: `https://www.the-hear.com/${key}.txt`,
+        keyLocation: `https://www.thehear.org/${key}.txt`,
         urlList: urls
     };
 
@@ -85,7 +85,7 @@ function generateFeedUrls(country, startDate, endDate, locales = ['en', 'heb']) 
         const dateString = `${day}-${month}-${year}`;
 
         locales.forEach(locale => {
-            urls.push(`https://www.the-hear.com/${locale}/${country}/${dateString}/feed`);
+            urls.push(`https://www.thehear.org/${locale}/${country}/${dateString}/feed`);
         });
 
         current.setDate(current.getDate() + 1);

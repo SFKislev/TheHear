@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const SERVICE_ACCOUNT_KEY = path.join(__dirname, 'service-account-key.json');
-const SITE_URL = 'sc-domain:the-hear.com'; // Domain property from Search Console
+const SITE_URL = 'sc-domain:thehear.org'; // Domain property from Search Console
 
 async function inspectUrl(urlToInspect) {
   console.log('🔍 Google Search Console - URL Inspection\n');
@@ -11,7 +11,7 @@ async function inspectUrl(urlToInspect) {
   if (!urlToInspect) {
     console.log('Usage: node inspect-url.js <URL>');
     console.log('\nExample:');
-    console.log('node inspect-url.js https://www.the-hear.com/en/israel/15-11-2025/feed');
+    console.log('node inspect-url.js https://www.thehear.org/en/israel/15-11-2025/feed');
     process.exit(1);
   }
 

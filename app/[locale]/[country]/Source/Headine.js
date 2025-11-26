@@ -28,8 +28,8 @@ export default function Headline({ headline, typography, isLoading, isPresent })
     
     // Check if link points to our own domain - if so, don't make it clickable
     const isInternalLink = headline.link && (
-        headline.link.includes('the-hear.com') || 
-        headline.link.includes('www.the-hear.com') ||
+        headline.link.includes('thehear.org') || 
+        headline.link.includes('www.thehear.org') ||
         headline.link.startsWith('/') // Relative URLs
     );
     

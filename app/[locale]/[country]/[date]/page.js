@@ -23,7 +23,7 @@ export async function generateMetadata({ params }) {
         const metadata = await createMetadata({ country, locale, date });
 
         // Point canonical to feed version - that's the version that should be indexed
-        const feedUrl = `https://www.the-hear.com/${locale}/${country}/${date}/feed`;
+        const feedUrl = `https://www.thehear.org/${locale}/${country}/${date}/feed`;
         metadata.alternates = {
             ...metadata.alternates,
             canonical: feedUrl
