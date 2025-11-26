@@ -40,19 +40,19 @@ async function main() {
     let allUrls = [];
 
     if (!targetCountry) {
-        // Submit main sitemaps and static pages
+        // Submit main sitemaps and static pages (archive-focused strategy)
+        // Excludes: date-pages (canonical to feed), live country/global pages (constantly changing)
         allUrls = [
             'https://www.thehear.org/sitemap.xml',
             'https://www.thehear.org/sitemap-static.xml',
             'https://www.thehear.org/sitemap-feed.xml',
-            'https://www.thehear.org/sitemap-date-pages.xml',
             'https://www.thehear.org/sitemap-archives.xml',
             'https://www.thehear.org/sitemap-global-archives.xml',
             'https://www.thehear.org/about',
             'https://www.thehear.org/methodology'
         ];
 
-        console.log('📋 Submitting sitemap URLs and static pages...\n');
+        console.log('📋 Submitting sitemap URLs and static pages (archive strategy)...\n');
     } else {
         // Submit feed URLs for specific country
         const endDate = new Date();

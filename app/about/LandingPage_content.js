@@ -71,7 +71,7 @@ const imageCards = [
   },
   {
     title: "A Public Good",
-    subtitle: styleTheHear("The Hear operates under a small <b>independent nonprofit organization</b>, supported by Google. It tracks, aggregates and archives headlines without making its own independent editorial decisions. It is a headline monitoring machine, maintained as a public good.")
+    subtitle: styleTheHear("The Hear operates under a small <b>independent nonprofit organization</b>. It tracks, aggregates and archives headlines without making its own independent editorial decisions. It is a headline monitoring machine, maintained as a public good.")
   },
 ];
 

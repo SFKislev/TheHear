@@ -9,7 +9,9 @@ import { isHebrewContentAvailable, getHeadline } from "@/utils/daily summary uti
 import FeedJsonLd from "./FeedJsonLd";
 import FeedView from "./FeedView";
 import FeedPopup from "./popup";
-import InactivityRedirect from "./InactivityRedirect";
+// TEMPORARILY DISABLED during initial crawl period (thehear.org migration)
+// Re-enable after 2-3 months once indexing is stable
+// import InactivityRedirect from "./InactivityRedirect";
 
 // Feed pages are immutable historical content that never changes
 // export const revalidate = false; // Disable ISR - these pages never change once created
@@ -265,13 +267,15 @@ export default async function FeedPage({ params }) {
                     pageDate={parsedDate}
                 />
 
+                {/* TEMPORARILY DISABLED during initial crawl period (thehear.org migration) */}
+                {/* Re-enable after 2-3 months once indexing is stable */}
                 {/* Inactivity redirect to time machine */}
-                <InactivityRedirect
+                {/* <InactivityRedirect
                     locale={locale}
                     country={country}
                     date={date}
                     timeoutSeconds={80}
-                />
+                /> */}
             </div>
         );
     } catch (error) {
