@@ -83,11 +83,11 @@ export default function MobileSummary({ locale, country, pageDate, initialSummar
     };
 
     return (
-        <div 
-            className={`flex flex-col gap-4 px-2 h-full overflow-hidden ${isLogoHovered ? 'mobile-logo-active-hover' : ''}`}
+        <div
+            className={`flex flex-col gap-2 px-2 h-full overflow-hidden ${isLogoHovered ? 'mobile-logo-active-hover' : ''}`}
             onClick={handleInteraction}
         >
-            <DynamicLogo locale={locale} padding="p-0" />
+            <DynamicLogo locale={locale} padding="p-0" mobileReducedPadding={true} />
             
             <div 
                 className="flex-1 overflow-y-auto custom-scrollbar"

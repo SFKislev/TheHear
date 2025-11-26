@@ -8,7 +8,7 @@ import logoC from './logo/logo-head-4.png';
 import Image from 'next/image';
 import InnerLink from './InnerLink';
 
-export default function DynamicLogo({ locale, padding = 'p-4', showDivider = true }) {
+export default function DynamicLogo({ locale, padding = 'p-4', showDivider = true, mobileReducedPadding = false }) {
     const [currentLogo, setCurrentLogo] = useState(logoA);
     const [isFakeHover, setIsFakeHover] = useState(false);
     const router = useRouter();
@@ -48,7 +48,7 @@ export default function DynamicLogo({ locale, padding = 'p-4', showDivider = tru
 
     return (
         <>
-            <div className={`logo-hover-container flex items-center justify-center relative pt-6 ${isFakeHover ? 'fake-hover' : ''}`}>
+            <div className={`logo-hover-container flex items-center justify-center relative ${mobileReducedPadding ? 'py-2' : 'pt-6'} ${isFakeHover ? 'fake-hover' : ''}`}>
                 <div className="logo-background absolute top-[37%] left-1/2 w-[285px] h-[25%] bg-[#EBEBEB] opacity-0 transform translate-y-[-50%] translate-x-[-50%]"
                     style={{
                         transition: 'opacity 0.2s ease',

@@ -7,6 +7,7 @@ import FlagIcon from "@/components/FlagIcon";
 import { countries } from "@/utils/sources/countries";
 import InnerLink from "@/components/InnerLink";
 import useMobile from "@/components/useMobile";
+import { createPortal } from "react-dom";
 
 // Simple Globe Icon component
 function GlobeIcon() {
@@ -48,20 +49,16 @@ export default function Flag({ country, locale, originalLocale }) {
 
 function FlagSelector({ country, open, close, locale, originalLocale }) {
     const { isMobile } = useMobile();
-    
+
     // Use originalLocale for navigation if provided, fallback to locale
     const navigationLocale = originalLocale || locale;
-    
+
     if (!open) return null;
 
-    return (
+    const dropdownContent = (
         <>
             <PopUpCleaner open={open} close={close} />
-            <div className={`${
-                isMobile 
-                    ? 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2' 
-                    : `absolute top-10 ${locale === 'heb' ? 'right-0' : 'left-0'}`
-            } p-4 bg-white rounded-xs shadow-lg w-[18rem] z-[9999] font-['Geist'] text-sm`} dir="ltr">
+            <div className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4 bg-white rounded-xs shadow-lg w-[18rem] z-[9999] font-['Geist'] text-sm`} dir="ltr">
                 <div className="grid grid-cols-2 gap-[1px] bg-gray-200">
                     {Object.keys(countries).map((c, i) => (
                         c === 'uae' ? (
@@ -84,7 +81,7 @@ function FlagSelector({ country, open, close, locale, originalLocale }) {
                         <div className="bg-white"></div>
                     )}
                 </div>
-                
+
                 {/* Global page link - separate from the grid */}
                 <div className="mt-3">
                     <InnerLink locale={navigationLocale} href={`/${navigationLocale}/global`}>
@@ -97,4 +94,8 @@ function FlagSelector({ country, open, close, locale, originalLocale }) {
             </div>
         </>
     );
+
+    // Render using portal to ensure it appears above everything, including sticky elements
+    if (typeof window === 'undefined') return null;
+    return createPortal(dropdownContent, document.body);
 }
