@@ -5,6 +5,7 @@ import Image from 'next/image';
 import FlagIcon from "@/components/FlagIcon";
 import { countries } from "@/utils/sources/countries";
 import DynamicLogo from "@/components/Logo";
+import DynamicLogoSmall from "@/components/Logo-small";
 import Link from 'next/link';
 // import { sources, RandomSampleCards } from "./SampleCards";  // Comment out this import
 import InnerLink from '@/components/InnerLink';
@@ -143,7 +144,14 @@ export default function LandingPageContent({ randomSeed }) {
           <div className="col-span-1 md:col-span-12 flex justify-center">
             <div className="h-full bg-white">
               <div className="no-underline">
-                <DynamicLogo locale="en" showDivider={false} />
+                {/* Mobile Logo */}
+                <div className="block md:hidden">
+                  <DynamicLogoSmall locale="en" showDivider={false} mobileReducedPadding={true} />
+                </div>
+                {/* Desktop Logo */}
+                <div className="hidden md:block">
+                  <DynamicLogo locale="en" showDivider={false} />
+                </div>
               </div>
             </div>
           </div>
@@ -237,7 +245,7 @@ export default function LandingPageContent({ randomSeed }) {
                     </div>
                   </div>
                 )}
-                <div className={`col-span-1 ${colSpan}`}>
+                <div className={`col-span-1 ${colSpan} ${card.title === "Methodology" ? "hidden md:block" : ""}`}>
                   <div className={`h-full rounded-sm p-2 transition-colors ${
                     card.title === "Methodology" 
                       ? "bg-white hover:bg-gray-50 flex items-center justify-center" 

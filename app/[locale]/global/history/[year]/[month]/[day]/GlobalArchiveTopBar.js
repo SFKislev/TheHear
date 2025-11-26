@@ -5,6 +5,7 @@ import { IconButton, LinearProgress } from '@mui/material';
 import InnerLink from '@/components/InnerLink';
 import CustomTooltip from '@/components/CustomTooltip';
 import { DateSelector } from '@/app/[locale]/[country]/TopBar/settings/DateSelector';
+import useMobile from '@/components/useMobile';
 
 // Custom DateSelector for global archive with calendar icon
 function GlobalDateSelector({ locale, currentDate }) {
@@ -155,6 +156,7 @@ function GlobalDateSelector({ locale, currentDate }) {
 }
 
 function DayNavigation({ locale, year, month, day, position = 'left' }) {
+    const { isMobile } = useMobile();
     const currentDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
     
     // Calculate previous day
@@ -200,7 +202,7 @@ function DayNavigation({ locale, year, month, day, position = 'left' }) {
                         </InnerLink>
                     </div>
                 </CustomTooltip>
-                <div className="w-8 h-px bg-gray-300"></div>
+                {!isMobile && <div className="w-8 h-px bg-gray-300"></div>}
             </div>
         );
     } else {
@@ -210,7 +212,7 @@ function DayNavigation({ locale, year, month, day, position = 'left' }) {
             : nextDay.toLocaleDateString('en', { day: 'numeric', month: 'long', year: 'numeric' });
         return (
             <div className="flex items-center gap-2">
-                <div className="w-8 h-px bg-gray-300"></div>
+                {!isMobile && <div className="w-8 h-px bg-gray-300"></div>}
                 <CustomTooltip title={nextDayName} placement="top">
                     <div>
                         <InnerLink 
@@ -233,7 +235,8 @@ function DayNavigation({ locale, year, month, day, position = 'left' }) {
 }
 
 export default function GlobalArchiveTopBar({ locale, year, month, day, dateString, isAlphabetical, setIsAlphabetical, currentDate }) {
-    const fullTitle = locale === 'heb' 
+    const { isMobile } = useMobile();
+    const fullTitle = locale === 'heb'
         ? `ארכיון חדשות עולמי - ${dateString}`
         : `Global News Archive - ${dateString}`;
 
@@ -261,8 +264,12 @@ export default function GlobalArchiveTopBar({ locale, year, month, day, dateStri
                             {/* <span>{locale === 'heb' ? 'עולמי' : 'Global'}</span> */}
                             {/* <span className="text-gray-400">•</span> */}
                             <span className={`${locale === 'heb' ? 'font-mono' : ''} text-sm`}>{dateString}</span>
-                            <span className="text-gray-400">•</span>
-                            <span>{locale === 'heb' ? 'ארכיון כותרות' : 'Global Headlines Archive'}</span>
+                            {!isMobile && (
+                                <>
+                                    <span className="text-gray-400">•</span>
+                                    <span>{locale === 'heb' ? 'ארכיון כותרות' : 'Global Headlines Archive'}</span>
+                                </>
+                            )}
                         </h1>
                         <DayNavigation {...{ locale, year, month, day }} position="right" />
                     </div>

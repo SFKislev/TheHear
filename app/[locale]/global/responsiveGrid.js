@@ -6,7 +6,7 @@
 // Define grid column configuration for different breakpoints
 // Matching your custom breakpoints from tailwind.config.mjs
 export const gridColumns = {
-  default: 'grid-cols-1',
+  default: 'grid-cols-2',
   xs: 'xs:grid-cols-2',
   sm: 'sm:grid-cols-2',
   md: 'md:grid-cols-4',
@@ -28,7 +28,7 @@ export const getGridColumnClasses = () => {
  */
 export const getCardSpanClasses = (index) => {
   // Small screens (default)
-  const smallScreenSpan = 'col-span-2';
+  const smallScreenSpan = (index === 0 || index === 5 || index === 12 || index === 19) ? 'col-span-2' : 'col-span-1';
   
   // Medium screens (md: 1024px+)
   const mediumScreenSpan = index === 0 ? 'md:col-span-4' : 'md:col-span-2';

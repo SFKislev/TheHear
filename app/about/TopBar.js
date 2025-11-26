@@ -14,21 +14,12 @@ export default function TopBar() {
   return (
     <nav className="fixed top-0 left-0 w-full bg-white z-50">
       <div className="w-full md:w-[70%] md:min-w-[800px] md:max-w-[1200px] mx-auto px-5">
-        <div className="flex items-center justify-between py-4">
+        <div className="flex items-center justify-center md:justify-between py-4">
           {/* Site Title with Geist font */}
           <h1 className="text-sm font-medium cursor-default hover:text-blue transition-colors font-['Geist']">The Hear</h1>
 
           {/* Navigation Links */}
           <div className="flex items-center gap-4">
-            {/* Mobile: Only show Global button */}
-            <div className="md:hidden">
-              <InnerLink href="/en/global">
-                <div className="px-4 py-2 text-sm bg-sky-100 rounded-md hover:bg-sky-200 transition-colors font-['Geist'] flex items-center gap-2 no-underline cursor-pointer">
-                  Global
-                </div>
-              </InnerLink>
-            </div>
-
             {/* Desktop: Show all buttons */}
             <div className="hidden md:flex items-center gap-4">
               {/* US Link */}

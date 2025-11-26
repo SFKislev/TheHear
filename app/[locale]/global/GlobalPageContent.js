@@ -23,35 +23,54 @@ export default function GlobalPageContent({ locale, AICountrySort, countrySummar
         setFont("random");
     }, [setFont]);
 
-    // Redirect mobile users to mobile page
-    useEffect(() => {
-        if (!isLoading && isMobile) {
-            router.replace('/mobile');
-        }
-    }, [isMobile, isLoading, router]);
-
     // Show loader while checking mobile status
     if (isLoading) {
         return <Loader />;
     }
 
     return (
-        <div className={`absolute flex flex-col sm:flex-row w-full h-full overflow-auto sm:overflow-hidden ${locale === 'heb' ? 'direction-rtl' : 'direction-ltr'}`}>
+        <div className={`absolute flex flex-col w-full h-full overflow-auto ${locale === 'heb' ? 'direction-rtl' : 'direction-ltr'}`}>
             <HebrewFonts />
             <EnglishFonts />
-            <div className={`${isGlobalSummaryCollapsed ? 'w-[48px]' : 'w-full sm:w-[380px]'} flex-shrink-0 sm:border-l sm:border-r border-gray-200 flex transition-all duration-300`}>
-                <GlobalSummarySection 
-                    locale={locale}
-                    onCollapsedChange={setIsGlobalSummaryCollapsed}
-                    globalOverview={globalOverview}
-                />
-            </div>
-            <div className="flex flex-col flex-[1] sm:flex-[1] md:flex-[2] lg:flex-[3] 2xl:flex-[4]">
-                <div className="hidden sm:block">
-                    <GlobalTopBar {...{locale}} />
+
+            {/* Mobile title bar - only visible on mobile */}
+            {isMobile && globalOverview && (
+                <div className="bg-white border-b border-gray-200 py-2 px-4 text-center">
+                    <h1 className={`text-gray-800 ${locale === 'heb' ? 'frank-re text-base py-2' : 'font-["Geist"] font-bold text-sm'}`}>
+                        {locale === 'heb' ? globalOverview.hebrew.headline : globalOverview.english.headline}
+                    </h1>
                 </div>
-                <GlobalGrid {...{locale, AICountrySort, countrySummaries}} />
-            </div>
+            )}
+
+            {/* Desktop layout with summary section */}
+            {!isMobile && (
+                <div className="flex flex-row w-full h-full overflow-hidden">
+                    <div className={`${isGlobalSummaryCollapsed ? 'w-[48px]' : 'w-[380px]'} flex-shrink-0 border-l border-r border-gray-200 flex transition-all duration-300`}>
+                        <GlobalSummarySection
+                            locale={locale}
+                            onCollapsedChange={setIsGlobalSummaryCollapsed}
+                            globalOverview={globalOverview}
+                        />
+                    </div>
+                    <div className="flex flex-col flex-[1] md:flex-[2] lg:flex-[3] 2xl:flex-[4]">
+                        <div className="block">
+                            <GlobalTopBar {...{locale}} />
+                        </div>
+                        <GlobalGrid {...{locale, AICountrySort, countrySummaries}} />
+                    </div>
+                </div>
+            )}
+
+            {/* Mobile layout without summary section */}
+            {isMobile && (
+                <div className="flex flex-col flex-1">
+                    <div className="block">
+                        <GlobalTopBar {...{locale}} />
+                    </div>
+                    <GlobalGrid {...{locale, AICountrySort, countrySummaries}} />
+                </div>
+            )}
+
             {/* Navigation links for crawlers */}
             <ServerCountryNavigation locale={locale} currentCountry="global" />
         </div>

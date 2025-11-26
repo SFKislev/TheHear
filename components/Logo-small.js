@@ -8,7 +8,7 @@ import logoC from './logo/thehear-round.png';
 import Image from 'next/image';
 import InnerLink from './InnerLink';
 
-export default function DynamicLogoSmall({ locale, showDivider = true }) {
+export default function DynamicLogoSmall({ locale, showDivider = true, mobileReducedPadding = false }) {
     const [isFakeHover, setIsFakeHover] = useState(false);
     const router = useRouter();
 
@@ -35,7 +35,7 @@ export default function DynamicLogoSmall({ locale, showDivider = true }) {
 
     return (
         <>
-            <div className={`logo-hover-container flex items-center justify-center relative pt-8 ${isFakeHover ? 'fake-hover' : ''}`}>
+            <div className={`logo-hover-container flex items-center justify-center relative ${mobileReducedPadding ? 'pt-2' : 'pt-8'} ${isFakeHover ? 'fake-hover' : ''}`}>
                 <div className="logo-background absolute top-[62%] left-1/2 w-[210px] h-[40%] bg-[#EBEBEB] opacity-0 transform translate-y-[-50%] translate-x-[-50%] shadow-xl"
                     style={{
                         transition: 'opacity 0.2s ease',

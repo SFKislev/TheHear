@@ -6,8 +6,10 @@ import InnerLink from '@/components/InnerLink';
 import ArchiveCountryNavigator from './ArchiveCountryNavigator';
 import { countries } from '@/utils/sources/countries';
 import CustomTooltip from '@/components/CustomTooltip';
+import useMobile from '@/components/useMobile';
 
 function MonthNavigation({ country, locale, year, month, monthName, position = 'left' }) {
+    const { isMobile } = useMobile();
     const currentMonth = parseInt(month);
     const currentYear = parseInt(year);
     
@@ -44,7 +46,7 @@ function MonthNavigation({ country, locale, year, month, monthName, position = '
                         </InnerLink>
                     </div>
                 </CustomTooltip>
-                <div className="w-8 h-px bg-gray-300"></div>
+                {!isMobile && <div className="w-8 h-px bg-gray-300"></div>}
             </div>
         );
     } else {
@@ -52,7 +54,7 @@ function MonthNavigation({ country, locale, year, month, monthName, position = '
         const nextMonthName = new Date(nextYear, nextMonth - 1).toLocaleDateString(locale === 'heb' ? 'he' : 'en', { month: 'long', year: 'numeric' });
         return (
             <div className="flex items-center gap-2">
-                <div className="w-8 h-px bg-gray-300"></div>
+                {!isMobile && <div className="w-8 h-px bg-gray-300"></div>}
                 <CustomTooltip title={nextMonthName} placement="top">
                     <div>
                         <InnerLink 
@@ -75,6 +77,7 @@ function MonthNavigation({ country, locale, year, month, monthName, position = '
 }
 
 export default function ArchiveTopBar({ country, locale, year, month, monthName }) {
+    const { isMobile } = useMobile();
     const countryData = countries[country] || {};
     const countryName = locale === 'heb' ? countryData.hebrew : countryData.english;
     const fullTitle = locale === 'heb' 
@@ -98,8 +101,12 @@ export default function ArchiveTopBar({ country, locale, year, month, monthName 
                             <span>{countryName}</span>
                             <span className="text-gray-400">•</span>
                             <span>{new Date(year, month - 1).toLocaleDateString(locale === 'heb' ? 'he' : 'en', { month: 'long' })}, {year}</span>
-                            <span className="text-gray-400">•</span>
-                            <span>{locale === 'heb' ? 'ארכיון כותרות' : 'Headlines Archive'}</span>
+                            {!isMobile && (
+                                <>
+                                    <span className="text-gray-400">•</span>
+                                    <span>{locale === 'heb' ? 'ארכיון כותרות' : 'Headlines Archive'}</span>
+                                </>
+                            )}
                         </h1>
                         <MonthNavigation {...{ country, locale, year, month, monthName }} position="right" />
                     </div>

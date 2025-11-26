@@ -8,6 +8,7 @@ import UnfoldMoreIcon from '@mui/icons-material/UnfoldMore';
 import UnfoldLessIcon from '@mui/icons-material/UnfoldLess';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import FilterCountries from './FilterCountries';
+import useMobile from "@/components/useMobile";
 
 export default function GlobalTopBar({ locale }) {
     const [loadingSort, setLoadingSort] = useState(null);
@@ -15,6 +16,7 @@ export default function GlobalTopBar({ locale }) {
     const [expandAll, setExpandAll] = useState(false);
     const [filterOpen, setFilterOpen] = useState(false);
     const { globalSort, setGlobalSort, setAllExpanded, filteredCountries } = useGlobalSort();
+    const { isMobile } = useMobile();
 
     const sortOptions = [
         { label: "AI", value: "ai", title: "An AI reads and sorts the headlines, acting as a live editor" },
@@ -100,31 +102,35 @@ export default function GlobalTopBar({ locale }) {
                                     </div>
                                 )}
                             </div>
-                            <CustomTooltip title={expandAll ? "Collapse all overviews" : "Expand all overviews"}>
-                                <button 
-                                    onClick={toggleExpandAll}
-                                    className="p-1 rounded-full text-gray-500 hover:bg-gray-100"
-                                >
-                                    {expandAll ? 
-                                        <UnfoldLessIcon style={{ fontSize: '1.1rem' }} /> : 
-                                        <UnfoldMoreIcon style={{ fontSize: '1.1rem' }} />
-                                    }
-                                </button>
-                            </CustomTooltip>
-                            {/* Filter Button */}
-                            <CustomTooltip title="Filter countries">
-                                <button 
-                                    onClick={() => setFilterOpen(true)}
-                                    className={`p-1 rounded-full text-gray-500 hover:bg-gray-100 relative ${filteredCountries.length > 0 ? 'text-blue-600' : ''}`}
-                                >
-                                    <FilterListIcon style={{ fontSize: '1.1rem' }} />
-                                    {filteredCountries.length > 0 && (
-                                        <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-bold">
-                                            {filteredCountries.length}
-                                        </span>
-                                    )}
-                                </button>
-                            </CustomTooltip>
+                            {!isMobile && (
+                                <>
+                                    <CustomTooltip title={expandAll ? "Collapse all overviews" : "Expand all overviews"}>
+                                        <button
+                                            onClick={toggleExpandAll}
+                                            className="p-1 rounded-full text-gray-500 hover:bg-gray-100"
+                                        >
+                                            {expandAll ?
+                                                <UnfoldLessIcon style={{ fontSize: '1.1rem' }} /> :
+                                                <UnfoldMoreIcon style={{ fontSize: '1.1rem' }} />
+                                            }
+                                        </button>
+                                    </CustomTooltip>
+                                    {/* Filter Button */}
+                                    <CustomTooltip title="Filter countries">
+                                        <button
+                                            onClick={() => setFilterOpen(true)}
+                                            className={`p-1 rounded-full text-gray-500 hover:bg-gray-100 relative ${filteredCountries.length > 0 ? 'text-blue-600' : ''}`}
+                                        >
+                                            <FilterListIcon style={{ fontSize: '1.1rem' }} />
+                                            {filteredCountries.length > 0 && (
+                                                <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-bold">
+                                                    {filteredCountries.length}
+                                                </span>
+                                            )}
+                                        </button>
+                                    </CustomTooltip>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>

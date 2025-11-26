@@ -4,6 +4,7 @@ import { ExpandLess, ExpandMore, PushPin, PushPinOutlined } from "@mui/icons-mat
 import { Collapse } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useGlobalSort } from "@/utils/store";
+import useMobile from "@/components/useMobile";
 
 // Helper function to clean summary text by removing everything after language markers
 const cleanSummaryText = (text) => {
@@ -28,6 +29,7 @@ export default function Content({ country, summary, locale, pinned }) {
     const [open, setOpen] = useState(false);
     const setPinnedCountries = useGlobalSort(state => state.setPinnedCountries);
     const allExpanded = useGlobalSort(state => state.allExpanded);
+    const { isMobile } = useMobile();
 
     useEffect(() => {
         setOpen(allExpanded);
@@ -90,17 +92,25 @@ export default function Content({ country, summary, locale, pinned }) {
                     textAlign: locale === 'heb' ? 'right' : 'left',
                     color: locale === 'heb' ? 'black' : '#374151', // Tailwind gray-700
                     fontSize: locale === 'heb' ? '0.85rem' : '0.9rem',
-                    // lineHeight: 1.4
+                    lineHeight: '1.4'
                 }}>
-                    {text.split(/(\([^)]+\))/g).map((part, index) =>
-                        part.startsWith('(') && part.endsWith(')') ? (
-                            <span key={index} style={{ fontSize: '0.75rem', color: 'grey' }}>
-                                {part}
-                            </span>
-                        ) : (
-                            part
-                        )
-                    )}
+                    <div className={isMobile ? 'line-clamp-4 overflow-hidden' : ''} style={isMobile ? {
+                        display: '-webkit-box',
+                        WebkitLineClamp: 4,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        wordBreak: 'break-word'
+                    } : {}}>
+                        {text.split(/(\([^)]+\))/g).map((part, index) =>
+                            part.startsWith('(') && part.endsWith(')') ? (
+                                <span key={index} style={{ fontSize: '0.75rem', color: 'grey' }}>
+                                    {part}
+                                </span>
+                            ) : (
+                                part
+                            )
+                        )}
+                    </div>
                 </div>
             </Collapse>
         </div>

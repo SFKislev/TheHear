@@ -4,10 +4,12 @@ import Link from "next/link";
 import { useState } from "react";
 import { LinearProgress } from "@mui/material";
 import { createPortal } from "react-dom";
+import useMobile from "@/components/useMobile";
 
 export default function Headline({ country, locale, summary, typography, index }) {
     const [showProgress, setShowProgress] = useState(false);
-    
+    const { isMobile } = useMobile();
+
     let headline = summary.englishHeadline;
     if (locale === 'heb') {
         headline = summary.hebrewHeadline || summary.headline
@@ -15,11 +17,18 @@ export default function Headline({ country, locale, summary, typography, index }
         headline = summary ? (summary.translatedHeadline || summary.headline) : '';
     }
 
+    // Apply font size multipliers
+    let updatedTypography = { ...typography };
+
     // Apply 1.5x font size multiplier for the first card (index 0)
-    const updatedTypography = index === 0 ? {
-        ...typography,
-        fontSize: `calc(${typography.fontSize} * 1.5)`
-    } : typography;
+    if (index === 0) {
+        updatedTypography.fontSize = `calc(${typography.fontSize} * 1.5)`;
+    }
+
+    // Apply 0.8x font size multiplier for mobile devices
+    if (isMobile) {
+        updatedTypography.fontSize = `calc(${updatedTypography.fontSize} * 0.8)`;
+    }
 
     const handleClick = () => {
         setShowProgress(true);
