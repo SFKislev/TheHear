@@ -11,7 +11,7 @@ function GoogleAnalyticsInner() {
 
   useEffect(() => {
     if (pathname && window.gtag) {
-      window.gtag('config', 'G-CVTNMFSM4M', {
+      window.gtag('config', 'G-SKES42H9G9', {
         page_path: pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : ''),
       });
     }
@@ -25,7 +25,7 @@ export default function GoogleAnalytics() {
     <>
       <Script
         strategy="afterInteractive"
-        src="https://www.googletagmanager.com/gtag/js?id=G-CVTNMFSM4M"
+        src="https://www.googletagmanager.com/gtag/js?id=G-SKES42H9G9"
       />
       <Script
         id="gtag-init"
@@ -35,7 +35,7 @@ export default function GoogleAnalytics() {
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-CVTNMFSM4M');
+            gtag('config', 'G-SKES42H9G9');
           `,
         }}
       />
