@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Skeleton } from '@mui/material';
 import useGlobalOverviews from '@/utils/database/useGlobalOverview';
+import CustomTooltip from '@/components/CustomTooltip';
 
 export default function GlobalOverview({ locale, initialOverview }) {
     const [overview, setOverview] = useState(null);
@@ -100,11 +101,16 @@ export default function GlobalOverview({ locale, initialOverview }) {
         });
     };
 
+    const disclaimer = locale === 'heb' ? 'כל הסקירות בעמוד נכתבו על ידי בינה' : 'All overviews on this page were written by an AI';
+
     return (
         <div className="mb-2 custom-scrollbar overflow-auto">
-            <div className={`text-blue mb-5 ${locale === 'heb' ? 'frank-re' : 'font-["Geist"]'} text-base`} 
+            <div className={`text-blue mb-5 ${locale === 'heb' ? 'frank-re' : 'font-["Geist"]'} text-base`}
                  style={locale === 'heb' ? { lineHeight: '1.4' } : {}}>
                 <span className="font-mono font-normal text-base">{formattedTime}</span> {locale === 'heb' ? '⇠' : '⇢'} <span className={`${locale === 'heb' ? 'text-lg' : 'font-semibold text-base'}`}>{displayOverview.headline}</span>
+                <CustomTooltip title={disclaimer} placement={locale === 'heb' ? 'top' : 'right'}>
+                    <span className={`${locale === 'heb' ? 'mr-2' : 'ml-2'} align-middle cursor-help text-sm text-gray-400`} tabIndex={0}>⌨</span>
+                </CustomTooltip>
             </div>
 
             {/* Gentle divider */}

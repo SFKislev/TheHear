@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
-import Disclaimer from "@/components/Disclaimer";
+import Link from "next/link";
 import DynamicLogoSmall from "@/components/Logo-small";
 import GlobalOverview from "./GlobalOverview";
 import CustomTooltip from "@/components/CustomTooltip";
@@ -110,9 +110,26 @@ export default function GlobalSummarySection({ locale, onCollapsedChange, global
                     <GlobalOverview locale={locale} initialOverview={globalOverview} />
                 </div>
             </div>
-            <div className='py-1 bg-white border-t border-gray-200'>
-                <div className="hidden sm:block">
-                    <Disclaimer locale={locale} />
+            <div className='py-1 bg-white border-t border-gray-200 px-1'>
+                <div className="flex items-center">
+                    <span className={`text-xs mt-4 mb-2 bg-gray-50 p-4 rounded-md text-gray-500 shadow-lg text-justify ${locale === 'heb' ? 'frank-re' : 'font-mono'}`}>
+                        {locale === 'heb' ? (
+                            // Hebrew content goes here
+                            <>
+                                סקירה גלובלית
+                            </>
+                        ) : (
+                            // English content
+                            <>
+                                This page displays short overviews of what is currently being discussed in the headlines across many countries,  
+                                giving a birds eye view of global news in real time. 
+                                It was written by an AI that constantly monitors and archives international main headlines.
+                                <br />
+                                <br />
+                                Click a country to see the actual headlines side by side, or <Link href="/about" className="text-gray-600 underline hover:text-blue">click here</Link> to read more about how this is made.
+                            </>
+                        )}
+                    </span>
                 </div>
             </div>
         </div>
