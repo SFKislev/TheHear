@@ -10,7 +10,7 @@ import { getCardSpanClasses } from "../responsiveGrid";
 import { Skeleton } from "@mui/material";
 
 export default function GlobalCard({ country, locale, pinned, index, typography, initialSummary }) {
-    const [summary, setSummary] = useState(null) // Start with null to show skeleton
+    const [summary, setSummary] = useState(initialSummary || null) // Start with initialSummary for SSR
     const [mounted, setMounted] = useState(false)
     const setGlobalCountryCohesion = useGlobalCountryCohesion(state => state?.setGlobalCountryCohesion) || (() => {})
     const setGlobalCountryTimestamp = useGlobalCountryTimestamps(state => state?.setGlobalCountryTimestamp) || (() => {})
@@ -18,14 +18,11 @@ export default function GlobalCard({ country, locale, pinned, index, typography,
 
     useEffect(() => {
         setMounted(true)
-        // Set initial summary after a short delay to show skeleton briefly
+        // Set initial summary immediately for SSR compatibility
         if (initialSummary) {
-            const timer = setTimeout(() => {
-                setSummary(initialSummary)
-                setGlobalCountryCohesion(country, initialSummary.relativeCohesion)
-                setGlobalCountryTimestamp(country, initialSummary.timestamp)
-            }, 100) // Brief delay to show skeleton
-            return () => clearTimeout(timer)
+            setSummary(initialSummary)
+            setGlobalCountryCohesion(country, initialSummary.relativeCohesion)
+            setGlobalCountryTimestamp(country, initialSummary.timestamp)
         }
     }, [initialSummary, country, setGlobalCountryCohesion, setGlobalCountryTimestamp])
 

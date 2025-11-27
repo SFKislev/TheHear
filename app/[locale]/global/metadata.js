@@ -13,17 +13,18 @@ function getFlagEmoji(countryKey) {
 }
 
 export function GlobalLdJson({ locale, countrySummaries, globalOverview }) {
-    const url = `https://www.thehear.org/${locale}/global`;
-    
+    const baseUrl = 'https://thehear.org';
+    const url = `${baseUrl}/${locale}/global`;
+
     // Create description for global overview page
     const description = locale === 'heb'
         ? `סקירה גלובלית של כותרות העיתונים מכל העולם; דוכן חדשות בין־לאומי המעדכן בזמן אמת.`
         : `Global overview of live headlines from around the world; an international newsstand updating in real time.`;
-    
-    const image = 'https://www.thehear.org/logo192.png';
+
+    const image = `${baseUrl}/logo192.png`;
     const title = locale === 'heb'
-        ? `🌍 סקירה גלובלית | The Hear`
-        : `🌍 Global Overview | The news as they evolve | The Hear`;
+        ? `🌍 דוכן עיתונים גלובלי | The Hear`
+        : `🌍 Global News Feed | International news as they evolve | The Hear`;
     
     // Prepare country summaries as abstracts
     const abstracts = [];
@@ -47,37 +48,62 @@ export function GlobalLdJson({ locale, countrySummaries, globalOverview }) {
                 
                 if (headlineContent && headlineContent.trim()) {
                     abstracts.push({
-                        '@type': 'NewsArticle',
+                        '@type': 'AnalysisNewsArticle',
                         'headline': headlineContent.trim(),
-                        'abstract': summaryContent ? summaryContent.trim() : '',
+                        'articleBody': summaryContent ? summaryContent.trim() : '',
+                        'description': locale === 'heb'
+                            ? `ניתוח AI של הסיקור התקשורתי ב${countryName}`
+                            : `AI-generated analysis of media coverage in ${countryName}`,
                         'datePublished': summary.timestamp ? new Date(summary.timestamp).toISOString() : new Date().toISOString(),
+                        'author': {
+                            '@type': 'Organization',
+                            'name': 'The Hear AI',
+                            'url': baseUrl
+                        },
                         'publisher': {
                             '@type': 'NewsMediaOrganization',
                             'name': 'The Hear',
-                            'url': 'https://www.thehear.org'
+                            'url': baseUrl
                         },
-                        'about': `Live news from ${countryName}`,
-                        'url': `https://www.thehear.org/${locale}/${country}`
+                        'genre': locale === 'heb' ? 'ניתוח חדשות' : 'News Analysis',
+                        'about': locale === 'heb' ? `חדשות מ${countryName}` : `News from ${countryName}`,
+                        'url': `${baseUrl}/${locale}/${country}`,
+                        'inLanguage': locale === 'heb' ? 'he' : 'en'
                     });
                 }
             }
         });
     }
 
-    // Add global overview as main abstract
+    // Add global overview as main abstract - using AnalysisNewsArticle to emphasize unique AI-generated content
     if (globalOverview) {
         const overviewData = locale === 'heb' ? globalOverview.hebrew : globalOverview.english;
         if (overviewData && overviewData.overview && overviewData.headline) {
             abstracts.unshift({
-                '@type': 'CreativeWork',
-                'name': overviewData.headline.trim(),
-                'abstract': overviewData.overview.trim(),
-                'dateCreated': globalOverview.timestamp ? new Date(globalOverview.timestamp).toISOString() : new Date().toISOString(),
-                'creator': {
-                    '@type': 'NewsMediaOrganization',
-                    'name': 'The Hear AI Global Overviews'
+                '@type': 'AnalysisNewsArticle',
+                'headline': overviewData.headline.trim(),
+                'articleBody': overviewData.overview.trim(),
+                'description': locale === 'heb'
+                    ? 'ניתוח שנוצר על ידי בינה מלאכותית של סיקור תקשורתי גלובלי בזמן אמת'
+                    : 'AI-generated analysis of global media coverage in real time',
+                'datePublished': globalOverview.timestamp ? new Date(globalOverview.timestamp).toISOString() : new Date().toISOString(),
+                'author': {
+                    '@type': 'Organization',
+                    'name': 'The Hear AI',
+                    'url': baseUrl
                 },
-                'about': locale === 'heb' ? 'ניתוח חדשות גלובלי' : 'Global news analysis'
+                'publisher': {
+                    '@type': 'NewsMediaOrganization',
+                    'name': 'The Hear',
+                    'url': baseUrl,
+                    'logo': {
+                        '@type': 'ImageObject',
+                        'url': image
+                    }
+                },
+                'genre': locale === 'heb' ? 'ניתוח חדשות' : 'News Analysis',
+                'about': locale === 'heb' ? 'ניתוח חדשות גלובלי' : 'Global news analysis',
+                'inLanguage': locale === 'heb' ? 'he' : 'en'
             });
         }
     }
@@ -93,7 +119,7 @@ export function GlobalLdJson({ locale, countrySummaries, globalOverview }) {
         'publisher': {
             '@type': 'NewsMediaOrganization',
             'name': 'The Hear AI overviews',
-            'url': 'https://www.thehear.org',
+            'url': baseUrl,
             'logo': {
                 '@type': 'ImageObject',
                 'url': image
@@ -117,7 +143,7 @@ export function GlobalLdJson({ locale, countrySummaries, globalOverview }) {
                     '@type': 'ListItem',
                     'position': 1,
                     'name': 'Home',
-                    'item': 'https://www.thehear.org'
+                    'item': baseUrl
                 },
                 {
                     '@type': 'ListItem',

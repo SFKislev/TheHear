@@ -5,6 +5,7 @@ import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { Analytics } from "@vercel/analytics/next"
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import PWAMeta from "@/components/PWAMeta";
+import EmotionRegistry from "./EmotionRegistry";
 
 
 export const metadata = {
@@ -91,12 +92,14 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
-        <Analytics />
-        <GoogleAnalytics />
-        <SpeedInsights />
-        <ServiceWorkerRegistration />
-        {/* <WebVitals /> */}
-        {children}
+        <EmotionRegistry options={{ key: 'mui' }}>
+          <Analytics />
+          <GoogleAnalytics />
+          <SpeedInsights />
+          <ServiceWorkerRegistration />
+          {/* <WebVitals /> */}
+          {children}
+        </EmotionRegistry>
       </body>
     </html>
   );

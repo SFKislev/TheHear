@@ -25,12 +25,12 @@ export default function GlobalSummarySection({ locale, onCollapsedChange, global
 
     // Set initial state based on screen size after component mounts
     useEffect(() => {
+        setIsMounted(true);
         const shouldBeCollapsed = window.innerWidth < 1920;
         setIsCollapsed(shouldBeCollapsed);
         isCollapsedRef.current = shouldBeCollapsed;
-        setIsMounted(true);
         setIsSmallScreen(window.innerWidth < 1920);
-        
+
         // Notify parent of initial collapsed state
         if (onCollapsedChange) {
             onCollapsedChange(shouldBeCollapsed);
@@ -52,11 +52,6 @@ export default function GlobalSummarySection({ locale, onCollapsedChange, global
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, [onCollapsedChange]);
-
-    // Don't render until we know the screen size to prevent flash
-    if (!isMounted) {
-        return null;
-    }
 
     // Collapsed view - narrow bar similar to SideSlider
     if (isCollapsed) {
@@ -112,11 +107,15 @@ export default function GlobalSummarySection({ locale, onCollapsedChange, global
             </div>
             <div className='py-1 bg-white border-t border-gray-200 px-1'>
                 <div className="flex items-center">
-                    <span className={`text-xs mt-4 mb-2 bg-gray-50 p-4 rounded-md text-gray-500 shadow-lg text-justify ${locale === 'heb' ? 'frank-re' : 'font-mono'}`}>
+                    <span className={`mt-4 mb-2 bg-gray-50 p-4 rounded-md shadow-lg text-justify ${locale === 'heb' ? 'frank-re text-sm leading-relaxed text-gray-700' : 'font-mono text-xs text-gray-500'}`}>
                         {locale === 'heb' ? (
                             // Hebrew content goes here
                             <>
-                                סקירה גלובלית
+                                בעמוד זה מרוכזות סקירות קצרות של הכותרות הראשיות ממדינות שונות ברחבי העולם: מבט ציפור על החדשות הגלובליות.
+                                הסקירות נכתבו בידי בינה שעוקבת אחר הכותרות הראשיות במאות עיתונים, בעשרות שפות ובזמן אמת. 
+                                <br />
+                                <br />
+                                לחצו על אחת המדינות כדי לראות את הכותרות עצמן, או <Link href="/about" className="text-gray-600 underline hover:text-blue">כאן</Link> למידע נוסף על איך זה נעשה.
                             </>
                         ) : (
                             // English content

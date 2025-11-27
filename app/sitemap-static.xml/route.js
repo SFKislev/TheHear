@@ -6,24 +6,37 @@ export const revalidate = 86400
 export async function GET() {
     const baseUrl = 'https://www.thehear.org'
     const res = []
-
-    // MIGRATION STRATEGY: Initially only include About/Methodology
-    // Live country and global pages will be added later (Month 4+)
-    // This allows Google to focus on static, immutable content first
+    const now = new Date()
 
     // Static information pages - very high priority (easy to crawl, help Google understand the site)
     res.push({
         url: `${baseUrl}/about`,
         lastModified: new Date('2025-08-28'),
         changeFrequency: 'monthly',
-        priority: 0.95 // Increased - helps Google understand the site's purpose
+        priority: 0.95
     });
 
     res.push({
         url: `${baseUrl}/methodology`,
         lastModified: new Date('2025-08-28'),
         changeFrequency: 'monthly',
-        priority: 0.95 // Increased - helps Google understand the site's methodology
+        priority: 0.95
+    });
+
+    // Global overview pages - high priority, frequently updated real-time content
+    // These pages provide unique AI-generated analysis of global news coverage
+    res.push({
+        url: `${baseUrl}/en/global`,
+        lastModified: now, // Always current - signals fresh content
+        changeFrequency: 'hourly', // Updates throughout the day
+        priority: 0.8 // High priority for unique content
+    });
+
+    res.push({
+        url: `${baseUrl}/heb/global`,
+        lastModified: now,
+        changeFrequency: 'hourly',
+        priority: 0.8
     });
 
     // Convert to XML format

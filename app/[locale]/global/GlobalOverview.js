@@ -6,19 +6,24 @@ import useGlobalOverviews from '@/utils/database/useGlobalOverview';
 import CustomTooltip from '@/components/CustomTooltip';
 
 export default function GlobalOverview({ locale, initialOverview }) {
-    const [overview, setOverview] = useState(null);
+    // Initialize with data for SSR
+    const initialData = initialOverview && (locale === 'en'
+        ? { ...initialOverview.english, timestamp: initialOverview.timestamp }
+        : { ...initialOverview.hebrew, timestamp: initialOverview.timestamp });
+
+    const [overview, setOverview] = useState(initialData || null);
     const [mounted, setMounted] = useState(false);
     const clientOverview = useGlobalOverviews(locale);
 
     useEffect(() => {
         setMounted(true);
-        if (initialOverview) {
-            const localizedOverview = locale === 'en' 
+        if (initialOverview && !overview) {
+            const localizedOverview = locale === 'en'
                 ? { ...initialOverview.english, timestamp: initialOverview.timestamp }
                 : { ...initialOverview.hebrew, timestamp: initialOverview.timestamp };
             setOverview(localizedOverview);
         }
-    }, [initialOverview, locale]);
+    }, [initialOverview, locale, overview]);
 
     // Update with client data when available
     useEffect(() => {
@@ -59,7 +64,7 @@ export default function GlobalOverview({ locale, initialOverview }) {
             if (titleMatch) {
                 return (
                     <>
-                        <div className={`inline ${locale === 'heb' ? 'frank-re text-[16px]' : 'font-["Geist"] text-sm'} font-bold`}>
+                        <div className={`inline ${locale === 'heb' ? 'frank-re text-base underline underline-offset-4' : 'font-["Geist"] text-sm font-bold'}`}>
                             {locale === 'heb' ? '⇠' : '⇢'} {titleMatch[1]}:
                         </div>
                         {" " + titleMatch[2]}
@@ -83,7 +88,7 @@ export default function GlobalOverview({ locale, initialOverview }) {
                 return (
                     <div
                         key={`parenthesis-${index}`}
-                        className="text-gray-400 text-xs inline"
+                        className={`text-gray-500 inline ${locale === 'heb' ? 'text-sm' : 'text-xs'}`}
                     >
                         {part}
                     </div>
@@ -105,7 +110,7 @@ export default function GlobalOverview({ locale, initialOverview }) {
 
     return (
         <div className="mb-2 custom-scrollbar overflow-auto">
-            <div className={`text-blue mb-5 ${locale === 'heb' ? 'frank-re' : 'font-["Geist"]'} text-base`}
+            <div className={`text-blue mb-5 ${locale === 'heb' ? 'frank-re text-lg' : 'font-["Geist"] text-base'}`}
                  style={locale === 'heb' ? { lineHeight: '1.4' } : {}}>
                 <span className="font-mono font-normal text-base">{formattedTime}</span> {locale === 'heb' ? '⇠' : '⇢'} <span className={`${locale === 'heb' ? 'text-lg' : 'font-semibold text-base'}`}>{displayOverview.headline}</span>
                 <CustomTooltip title={disclaimer} placement={locale === 'heb' ? 'top' : 'right'}>
@@ -117,7 +122,7 @@ export default function GlobalOverview({ locale, initialOverview }) {
             {/* <div className="w-[80%] mb-3 border-b border-gray-300" style={{height: '1px'}} /> */}
 
             {/* Overview Text */}
-            <div className={`${locale == 'heb' ? 'frank-re text-[16px]' : 'font-["Geist"] text-sm'} font-normal text-black whitespace-pre-wrap`} 
+            <div className={`${locale == 'heb' ? 'frank-re text-base' : 'font-["Geist"] text-sm'} font-normal text-black whitespace-pre-wrap`} 
                  style={locale === 'heb' ? { lineHeight: '1.4' } : {lineHeight: '1.5'}}>
                 {formatText(displayOverview.overview)}
             </div>

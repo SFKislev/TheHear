@@ -26,7 +26,8 @@ const cleanSummaryText = (text) => {
 };
 
 export default function Content({ country, summary, locale, pinned }) {
-    const [open, setOpen] = useState(false);
+    // Start with open=true for SSR (bots see content), can be toggled by user
+    const [open, setOpen] = useState(true);
     const setPinnedCountries = useGlobalSort(state => state.setPinnedCountries);
     const allExpanded = useGlobalSort(state => state.allExpanded);
     const { isMobile } = useMobile();
