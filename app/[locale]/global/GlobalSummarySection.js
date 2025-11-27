@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from "react";
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
 import Disclaimer from "@/components/Disclaimer";
-import DynamicLogo from "@/components/Logo";
 import DynamicLogoSmall from "@/components/Logo-small";
 import GlobalOverview from "./GlobalOverview";
 import CustomTooltip from "@/components/CustomTooltip";

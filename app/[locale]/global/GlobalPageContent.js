@@ -36,7 +36,7 @@ export default function GlobalPageContent({ locale, AICountrySort, countrySummar
             {/* Mobile title bar - only visible on mobile */}
             {isMobile && globalOverview && (
                 <div className="bg-white border-b border-gray-200 py-2 px-4 text-center">
-                    <h1 className={`text-gray-800 ${locale === 'heb' ? 'frank-re text-base py-2' : 'font-["Geist"] font-bold text-sm'}`}>
+                    <h1 className={`text-gray-800 ${locale === 'heb' ? 'frank-re text-base py-2' : 'font-["Geist"] font-bold text-sm py-1'}`}>
                         {locale === 'heb' ? globalOverview.hebrew.headline : globalOverview.english.headline}
                     </h1>
                 </div>

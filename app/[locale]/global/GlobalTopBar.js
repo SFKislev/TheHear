@@ -45,7 +45,7 @@ export default function GlobalTopBar({ locale }) {
 
     return (
         <>
-            <nav className="w-full bg-white z-50 border-b border-gray-200 py-1 direction-ltr">
+            <nav className="sticky top-0 w-full bg-white z-50 border-b border-gray-200 py-1 direction-ltr">
                 <div className="w-full mx-auto px-5">
                     <div className="flex items-center h-10 relative">
                         {/* Site Title with Geist font */}

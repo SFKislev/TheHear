@@ -94,11 +94,9 @@ export default function MobileSummary({ locale, country, pageDate, initialSummar
                 onScroll={handleInteraction}
             >
                 <div className="mb-0">
-                    <h3 className={`text-blue mb-2 ${locale === 'heb' ? 'text-lg' : 'text-default'} font-medium ${fontClass}`}
+                    <h3 className={`text-blue mb-2 mt-2 ${locale === 'heb' ? 'text-lg' : 'text-default'} font-medium ${fontClass}`}
                         style={{
                             lineHeight: '1.5',
-                            marginTop: '0px',
-                            marginBottom: '10px',
                             direction: locale === 'heb' ? 'rtl' : 'ltr',
                         }}
                     >

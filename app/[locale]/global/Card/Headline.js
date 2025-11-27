@@ -27,7 +27,7 @@ export default function Headline({ country, locale, summary, typography, index }
 
     // Apply 0.8x font size multiplier for mobile devices
     if (isMobile) {
-        updatedTypography.fontSize = `calc(${updatedTypography.fontSize} * 0.8)`;
+        updatedTypography.fontSize = `calc(${updatedTypography.fontSize} * 0.7)`;
     }
 
     const handleClick = () => {
