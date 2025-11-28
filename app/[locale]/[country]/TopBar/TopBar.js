@@ -8,10 +8,11 @@ import Link from "next/link";
 import InnerLink from '@/components/InnerLink';
 import { countries } from "@/utils/sources/countries";
 import FlagIcon from "@/components/FlagIcon";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import HebrewFonts from "@/utils/typography/HebrewFonts";
 import { getHeadline } from '@/utils/daily summary utils';
+import { trackEngagedUser } from "@/utils/analytics";
 
 const Settings = dynamic(() => import("./settings/Settings"));
 
@@ -41,6 +42,18 @@ export default function TopBar({ locale, country, sources, currentSummary, initi
     const date = useTime(state => state.date);
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [isWideScreen, setIsWideScreen] = useState(false);
+    const hasTrackedSettings = useRef(false);
+
+    // Track when settings are opened (once per session)
+    useEffect(() => {
+        if (settingsOpen && !hasTrackedSettings.current) {
+            hasTrackedSettings.current = true;
+            trackEngagedUser('settings_opened', {
+                country,
+                locale
+            });
+        }
+    }, [settingsOpen, country, locale]);
 
     // Check if screen is wide enough to show region buttons (1240px+)
     useEffect(() => {
@@ -151,9 +164,9 @@ export default function TopBar({ locale, country, sources, currentSummary, initi
                         <div className="flex items-center min-w-0 flex-1">
                             {effectiveLocale !== 'heb' && (
                                 <>
-                                    <Link href={`/${effectiveLocale}/global`} className="hover:text-blue transition-colors">
-                                        <h1 className={`${effectiveLocale === 'heb' ? 'text-base' : 'text-sm'} font-medium cursor-pointer ${effectiveLocale === 'heb' ? 'frank-re' : 'font-["Geist"]'} whitespace-nowrap`}>The Hear</h1>
-                                    </Link>
+                                    <InnerLink href={`/${effectiveLocale}/global`}>
+                                        <h1 className={`${effectiveLocale === 'heb' ? 'text-base' : 'text-sm'} font-medium cursor-pointer ${effectiveLocale === 'heb' ? 'frank-re' : 'font-["Geist"]'} whitespace-nowrap hover:text-blue transition-colors`}>The Hear</h1>
+                                    </InnerLink>
                                     <div className="border-l border-dotted border-gray-500 self-stretch mx-2 sm:mx-5 flex-shrink-0"></div>
                                 </>
                             )}

@@ -10,12 +10,6 @@ import InnerLink from './InnerLink';
 
 export default function DynamicLogoSmall({ locale, showDivider = true, mobileReducedPadding = false }) {
     const [isFakeHover, setIsFakeHover] = useState(false);
-    const router = useRouter();
-
-    const handleLogoClick = (e) => {
-        e.stopPropagation(); // Prevent parent click handlers from firing
-        router.push(`/${locale}/global`);
-    };
 
     // Add fake hover effect every 30 seconds
     useEffect(() => {
@@ -53,7 +47,7 @@ export default function DynamicLogoSmall({ locale, showDivider = true, mobileRed
                     THE
                 </div>
 
-                <InnerLink locale={locale} href={`/${locale}/global`} className='' onClick={handleLogoClick}>
+                <InnerLink locale={locale} href={`/${locale}/global`} className=''>
                     <Image className={`relative z-20 h-[85px] ${locale === 'heb' ? 'scale-x-[1]' : 'scale-x-[-1]'} object-contain pb-2 cursor-pointer`}
                         width="auto"
                         src={logoA} alt="The Hear Logo" />

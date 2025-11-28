@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
 import Link from "next/link";
+import InnerLink from "@/components/InnerLink";
 import DynamicLogoSmall from "@/components/Logo-small";
 import GlobalOverview from "./GlobalOverview";
 import CustomTooltip from "@/components/CustomTooltip";
@@ -115,7 +116,7 @@ export default function GlobalSummarySection({ locale, onCollapsedChange, global
                                 הסקירות נכתבו בידי בינה שעוקבת אחר הכותרות הראשיות במאות עיתונים, בעשרות שפות ובזמן אמת. 
                                 <br />
                                 <br />
-                                לחצו על אחת המדינות כדי לראות את הכותרות עצמן, או <Link href="/about" className="text-gray-600 underline hover:text-blue">כאן</Link> למידע נוסף על איך זה נעשה.
+                                לחצו על אחת המדינות כדי לראות את הכותרות עצמן, או <InnerLink href="/about"><span className="text-gray-600 underline hover:text-blue">כאן</span></InnerLink> למידע נוסף על איך זה נעשה.
                             </>
                         ) : (
                             // English content
@@ -125,7 +126,7 @@ export default function GlobalSummarySection({ locale, onCollapsedChange, global
                                 It was written by an AI that constantly monitors and archives international main headlines.
                                 <br />
                                 <br />
-                                Click a country to see the actual headlines side by side, or <Link href="/about" className="text-gray-600 underline hover:text-blue">click here</Link> to read more about how this is made.
+                                Click a country to see the actual headlines side by side, or <InnerLink href="/about"><span className="text-gray-600 underline hover:text-blue">click here</span></InnerLink> to read more about how this is made.
                             </>
                         )}
                     </span>

@@ -5,6 +5,7 @@ import { useEffect, useState, useRef } from "react";
 import { LinearProgress } from "@mui/material";
 import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
+import { trackEngagedUser, hasNavigatedAway } from "@/utils/analytics";
 
 export default function InnerLink({ href, locale, children }) {
     const [showProgress, setShowProgress] = useState(false);
@@ -46,6 +47,15 @@ export default function InnerLink({ href, locale, children }) {
     }, [pathname, showProgress]);
 
     const handleClick = (e) => {
+        // Track navigation if user is moving to a different page from their entry page
+        if (hasNavigatedAway(href)) {
+            trackEngagedUser('page_navigation', {
+                from: pathname,
+                to: href,
+                locale: locale || 'unknown'
+            });
+        }
+
         // Don't prevent default - let Next.js handle the navigation
         initialPathnameRef.current = pathname;
         setShowProgress(true);
@@ -53,11 +63,11 @@ export default function InnerLink({ href, locale, children }) {
 
     return (
         <>
-            <div onClick={handleClick} className="cursor-pointer">
+            <span onClick={handleClick} className="cursor-pointer inline-block">
                 <Link href={href} hrefLang={locale}>
                     {children}
                 </Link>
-            </div>
+            </span>
             {showProgress && typeof window !== 'undefined' && createPortal(
                 <div className="fixed inset-0 w-full h-full z-[9999] pointer-events-none">
                     <div className="absolute inset-0 bg-white bg-opacity-40 animate-pulse transition-all duration-200" />

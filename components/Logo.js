@@ -11,12 +11,6 @@ import InnerLink from './InnerLink';
 export default function DynamicLogo({ locale, padding = 'p-4', showDivider = true, mobileReducedPadding = false }) {
     const [currentLogo, setCurrentLogo] = useState(logoA);
     const [isFakeHover, setIsFakeHover] = useState(false);
-    const router = useRouter();
-
-    const handleLogoClick = (e) => {
-        e.stopPropagation(); // Prevent parent click handlers from firing
-        router.push(`/${locale}/global`);
-    };
 
     const eyeTimeout = useRef(null);
     const openEyes = () => {
@@ -66,7 +60,7 @@ export default function DynamicLogo({ locale, padding = 'p-4', showDivider = tru
                     THE
                 </div>
 
-                <InnerLink locale={locale} href={`/${locale}/global`} className='' onClick={handleLogoClick}>
+                <InnerLink locale={locale} href={`/${locale}/global`} className=''>
                     <Image className={`relative z-20 h-[165px] ${locale === 'heb' ? 'scale-x-[-1]' : ''} object-contain pb-2 cursor-pointer`}
                         width="auto"
                         src={currentLogo} alt="The Hear Logo" />
