@@ -27,7 +27,8 @@ export default function Headline({ country, locale, summary, typography, index }
 
     // Apply smaller font size multiplier for mobile devices
     if (isMobile) {
-        updatedTypography.fontSize = `calc(${updatedTypography.fontSize} * 0.67)`;
+        const mobileMultiplier = locale === 'heb' ? 0.75 : 0.67;
+        updatedTypography.fontSize = `calc(${updatedTypography.fontSize} * ${mobileMultiplier})`;
     }
 
     const handleClick = () => {
