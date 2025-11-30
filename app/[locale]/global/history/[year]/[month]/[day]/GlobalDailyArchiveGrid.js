@@ -37,7 +37,7 @@ export default function GlobalDailyArchiveGrid({
         : `Global News Archive - ${dateString}`;
     
     const pageDescription = locale === 'heb'
-        ? `דף זה מתעד את הסיפורים העיקריים שהתרחשו ברחבי העולם ב-${dateString}. הכותרות והסקירות היומיות, שנועדו לתפקד כשיא היסטורי מיקרו בזמן אמת של חדשות עולמיות, נכתבו על ידי בינה מלאכותית. צפה בכותרות מכל המדינות ביום אחד.`
+        ? `דף זה מתעד את כותרות החדשות העיקריות מתאריך ה-${dateString}. הכותרות והסקירות היומיות, שנועדו לתפקד כתיעוד בזמן אמת של החדשות מרחבי העולם, נכתבו על ידי בינה מלאכותית.`
         : `This page chronicles the main stories that unfolded across the world on ${dateString}. The daily titles and overviews, meant to function as a real time, micro-history record of global news headlines, were written by an AI. View headlines from all countries on a single day.`;
 
     // Sort function for daily summaries

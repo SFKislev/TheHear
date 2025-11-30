@@ -20,7 +20,7 @@ export async function createMetadata({ params }) {
         : `Global News Archive - ${dateString} | The Hear`;
     
     const description = isHebrew
-        ? `דף זה מתעד את הסיפורים העיקריים שהתרחשו ברחבי העולם ב-${dateString}. הכותרות והסקירות היומיות, שנועדו לתפקד כשיא היסטורי מיקרו בזמן אמת של חדשות עולמיות, נכתבו על ידי בינה מלאכותית. צפה בכותרות מכל המדינות ביום אחד.`
+        ? `דף זה מתעד את הכותרות החדשות העיקריות מתאריך ה-${dateString}. הכותרות היומיות והסקירות, שנועדו לשמש כתיעוד בזמן אמת של כותרות חדשות, נכתבו על ידי בינה מלאכותית. בחר מדינה כדי לראות את הכותרות כפי שהתרחשו, ללא עריכה.`
         : `This page chronicles the main stories that unfolded across the world on ${dateString}. The daily titles and overviews, meant to function as a real time, micro-history record of global news headlines, were written by an AI. View headlines from all countries on a single day.`;
 
     const keywords = isHebrew
@@ -86,7 +86,7 @@ export function LdJson({ locale, year, month, day, currentDate, dailySummaries, 
         : `Global News Archive - ${dateString} | The Hear`;
     
     const description = isHebrew
-        ? `דף זה מתעד את הסיפורים העיקריים שהתרחשו ברחבי העולם ב-${dateString}. הכותרות והסקירות היומיות, שנועדו לתפקד כשיא היסטורי מיקרו בזמן אמת של חדשות עולמיות, נכתבו על ידי בינה מלאכותית. צפה בכותרות מכל המדינות ביום אחד.`
+        ? `דף זה מתעד את הכותרות החדשות העיקריות מתאריך ה-${dateString}. הכותרות היומיות והסקירות, שנועדו לשמש כתיעוד בזמן אמת של כותרות חדשות, נכתבו על ידי בינה מלאכותית. בחר מדינה כדי לראות את הכותרות כפי שהתרחשו, ללא עריכה.`
         : `This page chronicles the main stories that unfolded across the world on ${dateString}. The daily titles and overviews, meant to function as a real time, micro-history record of global news headlines, were written by an AI. View headlines from all countries on a single day.`;
 
     const image = 'https://www.thehear.org/logo192.png';

@@ -26,7 +26,7 @@ export function createMetadata({ country, locale, year, month }) {
         : `${countryName} News Archive - ${monthName} | The Hear`;
     
     const description = isHebrew
-        ? `דף זה מתעד את הסיפורים העיקריים שהתרחשו בתקשורת ${countryName} ב-${monthName}. הכותרות היומיות והסקירות, שנועדו לתפקד כשיא היסטורי מיקרו בזמן אמת של כותרות חדשות, נכתבו על ידי בינה מלאכותית. בחר תאריך כדי לראות את הכותרות האמיתיות כפי שהתרחשו, ללא עריכה.`
+        ? `דף זה מתעד את הכותרות העיקריות מחדשות ${countryName} ב-${monthName}. הכותרות היומיות והסקירות, שנועדו לשמש כתיעוד בזמן אמת של כותרות חדשות, נכתבו על ידי בינה מלאכותית. בחר תאריך כדי לראות את הכותרות כפי שהתרחשו, ללא עריכה.`
         : `This page chronicles the main stories that unfolded in ${countryName} media on ${monthName}. The daily titles and overviews, meant to function as a real time, micro-history record of news headlines, were written by an AI. Pick a date to see the actual headlines as they played out, unedited.`;
 
     const keywords = isHebrew
@@ -95,7 +95,7 @@ export function LdJson({ country, locale, year, month, dailySummaries, headlines
         : `${countryName} News Archive - ${monthName} | The Hear`;
     
     const description = isHebrew
-        ? `דף זה מתעד את הסיפורים העיקריים שהתרחשו בתקשורת ${countryName} ב-${monthName}. הכותרות היומיות והסקירות, שנועדו לתפקד כשיא היסטורי מיקרו בזמן אמת של כותרות חדשות, נכתבו על ידי בינה מלאכותית. בחר תאריך כדי לראות את הכותרות האמיתיות כפי שהתרחשו, ללא עריכה.`
+        ? `דף זה מתעד את הכותרות העיקריות מחדשות ${countryName} ב-${monthName}. הכותרות היומיות והסקירות, שנועדו לשמש כתיעוד בזמן אמת של כותרות חדשות, נכתבו על ידי בינה מלאכותית. בחר תאריך כדי לראות את הכותרות כפי שהתרחשו, ללא עריכה.`
         : `This page chronicles the main stories that unfolded in ${countryName} media on ${monthName}. The daily titles and overviews, meant to function as a real time, micro-history record of news headlines, were written by an AI. Pick a date to see the actual headlines as they played out, unedited.`;
 
     const image = 'https://www.thehear.org/logo192.png';
