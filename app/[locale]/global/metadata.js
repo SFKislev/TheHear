@@ -108,51 +108,62 @@ export function GlobalLdJson({ locale, countrySummaries, globalOverview }) {
         }
     }
 
+    // Create breadcrumb navigation
+    const breadcrumbList = {
+        '@type': 'BreadcrumbList',
+        '@id': `${url}#breadcrumb`,
+        'itemListElement': [
+            {
+                '@type': 'ListItem',
+                'position': 1,
+                'name': 'Home',
+                'item': baseUrl
+            },
+            {
+                '@type': 'ListItem',
+                'position': 2,
+                'name': locale === 'heb' ? 'סקירה גלובלית' : 'Global Overview',
+                'item': url
+            }
+        ]
+    };
+
     const jsonLd = {
         '@context': 'https://schema.org',
-        '@type': 'CollectionPage',
-        'name': title,
-        'description': description,
-        'url': url,
-        'image': image,
-        'dateModified': new Date().toISOString(),
-        'publisher': {
-            '@type': 'NewsMediaOrganization',
-            'name': 'The Hear AI overviews',
-            'url': baseUrl,
-            'logo': {
-                '@type': 'ImageObject',
-                'url': image
-            }
-        },
-        'mainEntity': {
-            '@type': 'ItemList',
-            'name': locale === 'heb' ? 'כותרות גלובליות' : 'Global Headlines',
-            'description': description,
-            'numberOfItems': abstracts.length,
-            'itemListElement': abstracts.map((abstract, index) => ({
-                '@type': 'ListItem',
-                'position': index + 1,
-                'item': abstract
-            }))
-        },
-        'breadcrumb': {
-            '@type': 'BreadcrumbList',
-            'itemListElement': [
-                {
-                    '@type': 'ListItem',
-                    'position': 1,
-                    'name': 'Home',
-                    'item': baseUrl
+        '@graph': [
+            {
+                '@type': 'CollectionPage',
+                'name': title,
+                'description': description,
+                'url': url,
+                'image': image,
+                'dateModified': new Date().toISOString(),
+                'publisher': {
+                    '@type': 'NewsMediaOrganization',
+                    'name': 'The Hear AI overviews',
+                    'url': baseUrl,
+                    'logo': {
+                        '@type': 'ImageObject',
+                        'url': image
+                    }
                 },
-                {
-                    '@type': 'ListItem',
-                    'position': 2,
-                    'name': locale === 'heb' ? 'סקירה גלובלית' : 'Global Overview',
-                    'item': url
+                'mainEntity': {
+                    '@type': 'ItemList',
+                    'name': locale === 'heb' ? 'כותרות גלובליות' : 'Global Headlines',
+                    'description': description,
+                    'numberOfItems': abstracts.length,
+                    'itemListElement': abstracts.map((abstract, index) => ({
+                        '@type': 'ListItem',
+                        'position': index + 1,
+                        'item': abstract
+                    }))
+                },
+                'breadcrumb': {
+                    '@id': `${url}#breadcrumb`
                 }
-            ]
-        }
+            },
+            breadcrumbList
+        ]
     };
 
     return (

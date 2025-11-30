@@ -55,6 +55,7 @@ export function LdJson() {
     // Create breadcrumb navigation
     const breadcrumbList = {
         '@type': 'BreadcrumbList',
+        '@id': `${url}#breadcrumb`,
         'itemListElement': [
             {
                 '@type': 'ListItem',

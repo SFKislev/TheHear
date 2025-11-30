@@ -160,6 +160,7 @@ export function LdJson({ locale, year, month, day, currentDate, dailySummaries, 
     // Create breadcrumb navigation
     const breadcrumbList = {
         '@type': 'BreadcrumbList',
+        '@id': `${url}#breadcrumb`,
         'itemListElement': [
             {
                 '@type': 'ListItem',

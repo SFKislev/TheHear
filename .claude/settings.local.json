@@ -32,7 +32,9 @@
       "Bash(git diff:*)",
       "WebFetch(domain:storage.googleapis.com)",
       "WebFetch(domain:www.npmjs.com)",
-      "WebFetch(domain:www.the-hear.com)"
+      "WebFetch(domain:www.the-hear.com)",
+      "Bash(find:*)",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []

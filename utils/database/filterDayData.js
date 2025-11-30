@@ -1,43 +1,55 @@
 /**
- * Helper function to get timezone offset string for Date constructor
- * Converts IANA timezone names to offset strings (e.g., "-05:00", "+02:00")
- * This is a simplified version - for production, consider using a library like date-fns-tz
+ * Creates a Date object representing a specific local time in a given timezone
+ * This is surprisingly tricky in JavaScript without libraries!
  *
+ * @param {string} dateStr - Date string in YYYY-MM-DD format
+ * @param {string} timeStr - Time string in HH:MM:SS or HH:MM:SS.mmm format
  * @param {string} timezone - IANA timezone name (e.g., "America/New_York")
- * @returns {string} - Offset string (e.g., "-05:00")
+ * @returns {Date} - Date object in UTC that represents the local time
  */
-function getTimezoneOffset(timezone) {
-    // Common timezone mappings (simplified - this doesn't account for DST)
-    // For a production solution, use date-fns-tz or Temporal API
-    const timezoneOffsets = {
-        'America/New_York': '-05:00',    // EST (DST: -04:00)
-        'America/Chicago': '-06:00',     // CST (DST: -05:00)
-        'America/Denver': '-07:00',      // MST (DST: -06:00)
-        'America/Los_Angeles': '-08:00', // PST (DST: -07:00)
-        'Europe/London': '+00:00',       // GMT (DST: +01:00)
-        'Europe/Paris': '+01:00',        // CET (DST: +02:00)
-        'Europe/Berlin': '+01:00',       // CET (DST: +02:00)
-        'Europe/Moscow': '+03:00',       // MSK
-        'Europe/Athens': '+02:00',       // EET (DST: +03:00)
-        'Asia/Jerusalem': '+02:00',      // IST (DST: +03:00)
-        'Asia/Dubai': '+04:00',          // GST
-        'Asia/Tokyo': '+09:00',          // JST
-        'Asia/Shanghai': '+08:00',       // CST
-        'Asia/Kolkata': '+05:30',        // IST
-        'Asia/Tehran': '+03:30',         // IRST (DST: +04:30)
-        'Asia/Beirut': '+02:00',         // EET (DST: +03:00)
-        'Europe/Istanbul': '+03:00',     // TRT
-        'Europe/Kiev': '+02:00',         // EET (DST: +03:00)
-        'Europe/Warsaw': '+01:00',       // CET (DST: +02:00)
-        'Europe/Madrid': '+01:00',       // CET (DST: +02:00)
-        'Europe/Rome': '+01:00',         // CET (DST: +02:00)
-        'Europe/Amsterdam': '+01:00',    // CET (DST: +02:00)
-        'Europe/Helsinki': '+02:00',     // EET (DST: +03:00)
-        'Asia/Gaza': '+02:00',           // EET (DST: +03:00)
-        'UTC': '+00:00',
-    };
+function createDateInTimezone(dateStr, timeStr, timezone) {
+    // Parse components
+    const [year, month, day] = dateStr.split('-').map(Number);
+    const timeParts = timeStr.split(':');
+    const hour = parseInt(timeParts[0]);
+    const minute = parseInt(timeParts[1]);
+    const secondParts = (timeParts[2] || '0').split('.');
+    const second = parseInt(secondParts[0]);
+    const ms = secondParts[1] ? parseInt(secondParts[1].padEnd(3, '0').slice(0, 3)) : 0;
 
-    return timezoneOffsets[timezone] || '+00:00'; // Default to UTC if unknown
+    // Method: Use two Date objects to calculate the offset
+    // 1. Create a date in UTC for the same wall-clock time
+    const utcDate = new Date(Date.UTC(year, month - 1, day, hour, minute, second, ms));
+
+    // 3. Format the UTC date as if it were in the target timezone
+    const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: timezone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    });
+
+    const parts = formatter.formatToParts(utcDate);
+    const tzYear = parseInt(parts.find(p => p.type === 'year').value);
+    const tzMonth = parseInt(parts.find(p => p.type === 'month').value);
+    const tzDay = parseInt(parts.find(p => p.type === 'day').value);
+    const tzHour = parseInt(parts.find(p => p.type === 'hour').value);
+    const tzMinute = parseInt(parts.find(p => p.type === 'minute').value);
+    const tzSecond = parseInt(parts.find(p => p.type === 'second').value);
+
+    // 4. Calculate the difference in milliseconds
+    const targetTime = Date.UTC(year, month - 1, day, hour, minute, second, ms);
+    const tzTime = Date.UTC(tzYear, tzMonth - 1, tzDay, tzHour, tzMinute, tzSecond, 0);
+    const offset = targetTime - tzTime;
+
+    // Debug logging removed for production - was bloating HTML payload
+
+    // 5. Apply offset to get correct UTC time
+    return new Date(utcDate.getTime() + offset);
 }
 
 /**
@@ -84,8 +96,20 @@ export function filterToDayWithContinuity(data, parsedDate) {
     }).filter(Boolean); // Remove undefined entries (sources with no previous headlines)
 
     // Merge and sort all headlines by timestamp (newest first)
-    const headlines = [...dayHeadlines, ...previousDayLastHeadlines]
+    const mergedHeadlines = [...dayHeadlines, ...previousDayLastHeadlines]
         .sort((a, b) => b.timestamp - a.timestamp);
+
+    // Deduplicate by BOTH URL AND headline text (keep first occurrence = newest due to sort)
+    // Only remove if BOTH the link AND headline text are identical
+    // This allows headline rewording updates while preventing true duplicates
+    const seenCombos = new Set();
+    const headlines = mergedHeadlines.filter(h => {
+        if (!h.link) return true; // Keep headlines without links
+        const combo = `${h.link}|||${h.headline || ''}`; // Combine URL and headline text
+        if (seenCombos.has(combo)) return false; // Skip true duplicates
+        seenCombos.add(combo);
+        return true;
+    });
 
     // ============= SUMMARIES =============
     // Get all summaries within the day boundaries
@@ -134,18 +158,32 @@ export function filterToStrictDay(data, parsedDate) {
 
     // Create day boundaries in the country's timezone
     // Start: YYYY-MM-DD 00:00:00 in country timezone
-    const startOfDayStr = `${dateStr}T00:00:00`;
-    const startOfDay = new Date(startOfDayStr + getTimezoneOffset(timezone));
+    const startOfDay = createDateInTimezone(dateStr, '00:00:00', timezone);
 
     // End: YYYY-MM-DD 23:59:59.999 in country timezone
-    const endOfDayStr = `${dateStr}T23:59:59.999`;
-    const endOfDay = new Date(endOfDayStr + getTimezoneOffset(timezone));
+    const endOfDay = createDateInTimezone(dateStr, '23:59:59.999', timezone);
+
+    // Debug logging removed for production - was bloating HTML payload
 
     // ============= HEADLINES =============
     // Get ONLY headlines within the day boundaries (no continuity)
-    const headlines = data.headlines
+    const filteredHeadlines = data.headlines
         .filter(h => h.timestamp >= startOfDay && h.timestamp <= endOfDay)
         .sort((a, b) => b.timestamp - a.timestamp);
+
+    // Deduplicate by BOTH URL AND headline text (keep first occurrence = newest due to sort)
+    // Only remove if BOTH the link AND headline text are identical
+    // This allows headline rewording updates while preventing true duplicates
+    const seenCombos = new Set();
+    const headlines = filteredHeadlines.filter(h => {
+        if (!h.link) return true; // Keep headlines without links
+        const combo = `${h.link}|||${h.headline || ''}`; // Combine URL and headline text
+        if (seenCombos.has(combo)) {
+            return false; // Skip true duplicates
+        }
+        seenCombos.add(combo);
+        return true;
+    });
 
     // ============= SUMMARIES =============
     // Get ONLY summaries within the day boundaries (no continuity)

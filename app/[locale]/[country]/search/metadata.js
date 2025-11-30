@@ -82,6 +82,7 @@ export function SearchLdJson({ country, locale }) {
     // Create breadcrumb navigation
     const breadcrumbList = {
         '@type': 'BreadcrumbList',
+        '@id': `${url}#breadcrumb`,
         'itemListElement': [
             {
                 '@type': 'ListItem',
