@@ -12,9 +12,9 @@ import CountryLinksData from "../TopBar/CountryLinksData";
 import DateLinksData from "../TopBar/DateLinksData";
 import { isHebrewContentAvailable } from "@/utils/daily summary utils";
 
-// Archive pages are immutable historical content that never changes
-// export const revalidate = 31536000; // 1 year in seconds
-// export const dynamic = 'force-static'; // Ensure static generation
+// Archive pages are immutable historical content that rarely changes
+// Cache for 1 week - balances CDN caching with ability to deploy fixes
+export const revalidate = 604800; // 7 days in seconds
 
 // Generate SEO metadata for a specific day
 export async function generateMetadata({ params }) {

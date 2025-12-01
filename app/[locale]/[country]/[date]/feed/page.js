@@ -13,9 +13,9 @@ import FeedPopup from "./popup";
 // Re-enable after 2-3 months once indexing is stable
 // import InactivityRedirect from "./InactivityRedirect";
 
-// Feed pages are immutable historical content that never changes
-// export const revalidate = false; // Disable ISR - these pages never change once created
-// export const dynamic = 'error'; // Fail build if route tries to be dynamic - forces static generation
+// Feed pages are immutable historical content that rarely changes
+// Cache for 1 week - balances CDN caching with ability to deploy fixes
+export const revalidate = 604800; // 7 days in seconds
 
 // Generate SEO metadata for feed view
 export async function generateMetadata({ params }) {
