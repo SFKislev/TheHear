@@ -73,8 +73,8 @@ export default async function Page({ params }) {
             'china': new Date('2024-09-06'),
             'japan': new Date('2024-09-07'),
             'turkey': new Date('2024-09-07'),
-            'uae': new Date('2024-09-08'),
             'palestine': new Date('2024-09-10'),
+            'kenya': new Date('2025-11-05'),
             'finland': new Date('2025-02-20')
         };
 
