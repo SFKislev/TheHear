@@ -4,8 +4,8 @@ import { createDateString } from "@/utils/utils"
 // Per-country launch dates - actual dates when data became available
 const countryLaunchDates = {
     'israel': new Date('2024-07-04'),
-    'germany': new Date('2024-07-28'),
-    'us': new Date('2024-07-31'),
+    'germany': new Date('2024-09-13'),
+    'us': new Date('2024-09-15'),
     'italy': new Date('2024-08-28'),
     'russia': new Date('2024-08-29'),
     'iran': new Date('2024-08-29'),
