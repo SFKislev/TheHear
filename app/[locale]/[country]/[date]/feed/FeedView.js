@@ -5,8 +5,6 @@ import { getSourceData } from "@/utils/sources/getCountryData";
 import { getHeadline, getSummaryContent } from "@/utils/daily summary utils";
 import Link from "next/link";
 import InnerLink from "@/components/InnerLink";
-import EnglishFonts from "@/utils/typography/EnglishFonts";
-import HebrewFonts from "@/utils/typography/HebrewFonts";
 import { getTypographyOptions } from "@/utils/typography/typography";
 import HeadlineCard from "./FeedHeadlineCard";
 import SummaryCard from "./FeedSummaryCard";
@@ -14,10 +12,8 @@ import FeedTopbar from "./FeedTopbar";
 import FeedFooter from "./FeedFooter";
 import FeedDailySummary from "./feedDailySummary";
 import LogoSmall from "@/components/Logo-small";
-import useMobile from "@/components/useMobile";
 
-export default function FeedView({ headlines, initialSummaries, daySummary, yesterdaySummary, locale, country, date, countryTimezone }) {
-    const { isMobile } = useMobile();
+export default function FeedView({ headlines, initialSummaries, daySummary, yesterdaySummary, locale, country, date, countryTimezone, isMobile }) {
     const countryData = countries[country] || {};
     const countryName = locale === 'heb' ? countryData.hebrew || country : countryData.english || country;
     const isRTL = locale === 'heb';
@@ -66,8 +62,6 @@ export default function FeedView({ headlines, initialSummaries, daySummary, yest
     
     return (
         <>
-            <EnglishFonts />
-            {(locale === 'heb' || country === 'israel') && <HebrewFonts />}
             <div className={`min-h-screen ${isRTL ? 'direction-rtl' : 'direction-ltr'}`}>
                 <FeedTopbar locale={locale} country={country} daySummary={daySummary} date={date} />
 

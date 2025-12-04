@@ -19,27 +19,27 @@ export default function HebrewFonts() {
                 @font-face {
                     font-family: 'TelAviv';
                     src: url('/fonts/TelAviv-ModernistBold.ttf') format('truetype');
-                    font-display: block;
+                    font-display: swap;
                 }
                 @font-face {
                     font-family: 'FrankReTzar';
                     src: url('/fonts/frank-re-tzar-regular-aaa.otf') format('opentype');
-                    font-display: block;
+                    font-display: swap;
                 }
                 @font-face {
                     font-family: 'FrankRe';
                     src: url('/fonts/frank-re-medium-aaa.otf') format('opentype');
-                    font-display: block;
+                    font-display: swap;
                 }
                 @font-face {
                     font-family: 'Mandatory';
                     src: url('/fonts/Mandatory-18.otf') format('opentype');
-                    font-display: block;
+                    font-display: swap;
                 }
                 @font-face {
                     font-family: 'Mandatory29';
                     src: url('/fonts/Mandatory-29.otf') format('opentype');
-                    font-display: block;
+                    font-display: swap;
                 }
             `}</style>
         </>

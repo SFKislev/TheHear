@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 
 export default function useMobile() {
-    const [isMobile, setIsMobile] = useState(false);
+    // Default to mobile-first approach (most traffic is mobile)
+    // This minimizes CLS on mobile devices
+    const [isMobile, setIsMobile] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -17,7 +19,7 @@ export default function useMobile() {
 
         // Add resize listener to update when window size changes
         window.addEventListener('resize', checkIsMobile);
-        
+
         // Cleanup
         return () => window.removeEventListener('resize', checkIsMobile);
     }, []);

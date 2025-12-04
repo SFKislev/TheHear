@@ -1,11 +1,12 @@
 // import { WebVitals } from "@/components/web-vitals";
 import "./globals.css";
-import { SpeedInsights } from "@vercel/speed-insights/next"
-import GoogleAnalytics from "@/components/GoogleAnalytics";
-import { Analytics } from "@vercel/analytics/next"
+import LazyAnalytics from "@/components/LazyAnalytics";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import PWAMeta from "@/components/PWAMeta";
-import EmotionRegistry from "./EmotionRegistry";
+import ConditionalEmotionRegistry from "./ConditionalEmotionRegistry";
+import { fontVariables } from "./fonts";
+import EnglishFonts from "@/utils/typography/EnglishFonts";
+import HebrewFonts from "@/utils/typography/HebrewFonts";
 
 
 export const metadata = {
@@ -72,7 +73,7 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html>
+    <html className={fontVariables}>
       <head>
         <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png" />
@@ -92,14 +93,14 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
-        <EmotionRegistry options={{ key: 'mui' }}>
-          <Analytics />
-          <GoogleAnalytics />
-          <SpeedInsights />
+        <EnglishFonts />
+        <HebrewFonts />
+        <ConditionalEmotionRegistry>
+          <LazyAnalytics />
           <ServiceWorkerRegistration />
           {/* <WebVitals /> */}
           {children}
-        </EmotionRegistry>
+        </ConditionalEmotionRegistry>
       </body>
     </html>
   );

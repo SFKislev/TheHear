@@ -8,6 +8,7 @@ import { createMetadata, LdJson } from "./metadata";
 import ArchiveLinksData from "./TopBar/settings/ArchiveLinksData";
 import CountryLinksData from "./TopBar/CountryLinksData";
 import DateLinksData from "./TopBar/DateLinksData";
+import CountryFonts from "@/components/CountryFonts";
 import { headers } from "next/headers";
 import { isHebrewContentAvailable } from "@/utils/daily summary utils";
 import { redirect } from "next/navigation";
@@ -101,6 +102,9 @@ export default async function Page({ params }) {
 
     return (
         <>
+            {/* Load country-specific fonts dynamically */}
+            <CountryFonts country={country} />
+
             {/* This correctly handles all your SEO needs for the entire collection */}
             <LdJson {...{ country, locale, headlines, initialSummaries, sources, yesterdaySummary }} />
 

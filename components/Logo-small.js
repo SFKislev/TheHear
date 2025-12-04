@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import logoA from './logo/thehear-round.png';
-import logoB from './logo/thehear-round.png';
-import logoC from './logo/thehear-round.png';
+import logoA from './logo/thehear-round.webp';
+import logoB from './logo/thehear-round.webp';
+import logoC from './logo/thehear-round.webp';
 import Image from 'next/image';
 import InnerLink from './InnerLink';
 

@@ -18,6 +18,7 @@ export function trackEngagedUser(engagementType, params = {}) {
 
   window.gtag('event', 'engaged_user', {
     engagement_type: engagementType,
+    value: 1,
     ...params
   });
 }
@@ -78,6 +79,7 @@ export function trackTimeExploration(action, params = {}) {
     // Track the event
     window.gtag('event', 'time_exploration', {
       action_type: action,
+      value: 1,
       ...params
     });
   }

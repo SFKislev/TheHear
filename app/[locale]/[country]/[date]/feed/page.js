@@ -9,6 +9,8 @@ import { isHebrewContentAvailable, getHeadline } from "@/utils/daily summary uti
 import FeedJsonLd from "./FeedJsonLd";
 import FeedView from "./FeedView";
 import FeedPopup from "./popup";
+import FeedFonts from "./FeedFonts";
+import { headers } from "next/headers";
 // TEMPORARILY DISABLED during initial crawl period (thehear.org migration)
 // Re-enable after 2-3 months once indexing is stable
 // import InactivityRedirect from "./InactivityRedirect";
@@ -114,6 +116,12 @@ export async function generateMetadata({ params }) {
 export default async function FeedPage({ params }) {
     try {
         const { country, locale, date } = await params;
+
+        // Server-side mobile detection using User-Agent
+        const headersList = await headers();
+        const userAgent = headersList.get('user-agent') || '';
+        const isMobile = /Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent) ||
+                        (headersList.get('sec-ch-ua-mobile') === '?1');
 
         // Date parsing (no current date comparison for static generation)
         const parsedDate = parse(date, 'dd-MM-yyyy', new Date(2000, 0, 1));
@@ -236,6 +244,9 @@ export default async function FeedPage({ params }) {
 
         return (
             <div className="min-h-screen bg-gray-50 pb-4">
+                {/* Load country-specific fonts dynamically */}
+                <FeedFonts country={country} />
+
                 {/* JSON-LD structured data for feed page */}
                 <FeedJsonLd
                     country={country}
@@ -256,7 +267,8 @@ export default async function FeedPage({ params }) {
                         locale,
                         country,
                         date: parsedDate,
-                        countryTimezone: data.metadata?.timezone
+                        countryTimezone: data.metadata?.timezone,
+                        isMobile
                     }}
                 />
 
