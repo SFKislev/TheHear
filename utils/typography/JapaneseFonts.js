@@ -1,61 +1,59 @@
+// Japanese fonts reduced from 6 to 1 (Noto Sans JP only) to fix 291KB render-blocking CSS
+// Removed: RocknRoll One, Sawarabi Gothic, Potta One, Kiwi Maru, Dela Gothic One
 export default function JapaneseFonts() {
     return (
         <>
             <style>{`
                 :root {
-                    --font-rocknroll: 'RocknRoll One', Arial, sans-serif;
-                    --font-sawarabi: 'Sawarabi Gothic', Arial, sans-serif;
-                    --font-potta: 'Potta One', serif;
-                    --font-kiwi: 'Kiwi Maru', serif;
-                    --font-dela: 'Dela Gothic One', serif;
-                    --font-noto: 'Noto Sans JP', serif;
+                    --font-noto-jp: 'Noto Sans JP', sans-serif;
                 }
             `}</style>
         </>
     );
 }
 
+// Now using only Noto Sans JP with multiple weight variations for visual variety
 export const Typography_Japanese = [
     {
-        fontFamily: '"RocknRoll One", Arial, sans-serif',
+        fontFamily: '"Noto Sans JP", sans-serif',
         fontSize: '2.2rem',
         lineHeight: 1.15,
         fontWeight: 400,
         direction: 'ltr',
     },
     {
-        fontFamily: '"Sawarabi Gothic", Arial, sans-serif',
+        fontFamily: '"Noto Sans JP", sans-serif',
         fontSize: '2.2rem',
-        lineHeight: 1,
+        lineHeight: 1.15,
+        fontWeight: 700,
+        direction: 'ltr',
+    },
+    {
+        fontFamily: '"Noto Sans JP", sans-serif',
+        fontSize: '2.1rem',
+        lineHeight: 1.2,
         fontWeight: 400,
         direction: 'ltr',
     },
     {
-        fontFamily: '"Potta One", serif',
-        fontSize: '2.2rem',
+        fontFamily: '"Noto Sans JP", sans-serif',
+        fontSize: '2.1rem',
+        lineHeight: 1.2,
+        fontWeight: 700,
+        direction: 'ltr',
+    },
+    {
+        fontFamily: '"Noto Sans JP", sans-serif',
+        fontSize: '2.3rem',
         lineHeight: 1.1,
         fontWeight: 400,
         direction: 'ltr',
     },
     {
-        fontFamily: '"Kiwi Maru", serif',
-        fontSize: '2.2rem',
-        lineHeight: 1.2,
-        fontWeight: 400,
-        direction: 'ltr',
-    },
-    {
-        fontFamily: '"Dela Gothic One", serif',
-        fontSize: '2.2rem',
-        lineHeight: 1.2,
-        fontWeight: 400,
-        direction: 'ltr',
-    },
-    {
-        fontFamily: '"Noto Sans JP", serif',
-        fontSize: '2.2rem',
-        lineHeight: 1.2,
-        fontWeight: 400,
+        fontFamily: '"Noto Sans JP", sans-serif',
+        fontSize: '2.3rem',
+        lineHeight: 1.1,
+        fontWeight: 700,
         direction: 'ltr',
     }
 ]; 

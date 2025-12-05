@@ -38,7 +38,9 @@
       "Bash(ls:*)",
       "Bash(sort:*)",
       "Bash(for f in \"Futura_PT_Medium.otf\" \"Futura_PT_Bold.otf\" \"FuturaPT-bold-italic.otf\" \"Plantin Bold Condensed.otf\" \"cheltenham-cond-normal-700.ttf\" \"helvetica-bold.otf\")",
-      "Bash(do ls -lh \"public/fonts/$f\")"
+      "Bash(do ls -lh \"public/fonts/$f\")",
+      "Bash(git reset:*)",
+      "Bash(for f in *.css)"
     ],
     "deny": [],
     "ask": []

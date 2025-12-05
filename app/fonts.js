@@ -4,7 +4,7 @@ import {
   Roboto,
   Amiri,
   Geist,
-  Noto_Sans_JP,
+  Noto_Sans_JP,  // Keep this one - lightest Japanese font (2 weights only)
   Noto_Sans_SC,
   Noto_Sans_Devanagari,
   Oswald,
@@ -12,13 +12,13 @@ import {
   Lalezar,
   Alexandria,
   Palanquin_Dark,
-  RocknRoll_One,
-  Sawarabi_Gothic,
-  Potta_One,
-  Kiwi_Maru,
-  Dela_Gothic_One,
-  ZCOOL_KuaiLe,
-  ZCOOL_QingKe_HuangYou
+  // RocknRoll_One,  // REMOVED - Japanese fonts add 291KB CSS hurting SEO
+  // Sawarabi_Gothic,  // REMOVED - Japanese fonts add 291KB CSS hurting SEO
+  // Potta_One,  // REMOVED - Japanese fonts add 291KB CSS hurting SEO
+  // Kiwi_Maru,  // REMOVED - Japanese fonts add 291KB CSS hurting SEO
+  // Dela_Gothic_One,  // REMOVED - Japanese fonts add 291KB CSS hurting SEO
+  // ZCOOL_KuaiLe,  // REMOVED - Chinese fonts add 175KB CSS hurting SEO
+  // ZCOOL_QingKe_HuangYou  // REMOVED - Chinese fonts add 175KB CSS hurting SEO
 } from 'next/font/google';
 
 // Main fonts
@@ -52,6 +52,10 @@ export const notoSansJP = Noto_Sans_JP({
   adjustFontFallback: false, // Disable to reduce CSS size
 });
 
+// Japanese fonts - REMOVED 5 fonts (RocknRoll, Sawarabi, Potta, Kiwi, Dela)
+// These added 291KB of render-blocking CSS, killing desktop PageSpeed score (41 vs 98 local)
+// Keeping only Noto_Sans_JP (2 weights) - sufficient for Japan pages
+/*
 export const rocknRollOne = RocknRoll_One({
   weight: '400',
   subsets: ['latin'],
@@ -86,8 +90,10 @@ export const delaGothicOne = Dela_Gothic_One({
   display: 'swap',
   variable: '--font-dela',
 });
+*/
 
-// Chinese fonts - LIMITED WEIGHTS
+// Chinese fonts - REDUCED to 1 font (was 3) to fix render-blocking CSS
+// Keeping only Noto Sans SC (most reliable, 2 weights)
 export const notoSansSC = Noto_Sans_SC({
   weight: ['400', '700'],
   subsets: ['latin'],
@@ -96,6 +102,9 @@ export const notoSansSC = Noto_Sans_SC({
   adjustFontFallback: false,
 });
 
+// Chinese fonts - REMOVED 2 fonts (ZCOOL KuaiLe, ZCOOL QingKe)
+// These added 175KB of render-blocking CSS
+/*
 export const zcoolKuaiLe = ZCOOL_KuaiLe({
   weight: '400',
   subsets: ['latin'],
@@ -109,6 +118,7 @@ export const zcoolQingKe = ZCOOL_QingKe_HuangYou({
   display: 'swap',
   variable: '--font-zcool-qingke',
 });
+*/
 
 // Indian fonts - LIMITED WEIGHTS
 export const notoSansDevanagari = Noto_Sans_Devanagari({

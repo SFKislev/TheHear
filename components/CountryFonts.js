@@ -10,7 +10,9 @@ import ArabicFonts from '@/utils/typography/ArabicFonts';
 import ChinaFonts from '@/utils/typography/ChinaFonts';
 import JapaneseFonts from '@/utils/typography/JapaneseFonts';
 import IndiaFonts from '@/utils/typography/IndiaFonts';
-import { oswald, rubik, amiri, lalezar, alexandria, notoSansSC, zcoolKuaiLe, zcoolQingKe, notoSansJP, rocknRollOne, sawarabiGothic, pottaOne, kiwiMaru, delaGothicOne, notoSansDevanagari, palanquinDark } from '@/app/fonts';
+// Removed Japanese fonts: rocknRollOne, sawarabiGothic, pottaOne, kiwiMaru, delaGothicOne
+// Removed Chinese fonts: zcoolKuaiLe, zcoolQingKe
+import { oswald, rubik, amiri, lalezar, alexandria, notoSansSC, notoSansJP, notoSansDevanagari, palanquinDark } from '@/app/fonts';
 import { useEffect } from 'react';
 
 // Map countries to their font components and CSS variables
@@ -43,16 +45,18 @@ const countryFontConfig = {
         fontClasses: [amiri.variable, lalezar.variable, alexandria.variable]
     },
 
-    // Chinese
+    // Chinese - REDUCED to 1 font (was 3) to fix render-blocking CSS
+    // Keeping only Noto Sans SC (most reliable, 2 weights)
     'china': {
         component: ChinaFonts,
-        fontClasses: [notoSansSC.variable, zcoolKuaiLe.variable, zcoolQingKe.variable]
+        fontClasses: [notoSansSC.variable]  // Only Noto Sans SC now
     },
 
-    // Japanese
+    // Japanese - REDUCED to 1 font (was 6) to fix 291KB CSS render blocking
+    // Keeping only Noto Sans JP (most reliable, 2 weights)
     'japan': {
         component: JapaneseFonts,
-        fontClasses: [notoSansJP.variable, rocknRollOne.variable, sawarabiGothic.variable, pottaOne.variable, kiwiMaru.variable, delaGothicOne.variable]
+        fontClasses: [notoSansJP.variable]  // Only Noto Sans JP now
     },
 
     // Indian
