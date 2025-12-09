@@ -34,14 +34,24 @@ function prepareHeadline(doc) {
   const data = doc.data();
   const cleanedData = JSON.parse(JSON.stringify(data));
   const timestamp = new Date(data.timestamp.seconds * 1000);
+
+  // Validate link - only allow full URLs starting with http:// or https://
+  // Reject relative URLs (like /sports/article.html) that could become internal links
+  let validatedLink = cleanedData.link;
+  if (validatedLink && typeof validatedLink === 'string') {
+    if (!validatedLink.startsWith('http://') && !validatedLink.startsWith('https://')) {
+      validatedLink = ''; // Invalid link - clear it
+    }
+  }
+
   return {
     id: doc.id,
     headline: cleanedData.headline,
     subtitle: cleanedData.subtitle,
-    link: cleanedData.link,
+    link: validatedLink,
     timestamp: timestamp,
     website_id: cleanedData.website_id,
-    image: cleanedData.image, 
+    image: cleanedData.image,
   };
 }
 
@@ -72,7 +82,7 @@ export const getRecentHeadlines = async (countryName, fromTime) => {
   );
   let headlines = await getDocs(q);
   if (headlines.empty) return [];
-  headlines = headlines.docs.map(headline => prepareData(headline));
+  headlines = headlines.docs.map(headline => prepareHeadline(headline));
   return headlines;
 }
 
@@ -365,11 +375,19 @@ export const getCountryDayHeadlinesFromMetadata = cache(async (countryName, date
       // Generate synthetic ID from website_id + timestamp (unique combination)
       const syntheticId = `${h.website_id}_${timestamp.getTime()}`;
 
+      // Validate link - only allow full URLs starting with http:// or https://
+      let validatedLink = h.link;
+      if (validatedLink && typeof validatedLink === 'string') {
+        if (!validatedLink.startsWith('http://') && !validatedLink.startsWith('https://')) {
+          validatedLink = ''; // Invalid link - clear it
+        }
+      }
+
       return {
         id: syntheticId,
         headline: h.headline,
         subtitle: h.subtitle,
-        link: h.link,
+        link: validatedLink,
         timestamp: timestamp,
         website_id: h.website_id,
         image: h.image,

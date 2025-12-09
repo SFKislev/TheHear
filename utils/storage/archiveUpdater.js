@@ -34,7 +34,12 @@ function stripDocumentForSearch(doc, type) {
             stripped.headline = data.headline || '';
             stripped.subtitle = data.subtitle || '';
             stripped.website_id = data.website_id || '';
-            stripped.link = data.link || '';
+            // Validate link - only allow full URLs starting with http:// or https://
+            let validatedLink = data.link || '';
+            if (validatedLink && !validatedLink.startsWith('http://') && !validatedLink.startsWith('https://')) {
+                validatedLink = ''; // Invalid link - clear it
+            }
+            stripped.link = validatedLink;
             break;
             
         case 'summaries':
