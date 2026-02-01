@@ -24,13 +24,15 @@ export default function ResetTimerButton({ locale, country, className, pageDate 
     useEffect(() => {
         if (pageDate) return;
         const handleVisibilityChange = () => {
-            if (document.visibilityState === "visible") setDate(new Date());
+            if (document.visibilityState === "visible" && !isPresent) {
+                setDate(new Date());
+            }
         };
         document.addEventListener("visibilitychange", handleVisibilityChange);
         return () => {
             document.removeEventListener("visibilitychange", handleVisibilityChange);
         };
-    }, [pageDate, setDate])
+    }, [pageDate, setDate, isPresent])
 
     const tooltip = locale === 'heb' ? 'בחזרה לעכשיו' : 'Reset To Now';
     const placement = locale === 'heb' ? 'left' : 'right';

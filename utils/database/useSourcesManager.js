@@ -11,6 +11,7 @@ export default function useSourcesManager(country, initialSources, enabled = tru
     const setDate = useTime(state => state.setDate);
 
     const updateSources = (newHeadlines) => {
+        let addedCount = 0;
         setSources(prevSources => {
             const newSources = { ...prevSources };
             newHeadlines.forEach(headline => {
@@ -18,6 +19,7 @@ export default function useSourcesManager(country, initialSources, enabled = tru
                 if (!newSources[sourceName]) newSources[sourceName] = { headlines: [], website_id: headline.website_id };
                 if (!newSources[sourceName].headlines.find(h => h.id === headline.id)) {
                     newSources[sourceName].headlines.push(headline);
+                    addedCount += 1;
                 }
             });
             Object.values(newSources).forEach(source => {
@@ -25,6 +27,7 @@ export default function useSourcesManager(country, initialSources, enabled = tru
             });
             return newSources;
         });
+        return addedCount;
     }
 
     useEffect(() => {
@@ -46,16 +49,14 @@ export default function useSourcesManager(country, initialSources, enabled = tru
         const unsubscribe = firebase.firestore.onSnapshot(q, snapshot => {
             if (snapshot.empty) return
             const headlines = snapshot.docs.map(doc => firebase.prepareData(doc));
-            updateSources(headlines);
+            const added = updateSources(headlines);
+            if (added > 0) {
+                setDate(new Date());
+            }
         });
 
-        const handleVisibilityChange = () => {
-            if (document.visibilityState === "visible") getRecentHeadlines()
-        };
-        document.addEventListener("visibilitychange", handleVisibilityChange);
         return () => {
             unsubscribe()
-            document.removeEventListener("visibilitychange", handleVisibilityChange);
         };
 
     }, [firebase.ready, country, enabled]);
@@ -78,8 +79,10 @@ export default function useSourcesManager(country, initialSources, enabled = tru
         setLoading(false);
         if (newHeadlines.empty) return;
         newHeadlines = newHeadlines.docs.map(headline => firebase.prepareData(headline));
-        updateSources(newHeadlines);
-        setDate(new Date())
+        const added = updateSources(newHeadlines);
+        if (added > 0) {
+            setDate(new Date())
+        }
     }
 
     return { sources, loading }

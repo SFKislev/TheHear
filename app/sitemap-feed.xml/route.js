@@ -46,8 +46,8 @@ export async function GET() {
         // Calculate days since this country launched
         const daysSinceLaunch = Math.floor((today - countryLaunchDate) / (1000 * 60 * 60 * 24));
 
-        // Only include days where data actually exists, with reasonable maximum
-        const maxDaysForCountry = Math.min(daysSinceLaunch, 365);
+        // Include full history since launch (no cap)
+        const maxDaysForCountry = Math.max(daysSinceLaunch, 0);
 
         locales.forEach(locale => {
             // Start from i=1 (yesterday) since today's date URLs don't exist yet

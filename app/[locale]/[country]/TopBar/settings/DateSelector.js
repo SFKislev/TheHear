@@ -150,27 +150,27 @@ export function DateSelector({ locale, country }) {
                                     }}
                                     value={date}
                                     sx={{
-                                        fontFamily: "'monospace'",
+                                        fontFamily: "monospace",
                                         '& *': {
-                                            fontFamily: "'monospace' !important"
+                                            fontFamily: "monospace !important"
                                         },
                                         '& .MuiPickersCalendarHeader-root': {
-                                            fontFamily: "'monospace'"
+                                            fontFamily: "monospace"
                                         },
                                         '& .MuiPickersDay-root': {
-                                            fontFamily: "'monospace'"
+                                            fontFamily: "monospace"
                                         },
                                         '& .MuiPickersCalendarHeader-label': {
-                                            fontFamily: "'monospace'"
+                                            fontFamily: "monospace"
                                         },
                                         '& .MuiPickersCalendarHeader-switchViewButton': {
-                                            fontFamily: "'monospace'"
+                                            fontFamily: "monospace"
                                         },
                                         '& .MuiDayCalendar-weekDayLabel': {
-                                            fontFamily: "'monospace'"
+                                            fontFamily: "monospace"
                                         },
                                         '& .MuiPickersYear-yearButton': {
-                                            fontFamily: "'monospace'",
+                                            fontFamily: "monospace",
                                             fontSize: '0.8rem'
                                         },
                                         '& .MuiPickersYear-yearButton.Mui-selected': {

@@ -107,10 +107,10 @@ export async function createMetadata(params) {
         description,
         keywords: `${countryName}, news, headlines, ${formattedDate}, archive, ${headline}`,
         robots: {
-            index: true,
+            index: false,
             follow: true,
             googleBot: {
-                index: true,
+                index: false,
                 follow: true,
                 'max-video-preview': -1,
                 'max-image-preview': 'large',

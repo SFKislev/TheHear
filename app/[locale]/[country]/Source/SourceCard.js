@@ -45,6 +45,7 @@ export default function SourceCard({ source, headlines, country, locale, isLoadi
         setHeadline(foundHeadline || headlines[0]);
     }, [headlines, date]);
 
+
     useEffect(() => {
         if (shouldTranslate && headline && headline.headline && headline.id) {
             if (translations[headline.id]) return;

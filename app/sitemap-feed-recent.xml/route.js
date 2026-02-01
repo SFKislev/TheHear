@@ -4,8 +4,8 @@ import { createDateString } from "@/utils/utils"
 // Per-country launch dates - actual dates when data became available
 const countryLaunchDates = {
     'israel': new Date('2024-07-04'),
-    'germany': new Date('2024-07-28'),
-    'us': new Date('2024-07-31'),
+    'germany': new Date('2024-09-13'),
+    'us': new Date('2024-09-15'),
     'italy': new Date('2024-08-28'),
     'russia': new Date('2024-08-29'),
     'iran': new Date('2024-08-29'),
@@ -20,7 +20,6 @@ const countryLaunchDates = {
     'china': new Date('2024-09-06'),
     'japan': new Date('2024-09-07'),
     'turkey': new Date('2024-09-07'),
-    'uae': new Date('2024-09-08'),
     'palestine': new Date('2024-09-10'),
     'kenya': new Date('2025-11-05'),
     'finland': new Date('2025-02-20')
@@ -35,9 +34,13 @@ export async function GET() {
     const today = new Date()
     const res = []
 
-    // Base date pages (without /feed) - Medium priority
-    // These are JS-heavy interactive pages, not canonical
-    // The /feed pages are the canonical versions
+    // CRITICAL: Only include last 60 days to reduce sitemap size during authority building
+    // This shows Google we prioritize quality over quantity
+    // Expand gradually as backlinks grow (see DOMAIN_AUTHORITY_CRISIS_ANALYSIS.md)
+    const DAYS_TO_INCLUDE = 60;
+
+    // Feed pages - HIGHEST PRIORITY (bot-optimized, canonical, SSR)
+    // Only recent content to focus crawl budget on high-value pages
     Object.keys(countries).forEach(country => {
         const countryLaunchDate = countryLaunchDates[country];
         if (!countryLaunchDate) {
@@ -45,15 +48,9 @@ export async function GET() {
             return;
         }
 
-        // Calculate days since this country launched
-        const daysSinceLaunch = Math.floor((today - countryLaunchDate) / (1000 * 60 * 60 * 24));
-
-        // Only include days where data actually exists, with reasonable maximum
-        const maxDaysForCountry = Math.min(daysSinceLaunch, 365);
-
         locales.forEach(locale => {
-            // Start from i=1 (yesterday) since today's date URLs don't exist yet
-            for (let i = 1; i <= maxDaysForCountry; i++) {
+            // Only include recent days (last 60 days)
+            for (let i = 1; i <= DAYS_TO_INCLUDE; i++) {
                 const date = new Date();
                 date.setDate(date.getDate() - i);
 
@@ -64,15 +61,14 @@ export async function GET() {
 
                 const dateString = createDateString(date);
 
-                // Lower priority than feed pages - these are not canonical
-                // Priority: yesterday = 0.5, older = 0.3
-                const priority = 0.5 - ((i - 1) / maxDaysForCountry) * 0.2;
+                // Higher priority for recent content (yesterday = 1.0, gradually decreases)
+                const priority = 1.0 - ((i - 1) / DAYS_TO_INCLUDE) * 0.2;
 
                 res.push({
-                    url: `${baseUrl}/${locale}/${country}/${dateString}`,
+                    url: `${baseUrl}/${locale}/${country}/${dateString}/feed`,
                     lastModified: date,
                     changeFrequency: 'never', // Historical data doesn't change
-                    priority: Math.max(0.3, priority) // Ensure minimum priority of 0.3
+                    priority: Math.max(0.8, priority) // Ensure minimum priority of 0.8
                 });
             }
         });
@@ -95,3 +91,4 @@ ${res.map(entry => `  <url>
         },
     })
 }
+

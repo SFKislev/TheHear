@@ -10,7 +10,7 @@ import FeedJsonLd from "./FeedJsonLd";
 import FeedView from "./FeedView";
 import FeedPopup from "./popup";
 import FeedFonts from "./FeedFonts";
-import { headers } from "next/headers";
+// Do not import request-bound APIs (headers/cookies) here.
 // TEMPORARILY DISABLED during initial crawl period (thehear.org migration)
 // Re-enable after 2-3 months once indexing is stable
 // import InactivityRedirect from "./InactivityRedirect";
@@ -18,6 +18,8 @@ import { headers } from "next/headers";
 // Feed pages are immutable historical content that rarely changes
 // Cache for 1 week - balances CDN caching with ability to deploy fixes
 export const revalidate = 604800; // 7 days in seconds
+// Enforce static generation; build should fail if route becomes dynamic again.
+export const dynamic = 'error';
 
 // Generate SEO metadata for feed view
 export async function generateMetadata({ params }) {
@@ -117,11 +119,9 @@ export default async function FeedPage({ params }) {
     try {
         const { country, locale, date } = await params;
 
-        // Server-side mobile detection using User-Agent
-        const headersList = await headers();
-        const userAgent = headersList.get('user-agent') || '';
-        const isMobile = /Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent) ||
-                        (headersList.get('sec-ch-ua-mobile') === '?1');
+        // Avoid request-bound APIs to keep this route static/ISR.
+        // If mobile behavior is needed, handle it client-side in FeedView.
+        const isMobile = false;
 
         // Date parsing (no current date comparison for static generation)
         const parsedDate = parse(date, 'dd-MM-yyyy', new Date(2000, 0, 1));

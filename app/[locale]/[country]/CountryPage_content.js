@@ -18,6 +18,7 @@ import AboutMenu from './TopBar/AboutMenu';
 import DateNavigator from '@/components/DateNavigator';
 
 export default function CountryPageContent({ sources, initialSummaries, yesterdaySummary, daySummary, locale, country, pageDate, userCountry }) {
+    const [userCountryState, setUserCountryState] = useState(userCountry);
     const typography = getTypographyOptions(country);
     const currentSummary = useCurrentSummary();
     const [isRightPanelCollapsed, setIsRightPanelCollapsed] = useState(false);
@@ -41,6 +42,24 @@ export default function CountryPageContent({ sources, initialSummaries, yesterda
             setFont('random');
         }
     }, [isVerticalScreen, setFont]);
+
+    useEffect(() => {
+        if (userCountryState) return;
+        let cancelled = false;
+
+        fetch('/api/user-country')
+            .then(res => res.ok ? res.json() : null)
+            .then(data => {
+                if (!cancelled && data?.country) {
+                    setUserCountryState(data.country);
+                }
+            })
+            .catch(() => { });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [userCountryState]);
 
     // Show loading until mobile detection is complete
     if (isLoading) {
@@ -70,7 +89,7 @@ export default function CountryPageContent({ sources, initialSummaries, yesterda
 
                 <div className="flex flex-col flex-[1] sm:flex-[1] md:flex-[2] lg:flex-[3] 2xl:flex-[4]">
                     <TopBar
-                        {...{ locale, country, sources, userCountry, pageDate, daySummary }}
+                        {...{ locale, country, sources, userCountry: userCountryState, pageDate, daySummary }}
                         currentSummary={currentSummary}
                         initialSummaries={initialSummaries}
                         isRightPanelCollapsed={isRightPanelCollapsed}

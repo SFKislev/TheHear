@@ -9,7 +9,6 @@ import ArchiveLinksData from "./TopBar/settings/ArchiveLinksData";
 import CountryLinksData from "./TopBar/CountryLinksData";
 import DateLinksData from "./TopBar/DateLinksData";
 import CountryFonts from "@/components/CountryFonts";
-import { headers } from "next/headers";
 import { isHebrewContentAvailable } from "@/utils/daily summary utils";
 import { redirect } from "next/navigation";
 
@@ -32,7 +31,8 @@ export async function generateMetadata({ params }) {
 
 export default async function Page({ params }) {
     const { country, locale } = await params;
-    const userCountry = (await headers()).get('x-user-country') || 'us';
+    // Avoid request-bound headers to keep this route ISR-friendly.
+    const userCountry = null;
 
     const today = new Date();
     const yesterday = sub(today, { days: 1 });
