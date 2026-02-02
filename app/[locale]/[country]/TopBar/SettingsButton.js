@@ -4,15 +4,12 @@ import CustomTooltip from "@/components/CustomTooltip";
 import { TopBarButton } from "@/components/IconButtons";
 import { SettingsRounded, InfoOutlined } from "@mui/icons-material";
 import dynamic from "next/dynamic";
-import { useState } from "react";
 import { useTranslate } from "@/utils/store";
-import { createPortal } from "react-dom";
+import Link from "next/link";
 
-const AboutMenu = dynamic(() => import("./AboutMenu"));
 const TranslateToggle = dynamic(() => import("./settings/TranslateToggle"));
 
 export function SettingsButton({ locale, country, sources, isRightPanelCollapsed, userCountry, pageDate, settingsOpen, setSettingsOpen }) {
-    const [aboutMenuOpen, setAboutMenuOpen] = useState(false);
     const translate = useTranslate(state => state.translate);
     
     // Calculate conditions here where we have access to props
@@ -45,7 +42,7 @@ export function SettingsButton({ locale, country, sources, isRightPanelCollapsed
                     />
                 )}
                 <CustomTooltip title={locale === 'heb' ? "אודות The Hear" : "About the Hear"} arrow>
-                    <TopBarButton size="small" onClick={() => setAboutMenuOpen(true)}>
+                    <TopBarButton size="small" component={Link} href="/about">
                         <InfoOutlined />
                     </TopBarButton>
                 </CustomTooltip>
@@ -55,10 +52,6 @@ export function SettingsButton({ locale, country, sources, isRightPanelCollapsed
                     </TopBarButton>
                 </CustomTooltip>
             </div>
-            {aboutMenuOpen && typeof window !== 'undefined' && createPortal(
-                <AboutMenu open={aboutMenuOpen} onClose={() => setAboutMenuOpen(false)} />,
-                document.body
-            )}
         </>
     );
 }
