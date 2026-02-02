@@ -26,6 +26,16 @@ const cleanSummaryText = (text) => {
 };
 
 export default function Content({ country, summary, locale, pinned }) {
+    const coerceDate = (value) => {
+        if (!value) return null;
+        if (value instanceof Date) return value;
+        if (typeof value?.toDate === 'function') return value.toDate();
+        if (typeof value === 'string' || typeof value === 'number') {
+            const parsed = new Date(value);
+            return Number.isNaN(parsed.getTime()) ? null : parsed;
+        }
+        return null;
+    };
     // Start with open=true for SSR (bots see content), can be toggled by user
     const [open, setOpen] = useState(true);
     const setPinnedCountries = useGlobalSort(state => state.setPinnedCountries);
@@ -36,11 +46,14 @@ export default function Content({ country, summary, locale, pinned }) {
         setOpen(allExpanded);
     }, [allExpanded]);
 
-    const minutes = summary.timestamp.getMinutes();
-    const hours = summary.timestamp.getHours();
+    const timestampDate = coerceDate(summary?.timestamp);
+    const minutes = timestampDate?.getMinutes();
+    const hours = timestampDate?.getHours();
 
     // Format time to ensure two digits for minutes
-    const formattedTime = `${hours}:${minutes.toString().padStart(2, '0')}`;
+    const formattedTime = (minutes === undefined || hours === undefined)
+        ? '—'
+        : `${hours}:${minutes.toString().padStart(2, '0')}`;
 
     let text = cleanSummaryText(summary.summary);
     if (locale === 'heb') {

@@ -6,6 +6,16 @@ import useGlobalOverviews from '@/utils/database/useGlobalOverview';
 import CustomTooltip from '@/components/CustomTooltip';
 
 export default function GlobalOverview({ locale, initialOverview }) {
+    const coerceDate = (value) => {
+        if (!value) return null;
+        if (value instanceof Date) return value;
+        if (typeof value?.toDate === 'function') return value.toDate();
+        if (typeof value === 'string' || typeof value === 'number') {
+            const parsed = new Date(value);
+            return Number.isNaN(parsed.getTime()) ? null : parsed;
+        }
+        return null;
+    };
     // Initialize with data for SSR
     const initialData = initialOverview && (locale === 'en'
         ? { ...initialOverview.english, timestamp: initialOverview.timestamp }
@@ -48,11 +58,12 @@ export default function GlobalOverview({ locale, initialOverview }) {
     }
 
     // Format timestamp
-    let formattedTime = displayOverview.timestamp.toLocaleTimeString([], {
+    const timestampDate = coerceDate(displayOverview.timestamp);
+    const formattedTime = timestampDate ? timestampDate.toLocaleTimeString([], {
         hour: '2-digit',
         minute: '2-digit',
         hour12: false
-    });
+    }) : '—';
 
     const formatText = (text) => {
         // Split text by HTML break tags and parenthetical content

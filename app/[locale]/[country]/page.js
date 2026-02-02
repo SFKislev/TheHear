@@ -60,6 +60,8 @@ export default async function Page({ params }) {
         // Fallback to collection if no metadata available
         headlines = await getCountryDayHeadlines(country, today, 1);
     }
+    // Ensure newest headlines first for correct live display
+    headlines.sort((a, b) => b.timestamp - a.timestamp);
 
     // Get today's summaries from Firestore
     const initialSummaries = await getCountryDaySummaries(country, today, 1);
@@ -92,6 +94,10 @@ export default async function Page({ params }) {
         const sourceName = getWebsiteName(country, headline.website_id);
         if (!sources[sourceName]) sources[sourceName] = { headlines: [], website_id: headline.website_id };
         sources[sourceName].headlines.push(headline);
+    });
+    // Ensure each source is sorted newest-first
+    Object.values(sources).forEach(source => {
+        source.headlines.sort((a, b) => b.timestamp - a.timestamp);
     });
 
     if (initialSummaries.length === 0) {

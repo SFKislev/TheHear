@@ -8,6 +8,16 @@ import useFirebase from "@/utils/database/useFirebase";
 import CustomTooltip from "@/components/CustomTooltip";
 
 export default function FilterCountries({ isOpen, onClose, locale }) {
+    const coerceDate = (value) => {
+        if (!value) return null;
+        if (value instanceof Date) return value;
+        if (typeof value?.toDate === 'function') return value.toDate();
+        if (typeof value === 'string' || typeof value === 'number') {
+            const parsed = new Date(value);
+            return Number.isNaN(parsed.getTime()) ? null : parsed;
+        }
+        return null;
+    };
     const { filteredCountries, toggleCountryFilter, setFilteredCountries } = useGlobalSort();
     const globalCountryCohesion = useGlobalCountryCohesion(state => state.globalCountryCohesion);
     const [countrySummaries, setCountrySummaries] = useState({});
@@ -85,8 +95,8 @@ export default function FilterCountries({ isOpen, onClose, locale }) {
                     bValue = globalCountryCohesion[b] || 0;
                     break;
                 case 'timestamp':
-                    aValue = countrySummaries[a]?.timestamp?.getTime() || 0;
-                    bValue = countrySummaries[b]?.timestamp?.getTime() || 0;
+                    aValue = coerceDate(countrySummaries[a]?.timestamp)?.getTime() || 0;
+                    bValue = coerceDate(countrySummaries[b]?.timestamp)?.getTime() || 0;
                     break;
                 default:
                     return 0;
@@ -236,13 +246,13 @@ export default function FilterCountries({ isOpen, onClose, locale }) {
                                                 <span className="text-sm text-gray-900 font-['Geist'] flex-1">
                                                     {headline}
                                                 </span>
-                                                {summary && (
+                                {summary && (
                                                     <span className="text-xs text-gray-500 whitespace-nowrap font-mono">
-                                                        {summary.timestamp?.toLocaleTimeString('en-GB', {
+                                                        {coerceDate(summary.timestamp)?.toLocaleTimeString('en-GB', {
                                                             hour: '2-digit',
                                                             minute: '2-digit',
                                                             hour12: false
-                                                        })}
+                                                        }) || '—'}
                                                     </span>
                                                 )}
                                             </div>

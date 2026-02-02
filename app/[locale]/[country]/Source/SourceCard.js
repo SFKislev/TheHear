@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import CloseButton from "./CloseButton";
 import Headline from "./Headine";
 import SourceName from "./SourceName";
@@ -25,6 +25,8 @@ export default function SourceCard({ source, headlines, country, locale, isLoadi
     const [translations, setTranslations] = useState({});
     const websites = useActiveWebsites(state => state.activeWebsites);
     const [isPresent, setIsPresent] = useState(true);
+    const [showLiveHint, setShowLiveHint] = useState(false);
+    const liveHintStartedRef = useRef(false);
 
     const index = websites.length > 0 ? websites.indexOf(source) : 1
     const shouldRender = headline && index !== -1;
@@ -100,6 +102,18 @@ export default function SourceCard({ source, headlines, country, locale, isLoadi
         setIsPresent(new Date() - date < 60 * 1000 * 5);
     }, [date]);
 
+    useEffect(() => {
+        if (pageDate) return;
+        if (!shouldRender) return;
+        if (isLoading) return;
+        if (liveHintStartedRef.current) return;
+        liveHintStartedRef.current = true;
+        setShowLiveHint(true);
+        const durationMs = Math.floor(3000 + Math.random() * 2000);
+        const timer = setTimeout(() => setShowLiveHint(false), durationMs);
+        return () => clearTimeout(timer);
+    }, [pageDate, shouldRender, isLoading]);
+
     // Early return if shouldn't render
     if (!shouldRender) {
         return null;
@@ -118,11 +132,18 @@ export default function SourceCard({ source, headlines, country, locale, isLoadi
             <CloseButton name={source} isRTL={isRTL} className="z-[2]" />
             <div className="flex flex-col h-full justify-normal sm:justify-between">
                 <div className="flex flex-col gap-2 mb-2 p-4">
-                    <SourceName
-                        name={displayName}
-                        description={sourceData.description}
-                        {...{ typography, date, isLoading }}
-                    />
+                    <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                        <SourceName
+                            name={displayName}
+                            description={sourceData.description}
+                            {...{ typography, date, isLoading }}
+                        />
+                        {showLiveHint && (
+                            <span className="inline-flex items-center justify-center h-4 w-4 rounded-full bg-white/80 shadow-sm border border-gray-200">
+                                <span className="h-2.5 w-2.5 rounded-full border-2 border-gray-300 border-t-gray-600 animate-spin" />
+                            </span>
+                        )}
+                    </div>
                     <Headline headline={displayHeadline}
                         {...{ typography, isLoading }} />
                 </div>
