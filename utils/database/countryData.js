@@ -1,7 +1,7 @@
 import { endOfDay, sub, endOfMonth, startOfMonth } from "date-fns";
 import { initializeApp } from 'firebase/app';
 import { collection, doc, getDocs, getDoc, limit, onSnapshot, orderBy, query, where, getFirestore } from "firebase/firestore";
-import { cache } from "react";
+import { unstable_cache } from "next/cache";
 
 import { firebaseConfig } from './firebaseConfig';
 import { countries } from "../sources/countries";
@@ -9,6 +9,9 @@ import { countries } from "../sources/countries";
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
+const CACHE_10_MINUTES = 60 * 10;
+const CACHE_1_DAY = 60 * 60 * 24;
 
 export function getCountryCollectionRef(countryName, collectionName) {
   const countriesCollection = collection(db, '- Countries -');
@@ -55,7 +58,7 @@ function prepareHeadline(doc) {
   };
 }
 
-export const getCountryDayHeadlines = cache(async (countryName, day, daysInclude = 1) => {
+export const getCountryDayHeadlines = unstable_cache(async (countryName, day, daysInclude = 1) => {
   const headlinesCollection = getCountryCollectionRef(countryName, 'headlines');
 
   const theDay = endOfDay(day);
@@ -71,7 +74,7 @@ export const getCountryDayHeadlines = cache(async (countryName, day, daysInclude
   if (headlines.empty) return [];
   headlines = headlines.docs.map(headline => prepareHeadline(headline));
   return headlines;
-});
+}, ['getCountryDayHeadlines'], { tags: ['getCountryDayHeadlines'], revalidate: CACHE_10_MINUTES });
 
 export const getRecentHeadlines = async (countryName, fromTime) => {
   const headlinesCollection = getCountryCollectionRef(countryName, 'headlines');
@@ -119,7 +122,7 @@ function prepareSummary(doc) {
   }
 }
 
-export const getCountryDaySummaries = cache(async (countryName, day, daysInclude = 1) => {
+export const getCountryDaySummaries = unstable_cache(async (countryName, day, daysInclude = 1) => {
   const summariesCollection = getCountryCollectionRef(countryName, 'summaries');
 
   const theDay = endOfDay(day);
@@ -135,7 +138,7 @@ export const getCountryDaySummaries = cache(async (countryName, day, daysInclude
   if (summaries.empty) return [];
   summaries = summaries.docs.map(doc => prepareSummary(doc));
   return summaries;
-})
+}, ['getCountryDaySummaries'], { tags: ['getCountryDaySummaries'], revalidate: CACHE_10_MINUTES })
 
 export const getRecentSummaries = async (countryName, fromTime) => {
   const summariesCollection = getCountryCollectionRef(countryName, 'summaries');
@@ -168,7 +171,7 @@ export const subscribeToSummaries = (countryName, callback) => {
 // ---------------------------------------------------
 
 // Lightweight function to get only the headline for metadata (fast)
-export const getCountryDayHeadlineOnly = cache(async (countryName, day) => {
+export const getCountryDayHeadlineOnly = unstable_cache(async (countryName, day) => {
   try {
     // Use same collection name and date parsing as getCountryDailySummary
     let date;
@@ -216,9 +219,9 @@ export const getCountryDayHeadlineOnly = cache(async (countryName, day) => {
     // Silently return null on error - metadata will use fallback
     return null;
   }
-});
+}, ['getCountryDayHeadlineOnly'], { tags: ['getCountryDayHeadlineOnly'], revalidate: CACHE_1_DAY });
 
-export const getCountryDailySummary = cache(async (countryName, day) => {
+export const getCountryDailySummary = unstable_cache(async (countryName, day) => {
   // console.log('getting daily summary for', countryName, day);
   let date;
   
@@ -252,9 +255,9 @@ export const getCountryDailySummary = cache(async (countryName, day) => {
   const snapshot = await getDocs(q);
   if (snapshot.empty) return null;
   return prepareData(snapshot.docs[0]);
-})
+}, ['getCountryDailySummary'], { tags: ['getCountryDailySummary'], revalidate: CACHE_1_DAY })
 
-export const getCountryDailySummariesForMonth = cache(async (countryName, year, month) => {
+export const getCountryDailySummariesForMonth = unstable_cache(async (countryName, year, month) => {
   // Create dates for the target month (month is 1-indexed)
   const startDate = new Date(year, month - 1, 1); // First day of month
   const endDate = new Date(year, month, 0); // Last day of month
@@ -283,9 +286,9 @@ export const getCountryDailySummariesForMonth = cache(async (countryName, year, 
   });
   
   return filteredResults;
-})
+}, ['getCountryDailySummariesForMonth'], { tags: ['getCountryDailySummariesForMonth'], revalidate: CACHE_1_DAY })
 
-export const getGlobalDailySummariesForDate = cache(async (year, month, date) => {
+export const getGlobalDailySummariesForDate = unstable_cache(async (year, month, date) => {
   const dateString = `${year}-${String(month).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
   
   const globalSummaries = [];
@@ -316,7 +319,7 @@ export const getGlobalDailySummariesForDate = cache(async (year, month, date) =>
   }
   
   return globalSummaries;
-})
+}, ['getGlobalDailySummariesForDate'], { tags: ['getGlobalDailySummariesForDate'], revalidate: CACHE_1_DAY })
 
 // ========================================================================
 // METADATA AGGREGATED HEADLINES - Optimized single-read approach
@@ -336,7 +339,7 @@ export const getGlobalDailySummariesForDate = cache(async (year, month, date) =>
  * @param {Date} date - The date to fetch headlines for
  * @returns {Array|null} - Array of headline objects with synthetic IDs, or null if not found
  */
-export const getCountryDayHeadlinesFromMetadata = cache(async (countryName, date) => {
+export const getCountryDayHeadlinesFromMetadata = unstable_cache(async (countryName, date) => {
   try {
     // Format date as YYYY-MM-DD
     const dateString = date.toISOString().split('T')[0];
@@ -401,4 +404,4 @@ export const getCountryDayHeadlinesFromMetadata = cache(async (countryName, date
     console.warn(`Failed to fetch metadata headlines for ${countryName} on ${date}:`, error.message);
     return null;
   }
-});
+}, ['getCountryDayHeadlinesFromMetadata'], { tags: ['getCountryDayHeadlinesFromMetadata'], revalidate: CACHE_1_DAY });

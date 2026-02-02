@@ -34,7 +34,7 @@ export async function fetchDailySnapshot(country, date) {
             response = await fetch(url, {
                 // Use ISR-friendly caching: short revalidate for recent dates, long for historical
                 cache: 'force-cache',
-                next: { revalidate: isRecentDate ? 900 : 86400 },
+                next: { revalidate: isRecentDate ? 900 : 86400 * 7 },
                 signal: controller.signal,
             });
             clearTimeout(timeoutId);

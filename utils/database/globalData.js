@@ -1,7 +1,7 @@
 import { endOfDay, sub } from "date-fns";
 import { initializeApp } from 'firebase/app';
 import { collection, doc, getDocs, getDoc, limit, onSnapshot, orderBy, query, where, getFirestore } from "firebase/firestore";
-import { cache } from "react";
+import { unstable_cache } from "next/cache";
 
 import { firebaseConfig } from './firebaseConfig';
 import { countries } from "../sources/countries";
@@ -10,6 +10,8 @@ import { countryToAlpha2 } from "country-to-iso";
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
+const CACHE_10_MINUTES = 60 * 10;
 
 export const getAICountrySort = async () => {
     const sortedHeadlinesRef = collection(db, '- metadata -', 'summaryCount', 'sortedHeadlines');
@@ -38,7 +40,7 @@ export const getAICountrySort = async () => {
 }
 
 // Server-side cached version for SSR
-export const getAICountrySortServer = cache(async () => {
+export const getAICountrySortServer = unstable_cache(async () => {
     try {
         return await getAICountrySort();
     } catch (error) {
@@ -46,7 +48,7 @@ export const getAICountrySortServer = cache(async () => {
         // Fallback to default country order
         return Object.keys(countries);
     }
-});
+}, ['getAICountrySortServer'], { tags: ['getAICountrySortServer'], revalidate: CACHE_10_MINUTES });
 
 // Get latest summary for a specific country (FALLBACK - only used if metadata doesn't exist)
 const getCountryLatestSummary = async (countryName) => {
@@ -157,7 +159,7 @@ const getAllCountriesLatestSummariesFromMetadata = async () => {
 // 1. Try metadata first (2 reads for today + yesterday)
 // 2. For missing countries, query their collections (1 read per missing country, filtered to last 24h)
 // 3. Total worst case: 2 + N reads (where N = countries missing from metadata)
-export const getAllCountriesLatestSummaries = cache(async () => {
+export const getAllCountriesLatestSummaries = unstable_cache(async () => {
     // Try metadata document first (efficient: 2 reads for today + yesterday)
     const metadataSummaries = await getAllCountriesLatestSummariesFromMetadata();
 
@@ -224,10 +226,10 @@ export const getAllCountriesLatestSummaries = cache(async () => {
     }
 
     return metadataSummaries;
-});
+}, ['getAllCountriesLatestSummaries'], { tags: ['getAllCountriesLatestSummaries'], revalidate: CACHE_10_MINUTES });
 
 // Get latest global overview
-export const getGlobalOverview = cache(async () => {
+export const getGlobalOverview = unstable_cache(async () => {
     try {
         const globalOverviewsRef = collection(db, '- metadata -', 'globalOverviews', 'overviews');
         const q = query(globalOverviewsRef, orderBy('timestamp', 'desc'), limit(1));
@@ -257,4 +259,4 @@ export const getGlobalOverview = cache(async () => {
         console.error('Error fetching global overview:', error);
         return null;
     }
-});
+}, ['getGlobalOverview'], { tags: ['getGlobalOverview'], revalidate: CACHE_10_MINUTES });
