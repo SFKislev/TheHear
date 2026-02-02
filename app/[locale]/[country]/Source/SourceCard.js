@@ -132,11 +132,12 @@ export default function SourceCard({ source, headlines, country, locale, isLoadi
             <CloseButton name={source} isRTL={isRTL} className="z-[2]" />
             <div className="flex flex-col h-full justify-normal sm:justify-between">
                 <div className="flex flex-col gap-2 mb-2 p-4">
-                    <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                    <div className={`flex items-center gap-2 w-full ${isRTL ? 'flex-row-reverse' : ''}`}>
                         <SourceName
                             name={displayName}
                             description={sourceData.description}
                             {...{ typography, date, isLoading }}
+                            align={isRTL ? 'right' : 'left'}
                         />
                         {showLiveHint && (
                             <span className="inline-flex items-center justify-center h-4 w-4 rounded-full bg-white/80 shadow-sm border border-gray-200">
