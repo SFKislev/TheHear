@@ -15,6 +15,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }) {
     const { locale } = await params;
+    const canonicalUrl = `https://www.thehear.org/${locale}/global`;
     
     const title = locale === 'heb' ? 'חדשות גלובליות בזמן אמת' : 'Live global news - the headlines as they evolve';
     const description = locale === 'heb' 
@@ -24,6 +25,9 @@ export async function generateMetadata({ params }) {
     return {
         title,
         description,
+        alternates: {
+            canonical: canonicalUrl,
+        },
     };
 }
 
