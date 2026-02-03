@@ -20,7 +20,7 @@ const styleTheHear = (text) => {
 
 const introCards = [
   {
-    title: "The Hear is live a news observatory and headlines archive.",
+    title: "The Hear is a live news observatory and headlines archive.",
     span: 4
   },
   {
@@ -174,12 +174,21 @@ export default function LandingPageContent({ randomSeed }) {
                 card.title === "Archive" ? "bg-off-white hover:bg-amber-100" : "bg-gray-100 hover:bg-gray-200"
               }`}>
                 <div className="text-center p-6">
-                  <h2 
-                    className="text-xl font-semibold"
-                    style={typographyStyle}
-                  >
-                    {card.title}
-                  </h2>
+                  {index === 0 ? (
+                    <h1
+                      className="text-xl font-semibold"
+                      style={typographyStyle}
+                    >
+                      {card.title}
+                    </h1>
+                  ) : (
+                    <h2 
+                      className="text-xl font-semibold"
+                      style={typographyStyle}
+                    >
+                      {card.title}
+                    </h2>
+                  )}
                   {card.subtitle && (
                     <div 
                       className="text-sm leading-relaxed text-gray-800 prose prose-blue font-['Geist'] mt-4"

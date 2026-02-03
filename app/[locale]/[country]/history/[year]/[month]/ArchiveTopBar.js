@@ -80,9 +80,9 @@ export default function ArchiveTopBar({ country, locale, year, month, monthName 
     const { isMobile } = useMobile();
     const countryData = countries[country] || {};
     const countryName = locale === 'heb' ? countryData.hebrew : countryData.english;
-    const fullTitle = locale === 'heb' 
-        ? `ארכיון חדשות ${countryName} - ${monthName}`
-        : `${countryName} News Archive - ${monthName}`;
+    const fullTitle = locale === 'heb'
+        ? `ארכיון כותרות מ־${countryName}, ${monthName} ${year}`
+        : `Headlines archive from ${countryName}, ${monthName} ${year}`;
 
     return (
         <nav className="sticky top-0 w-full bg-white z-50 py-1 direction-ltr border-b border-gray-200">
@@ -97,17 +97,9 @@ export default function ArchiveTopBar({ country, locale, year, month, monthName 
                     <div className="flex items-center gap-2 flex-1 justify-center">
                         <MonthNavigation {...{ country, locale, year, month, monthName }} position="left" />
                         <ArchiveCountryNavigator country={country} locale={locale} year={year} month={month} />
-                        <h1 className={`${locale === 'heb' ? 'frank-re text-right text-[16px]' : 'font-[\"Geist\"] text-left text-sm'} flex items-center gap-2`}>
-                            <span>{countryName}</span>
-                            <span className="text-gray-400">•</span>
-                            <span>{new Date(year, month - 1).toLocaleDateString(locale === 'heb' ? 'he' : 'en', { month: 'long' })}, {year}</span>
-                            {!isMobile && (
-                                <>
-                                    <span className="text-gray-400">•</span>
-                                    <span>{locale === 'heb' ? 'ארכיון כותרות' : 'Headlines Archive'}</span>
-                                </>
-                            )}
-                        </h1>
+                        <div className={`${locale === 'heb' ? 'frank-re text-right text-[16px]' : 'font-[\"Geist\"] text-left text-sm'} flex items-center gap-2`}>
+                            <span className="text-sm">{fullTitle}</span>
+                        </div>
                         <MonthNavigation {...{ country, locale, year, month, monthName }} position="right" />
                     </div>
 

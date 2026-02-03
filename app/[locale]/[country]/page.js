@@ -5,12 +5,10 @@ import { countries } from "@/utils/sources/countries";
 import CountryPageContent from "./CountryPage_content";
 import { getWebsiteName } from "@/utils/sources/getCountryData";
 import { createMetadata, LdJson } from "./metadata";
-import ArchiveLinksData from "./TopBar/settings/ArchiveLinksData";
-import CountryLinksData from "./TopBar/CountryLinksData";
-import DateLinksData from "./TopBar/DateLinksData";
 import CountryFonts from "@/components/CountryFonts";
 import { isHebrewContentAvailable } from "@/utils/daily summary utils";
 import { redirect } from "next/navigation";
+import UniversalFooter from "@/components/UniversalFooter";
 
 export const revalidate = 900 // 15 minutes
 export const dynamicParams = false
@@ -104,8 +102,6 @@ export default async function Page({ params }) {
         return 'no summaries found';
     }
 
-    const countryName = locale === 'heb' ? countries[country].hebrew || country : countries[country].english || country;
-
     return (
         <>
             {/* Load country-specific fonts dynamically */}
@@ -113,11 +109,6 @@ export default async function Page({ params }) {
 
             {/* This correctly handles all your SEO needs for the entire collection */}
             <LdJson {...{ country, locale, headlines, initialSummaries, sources, yesterdaySummary }} />
-
-            {/* Navigation links for crawlers */}
-            <ArchiveLinksData locale={locale} country={country} />
-            <CountryLinksData locale={locale} currentCountry={country} />
-            <DateLinksData locale={locale} country={country} />
 
             {/* This is the interactive UI for your users */}
             <CountryPageContent
@@ -129,6 +120,12 @@ export default async function Page({ params }) {
                     country,
                     userCountry
                 }}
+            />
+
+            <UniversalFooter
+                locale={locale}
+                pageType="live"
+                country={country}
             />
         </>
     );

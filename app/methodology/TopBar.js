@@ -16,7 +16,7 @@ export default function TopBar() {
       <div className="w-full md:w-[70%] md:min-w-[800px] md:max-w-[1200px] mx-auto px-5">
         <div className="flex items-center justify-between py-4">
           {/* Site Title with Geist font */}
-          <h1 className="text-sm font-medium cursor-default hover:text-blue transition-colors font-['Geist']">The Hear</h1>
+          <div className="text-sm font-medium cursor-default hover:text-blue transition-colors font-['Geist']">The Hear</div>
 
           {/* Navigation Links */}
           <div className="flex items-center gap-4">

@@ -4,61 +4,7 @@ import { isHebrewContentAvailable } from "@/utils/daily summary utils";
 import MonthlyArchiveGrid from "./MonthlyArchiveGrid";
 import { createMetadata, LdJson } from "./metadata";
 import { redirect } from "next/navigation";
-
-// Server-side navigation component for SEO
-function ServerArchiveNavigation({ country, locale, year, month }) {
-    const currentMonth = parseInt(month);
-    const currentYear = parseInt(year);
-
-    // Calculate previous month
-    const prevMonth = currentMonth === 1 ? 12 : currentMonth - 1;
-    const prevYear = currentMonth === 1 ? currentYear - 1 : currentYear;
-
-    // Calculate next month  
-    const nextMonth = currentMonth === 12 ? 1 : currentMonth + 1;
-    const nextYear = currentMonth === 12 ? currentYear + 1 : currentYear;
-
-    // Check if navigation months should be available based on launch dates and current date
-    const today = new Date();
-    const nextMonthDate = new Date(nextYear, nextMonth - 1, 1);
-    const hasNextMonth = nextMonthDate <= today;
-
-    return (
-        <div style={{ display: 'none' }} aria-hidden="true">
-            {/* Hidden server-rendered navigation links for crawlers */}
-            <nav>
-                {/* Month navigation */}
-                <a href={`/${locale}/${country}/history/${prevYear}/${prevMonth.toString().padStart(2, '0')}`}>
-                    {locale === 'heb' ? 'חודש קודם' : 'Previous Month'}: {new Date(prevYear, prevMonth - 1).toLocaleDateString(locale === 'heb' ? 'he' : 'en', { month: 'long', year: 'numeric' })}
-                </a>
-                {hasNextMonth && (
-                    <a href={`/${locale}/${country}/history/${nextYear}/${nextMonth.toString().padStart(2, '0')}`}>
-                        {locale === 'heb' ? 'חודש הבא' : 'Next Month'}: {new Date(nextYear, nextMonth - 1).toLocaleDateString(locale === 'heb' ? 'he' : 'en', { month: 'long', year: 'numeric' })}
-                    </a>
-                )}
-
-                {/* Country navigation - matches ArchiveCountryNavigator exactly */}
-                {Object.keys(countries)
-                    .filter(c => c !== 'uae' && c !== 'finland') // Same filter as ArchiveCountryNavigator
-                    .map((c) => (
-                        <a key={c} href={`/${locale}/${c}/history/${year}/${month.toString().padStart(2, '0')}`}>
-                            {locale === 'heb' ? `${countries[c].english} ארכיון` : `${countries[c].english} Headlines Archive`} - {new Date(parseInt(year), parseInt(month) - 1).toLocaleDateString(locale === 'heb' ? 'he' : 'en', { month: 'long', year: 'numeric' })}
-                        </a>
-                    ))}
-
-                {/* Global page link */}
-                <a href={`/${locale}/global`}>
-                    {locale === 'heb' ? 'תצוגה עולמית' : 'Global Headlines View'}
-                </a>
-
-                {/* Additional SEO-friendly internal links */}
-                <a href={`/${locale}/${country}`}>
-                    {locale === 'heb' ? 'כותרות חיות מ' : 'Live Headlines from'} {locale === 'heb' ? countries[country].hebrew : countries[country].english}
-                </a>
-            </nav>
-        </div>
-    );
-}
+import UniversalFooter from "@/components/UniversalFooter";
 
 // Historical months are immutable - cache forever
 // Current month updates daily
@@ -122,7 +68,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }) {
-    return createMetadata(params);
+    const { country, locale, year, month } = await params;
+    return createMetadata({ country, locale, year, month });
 }
 
 export default async function MonthlyArchivePage({ params }) {
@@ -160,9 +107,6 @@ export default async function MonthlyArchivePage({ params }) {
                 headlines={dailySummaries.flatMap(summary => summary.headlines || [])}
             />
 
-            {/* Server-side navigation links for SEO - hidden but crawlable */}
-            <ServerArchiveNavigation country={country} locale={locale} year={year} month={month} />
-
             {/* Client-side interactive UI */}
             <MonthlyArchiveGrid
                 dailySummaries={dailySummaries}
@@ -171,6 +115,14 @@ export default async function MonthlyArchivePage({ params }) {
                 year={year}
                 month={month}
                 monthName={monthName}
+            />
+
+            <UniversalFooter
+                locale={locale}
+                pageType="monthly-archive"
+                country={country}
+                year={year}
+                month={month}
             />
         </>
     );

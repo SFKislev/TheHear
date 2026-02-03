@@ -1,6 +1,7 @@
 import { countries } from "@/utils/sources/countries";
 import HistoryContent from "./HistoryContent";
 import { createMetadata, SearchLdJson } from "./metadata";
+import UniversalFooter from "@/components/UniversalFooter";
 
 export const revalidate = 3600; // 1 hour
 export const dynamicParams = false;
@@ -32,6 +33,12 @@ export default async function HistoryPage({ params }) {
             
             {/* Client-side interactive content - UX unchanged */}
             <HistoryContent locale={locale} country={country} />
+
+            <UniversalFooter
+                locale={locale}
+                pageType="search"
+                country={country}
+            />
         </>
     );
 }

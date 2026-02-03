@@ -173,16 +173,17 @@ export default function TopBar({ locale, country, sources, currentSummary, initi
                             <TimeDisplay locale={effectiveLocale} country={country} />
                             <div className="border-l border-dotted border-gray-500 h-5 w-0 mx-2 sm:mx-5 flex-shrink-0"></div>
                             <Flag {...{ country, locale: effectiveLocale, originalLocale: locale}} />
-                            {/* Show current summary title when right panel is collapsed or on vertical screens */}
+                            {/* Show current summary title when right panel is collapsed or on vertical screens - h2 for SEO on live page */}
                             {(isRightPanelCollapsed || isVerticalScreen) && currentHeadline && (
                                 <>
                                     <div className="border-l border-gray-500 border-dotted h-5 w-0 mx-2 sm:mx-5 flex-shrink-0"></div>
-                                    <div
+                                    <h2
                                         className={`text-gray-800 truncate cursor-pointer hover:underline hover:underline-offset-2 min-w-0 flex-1 max-w-xs sm:max-w-md ${effectiveLocale === 'heb' ? 'frank-re text-base' : 'font-["Geist"] text-sm'}`}
+                                        style={{ margin: 0 }}
                                         onClick={onExpandPanel}
                                     >
                                         {currentHeadline}
-                                    </div>
+                                    </h2>
                                 </>
                             )}
                         </div>

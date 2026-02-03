@@ -32,10 +32,10 @@ export async function createMetadata(params) {
     const flagEmoji = countryFlags[country] || '';
     const siteName = 'The Hear';
     
-    // Consistent title format: [Flag] Live Headlines from [Country] | Unfiltered news
+    // Consistent title format: [Flag] Live Headlines from [Country] | Unfiltered news (match h1: "the" for US/UK in English)
     const title = locale === 'heb'
         ? `${flagEmoji} כותרות חיות מ${countryName} | דוכן עיתונים מתעדכן `
-        : `${flagEmoji} Live Headlines from ${countryName} | Unfiltered news`;
+        : `${flagEmoji} Live Headlines ${(country === 'us' || country === 'uk') ? `from the ${countryName}` : `from ${countryName}`} | Unfiltered news`;
     
     const description = locale === 'heb'
         ? `דוכן כותרות חי של עיתונים מ-${countryName}; ארכיון חדשות המעדכן בזמן אמת.`

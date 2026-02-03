@@ -18,6 +18,8 @@ export default function SideSlider({ locale, country, pageDate }) {
     const summaries = useDaySummaries(state => state.daySummaries);
     const date = useTime(state => state.date);
     const setDate = useTime(state => state.setDate);
+    const setManualDate = useTime(state => state.setManualDate);
+    const lastManualInteractionAt = useTime(state => state.lastManualInteractionAt);
     const { isMobile } = useMobile();
     const [isPlaying, setIsPlaying] = useState(false);
     const [playSpeed, setPlaySpeed] = useState(4); // Speed multiplier (1x, 2x, 4x, 8x, 16x)
@@ -76,10 +78,54 @@ export default function SideSlider({ locale, country, pageDate }) {
         }
     }, [pageDate, setDate]); // eslint-disable-line react-hooks/exhaustive-deps
 
-        const minutes = date.getHours() * 60 + date.getMinutes();
+    useEffect(() => {
+        if (isDatePage) return;
+        const manualHoldActive = () => (
+            lastManualInteractionAt &&
+            Date.now() - lastManualInteractionAt < 2 * 60 * 1000
+        );
+        const tick = () => {
+            if (manualHoldActive()) return;
+            setDate(new Date());
+        };
+
+        const interval = setInterval(tick, 60 * 1000);
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === "visible") {
+                tick();
+            }
+        };
+        const handleFocus = () => tick();
+
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        window.addEventListener("focus", handleFocus);
+
+        return () => {
+            clearInterval(interval);
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
+            window.removeEventListener("focus", handleFocus);
+        };
+    }, [isDatePage, lastManualInteractionAt, setDate]);
+
+    useEffect(() => {
+        if (isDatePage || !lastManualInteractionAt) return;
+        const elapsed = Date.now() - lastManualInteractionAt;
+        const remaining = 2 * 60 * 1000 - elapsed;
+        if (remaining <= 0) return;
+
+        const timeout = setTimeout(() => {
+            if (Date.now() - lastManualInteractionAt >= 2 * 60 * 1000) {
+                setDate(new Date());
+            }
+        }, remaining);
+
+        return () => clearTimeout(timeout);
+    }, [isDatePage, lastManualInteractionAt, setDate]);
+
+    const minutes = date.getHours() * 60 + date.getMinutes();
 
     // Get current time to prevent sliding into the future
-    const now = useMemo(() => new Date(), []);
+    const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
     const isToday = day === now.toDateString();
 
@@ -90,7 +136,7 @@ export default function SideSlider({ locale, country, pageDate }) {
         }
 
         const updatedDate = new Date(day + ' ' + Math.floor(minutes / 60) + ':' + (minutes % 60));
-        setDate(updatedDate);
+        setManualDate(updatedDate);
 
         // Track time exploration when user manually adjusts slider
         if (pausePlay) {
@@ -105,7 +151,7 @@ export default function SideSlider({ locale, country, pageDate }) {
         if (pausePlay && isPlaying) {
             setIsPlaying(false);
         }
-    }, [isToday, currentMinutes, day, setDate, isPlaying, setIsPlaying, country, locale, isDatePage]);
+    }, [isToday, currentMinutes, day, setManualDate, isPlaying, setIsPlaying, country, locale, isDatePage]);
 
     // Auto-play functionality
     useEffect(() => {
@@ -164,9 +210,9 @@ export default function SideSlider({ locale, country, pageDate }) {
             is_date_page: isDatePage
         });
 
-        setDate(summary.timestamp);
+        setManualDate(summary.timestamp);
         if (date.toDateString() === summary.timestamp.toDateString()) {
-            setDate(summary.timestamp);
+            setManualDate(summary.timestamp);
         } else {
             redirect(`/${locale}/${country}/${createDateString(summary.timestamp)}`);
         }

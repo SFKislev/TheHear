@@ -50,7 +50,7 @@ export default function GlobalTopBar({ locale }) {
                     <div className="flex items-center h-10 relative">
                         {/* Site Title with Geist font */}
                         <div className="flex-1">
-                            <h1 className="text-sm font-medium cursor-default hover:text-blue transition-colors font-['Geist']">The Hear</h1>
+                            <div className="text-sm font-medium cursor-default hover:text-blue transition-colors font-['Geist']">The Hear</div>
                         </div>
 
                         {/* Center: Clock - absolutely positioned for perfect centering */}

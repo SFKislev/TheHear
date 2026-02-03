@@ -9,11 +9,10 @@ import { getTypographyOptions } from "@/utils/typography/typography";
 import HeadlineCard from "./FeedHeadlineCard";
 import SummaryCard from "./FeedSummaryCard";
 import FeedTopbar from "./FeedTopbar";
-import FeedFooter from "./FeedFooter";
 import FeedDailySummary from "./feedDailySummary";
 import LogoSmall from "@/components/Logo-small";
 
-export default function FeedView({ headlines, initialSummaries, daySummary, yesterdaySummary, locale, country, date, countryTimezone, isMobile }) {
+export default function FeedView({ headlines, initialSummaries, daySummary, yesterdaySummary, locale, country, date, countryTimezone, isMobile, footer }) {
     const countryData = countries[country] || {};
     const countryName = locale === 'heb' ? countryData.hebrew || country : countryData.english || country;
     const isRTL = locale === 'heb';
@@ -62,7 +61,7 @@ export default function FeedView({ headlines, initialSummaries, daySummary, yest
     
     return (
         <>
-            <div className={`min-h-screen ${isRTL ? 'direction-rtl' : 'direction-ltr'}`}>
+            <div style={{ paddingBottom: "var(--footer-offset, 3rem)" }} className={`min-h-screen ${isRTL ? 'direction-rtl' : 'direction-ltr'}`}>
                 <FeedTopbar locale={locale} country={country} daySummary={daySummary} date={date} />
 
                 {/* Logo */}
@@ -246,8 +245,8 @@ export default function FeedView({ headlines, initialSummaries, daySummary, yest
                     )}
                 </div>
 
-                {/* Footer */}
-                <FeedFooter locale={locale} country={country} daySummary={daySummary} date={date} />
+                {/* Footer - passed from page as server component for SSR links */}
+                {footer}
             </div>
         </>
     );

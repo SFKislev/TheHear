@@ -1,71 +1,9 @@
-import { countries } from "@/utils/sources/countries";
 import { getGlobalDailySummariesForDate } from "@/utils/database/countryData";
 import { isHebrewContentAvailable } from "@/utils/daily summary utils";
 import GlobalDailyArchiveGrid from "./GlobalDailyArchiveGrid";
 import { createMetadata, LdJson } from "./metadata";
 import { redirect, notFound } from "next/navigation";
-import { createDateString } from "@/utils/utils";
-
-// Server-side navigation component for SEO
-function ServerArchiveNavigation({ locale, year, month, day }) {
-    const currentDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-    
-    // Calculate previous day
-    const prevDay = new Date(currentDate);
-    prevDay.setDate(currentDate.getDate() - 1);
-    
-    // Calculate next day  
-    const nextDay = new Date(currentDate);
-    nextDay.setDate(currentDate.getDate() + 1);
-    
-    // Check if navigation days should be available based on current date
-    const today = new Date();
-    const hasNextDay = nextDay <= today;
-
-    const formatDateUrl = (date) => {
-        return `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`;
-    };
-
-    return (
-        <div style={{ display: 'none' }} aria-hidden="true">
-            {/* Hidden server-rendered navigation links for crawlers */}
-            <nav>
-                {/* Day navigation */}
-                <a href={`/${locale}/global/history/${formatDateUrl(prevDay)}`}>
-                    {locale === 'heb' ? 'יום קודם' : 'Previous Day'}: {prevDay.toLocaleDateString(locale === 'heb' ? 'he' : 'en', { day: 'numeric', month: 'long', year: 'numeric' })}
-                </a>
-                {hasNextDay && (
-                    <a href={`/${locale}/global/history/${formatDateUrl(nextDay)}`}>
-                        {locale === 'heb' ? 'יום הבא' : 'Next Day'}: {nextDay.toLocaleDateString(locale === 'heb' ? 'he' : 'en', { day: 'numeric', month: 'long', year: 'numeric' })}
-                    </a>
-                )}
-                
-                {/* Country navigation - link to each country's feed archive for this date */}
-                {Object.keys(countries)
-                    .filter(c => c !== 'uae' && c !== 'finland')
-                    .map((c) => (
-                        <a key={c} href={`/${locale}/${c}/${createDateString(currentDate)}/feed`}>
-                            {locale === 'heb' ? `${countries[c].hebrew} - ${currentDate.toLocaleDateString('he', { day: 'numeric', month: 'long', year: 'numeric' })}` : `${countries[c].english} - ${currentDate.toLocaleDateString('en', { day: 'numeric', month: 'long', year: 'numeric' })}`}
-                        </a>
-                    ))}
-                
-                {/* Global live page link */}
-                <a href={`/${locale}/global`}>
-                    {locale === 'heb' ? 'תצוגה עולמית חיה' : 'Live Global Headlines View'}
-                </a>
-                
-                {/* Month archive links for each country */}
-                {Object.keys(countries)
-                    .filter(c => c !== 'uae' && c !== 'finland')
-                    .map((c) => (
-                        <a key={`${c}-archive`} href={`/${locale}/${c}/history/${year}/${String(month).padStart(2, '0')}`}>
-                            {locale === 'heb' ? `${countries[c].hebrew} ארכיון חודשי` : `${countries[c].english} Monthly Archive`}
-                        </a>
-                    ))}
-            </nav>
-        </div>
-    );
-}
+import UniversalFooter from "@/components/UniversalFooter";
 
 // Historical dates cached forever, current date updates daily
 export const revalidate = 86400; // 24 hours - will be optimized at edge for historical dates
@@ -153,9 +91,6 @@ export default async function GlobalDailyArchivePage({ params }) {
                 headlines={dailySummaries.flatMap(summary => summary.headlines || [])}
             />
             
-            {/* Server-side navigation links for SEO - hidden but crawlable */}
-            <ServerArchiveNavigation locale={locale} year={year} month={month} day={day} />
-            
             {/* Client-side interactive UI */}
             <GlobalDailyArchiveGrid 
                 dailySummaries={dailySummaries}
@@ -165,6 +100,14 @@ export default async function GlobalDailyArchivePage({ params }) {
                 day={day}
                 currentDate={currentDate}
                 dateString={dateString}
+            />
+
+            <UniversalFooter
+                locale={locale}
+                pageType="global-archive"
+                year={year}
+                month={month}
+                day={day}
             />
         </>
     );

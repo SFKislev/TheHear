@@ -134,7 +134,7 @@ export default function HistoryContent({ locale, country }) {
         <>
             <EnglishFonts />
             <HebrewFonts />
-            <div className="min-h-screen bg-white">
+            <div style={{ paddingBottom: "var(--footer-offset, 3rem)" }} className="min-h-screen bg-white">
                 {/* TopBar - copied from ArchiveTopBar.js */}
                 <nav className="sticky top-0 w-full bg-white z-50 py-1 direction-ltr border-b border-gray-200">
                     <div className="px-4">

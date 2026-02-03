@@ -8,6 +8,7 @@ import { countries } from "@/utils/sources/countries";
 import { isHebrewContentAvailable, getHeadline } from "@/utils/daily summary utils";
 import FeedJsonLd from "./FeedJsonLd";
 import FeedView from "./FeedView";
+import FeedFooter from "./FeedFooter";
 import FeedPopup from "./popup";
 import FeedFonts from "./FeedFonts";
 // Do not import request-bound APIs (headers/cookies) here.
@@ -57,9 +58,10 @@ export async function generateMetadata({ params }) {
         ? `${flagEmoji} ${countryName} | ${formattedDate} | ארכיון כותרות`
         : `${flagEmoji} ${countryName} | ${formattedDate} | Headline Archive`;
 
+    const countryInDescription = (country === 'us' || country === 'uk') ? `the ${countryName}` : countryName;
     const description = locale === 'heb'
         ? `${currentHeadline ? `${currentHeadline}. ` : ''}ארכיון מלא של כותרות חדשות מ-${countryName} ל-${formattedDate} - כל הכותרות כפי שהתפתחו במהלך היום עם סיכומי בינה מלאכותית בזמן אמת`
-        : `An archive of news headlines from ${countryName} for ${formattedDate}; ${currentHeadline ? `${currentHeadline}. ` : ''}All headlines as they unfolded throughout the day, with real-time AI overviews`;
+        : `An archive of news headlines from ${countryInDescription} for ${formattedDate}; ${currentHeadline ? `${currentHeadline}. ` : ''}All headlines as they unfolded throughout the day, with real-time AI overviews`;
 
     const url = `https://www.thehear.org/${locale}/${country}/${date}/feed`;
 
@@ -257,7 +259,7 @@ export default async function FeedPage({ params }) {
                     initialSummaries={initialSummaries}
                 />
 
-                {/* Feed view with all content visible */}
+                {/* Feed view with all content visible - footer passed as server component for SSR links */}
                 <FeedView
                     {...{
                         headlines,
@@ -268,7 +270,8 @@ export default async function FeedPage({ params }) {
                         country,
                         date: parsedDate,
                         countryTimezone: data.metadata?.timezone,
-                        isMobile
+                        isMobile,
+                        footer: <FeedFooter locale={locale} country={country} date={parsedDate} />
                     }}
                 />
 

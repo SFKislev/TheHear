@@ -2,8 +2,8 @@ export function createMetadata() {
     const url = 'https://www.thehear.org/methodology';
     const siteName = 'The Hear';
     
-    const title = 'Methodology | The Hear - How We Track & Analyze News Headlines';
-    const description = 'Learn how The Hear tracks, aggregates, and analyzes news headlines in real time. Discover our methodology for monitoring main headlines from newspapers worldwide, AI-generated overviews, and archive creation process.';
+    const title = 'Methodology | How the Hear tracks Headlines';
+    const description = 'How the Hear tracks, aggregates and analyzes main news headlines in real time from many sources worldwide, how it uses AI, and how it archives the results.';
     const keywords = 'news methodology, headline tracking, news analysis, AI overviews, news aggregation, media monitoring, journalism methodology, news archive, real time news tracking';
 
     return {
@@ -48,8 +48,8 @@ export function createMetadata() {
 
 export function LdJson() {
     const url = 'https://www.thehear.org/methodology';
-    const title = 'Methodology | The Hear - How We Track & Analyze News Headlines';
-    const description = 'Learn how The Hear tracks, aggregates, and analyzes news headlines in real time. Discover our methodology for monitoring main headlines from newspapers worldwide, AI-generated overviews, and archive creation process.';
+    const title = 'Methodology | How the Hear tracks Headlines';
+    const description = 'How the Hear tracks, aggregates and analyzes main news headlines in real time from many sources worldwide, how it uses AI, and how it archives the results.';
     const image = 'https://www.thehear.org/logo192.png';
     
     // Create breadcrumb navigation

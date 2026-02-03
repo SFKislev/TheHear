@@ -70,7 +70,7 @@ export default function CountryPageContent({ sources, initialSummaries, yesterda
         <>
             <FirstVisitModal openAbout={() => setAboutOpen(true)} country={country} locale={locale} pageDate={pageDate} />
             <AboutMenu open={aboutOpen} onClose={() => setAboutOpen(false)} />
-            <div id='main' className={`absolute flex flex-col sm:flex-row w-full h-full overflow-auto sm:overflow-hidden ${effectiveLocale === 'heb' ? 'direction-rtl' : 'direction-ltr'}`}>
+            <div id='main' style={{ paddingBottom: "var(--footer-offset, 3rem)" }} className={`absolute flex flex-col sm:flex-row w-full h-full overflow-auto sm:overflow-hidden ${effectiveLocale === 'heb' ? 'direction-rtl' : 'direction-ltr'}`}>
                 <EnglishFonts />
                 {locale == 'heb' && <HebrewFonts />}
                 <typography.component />

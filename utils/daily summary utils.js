@@ -1,5 +1,5 @@
-// Helper function to clean summary text by removing everything after language markers
-const cleanSummaryText = (text) => {
+// Helper function to clean summary text by removing everything after language markers (exported for live summary headline in SEO)
+export const cleanSummaryText = (text) => {
     if (!text) return '';
     
     // Find the index of language markers and truncate at the first one found

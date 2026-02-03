@@ -55,7 +55,7 @@ export default function MonthlyArchiveGrid({
         <>
             <typography.component />
             <ArchiveTopBar {...{ country, locale, year, month, monthName }} />
-            <div className={`custom-scrollbar 
+            <div style={{ paddingBottom: "var(--footer-offset, 3rem)" }} className={`custom-scrollbar 
                         gap-4 p-4
                         flex flex-col sm:grid 
                         sm:grid-cols-1 

@@ -237,8 +237,8 @@ function DayNavigation({ locale, year, month, day, position = 'left' }) {
 export default function GlobalArchiveTopBar({ locale, year, month, day, dateString, isAlphabetical, setIsAlphabetical, currentDate }) {
     const { isMobile } = useMobile();
     const fullTitle = locale === 'heb'
-        ? `ארכיון חדשות עולמי - ${dateString}`
-        : `Global News Archive - ${dateString}`;
+        ? `ארכיון כותרות גלובלי ל־${dateString}`
+        : `Global Headlines Archive for ${dateString}`;
 
     const handleSortToggle = () => {
         setIsAlphabetical(!isAlphabetical);
@@ -260,17 +260,9 @@ export default function GlobalArchiveTopBar({ locale, year, month, day, dateStri
                     {/* Center: Global • Date • Headlines Archive with Day Navigation on sides */}
                     <div className="flex items-center gap-2 flex-1 justify-center">
                         <DayNavigation {...{ locale, year, month, day }} position="left" />
-                        <h1 className={`${locale === 'heb' ? 'frank-re text-right text-[16px]' : 'font-[\"Geist\"] text-left text-sm'} flex items-center gap-2`}>
-                            {/* <span>{locale === 'heb' ? 'עולמי' : 'Global'}</span> */}
-                            {/* <span className="text-gray-400">•</span> */}
-                            <span className={`${locale === 'heb' ? 'font-mono' : ''} text-sm`}>{dateString}</span>
-                            {!isMobile && (
-                                <>
-                                    <span className="text-gray-400">•</span>
-                                    <span>{locale === 'heb' ? 'ארכיון כותרות' : 'Global Headlines Archive'}</span>
-                                </>
-                            )}
-                        </h1>
+                        <div className={`${locale === 'heb' ? 'frank-re text-right text-[16px]' : 'font-[\"Geist\"] text-left text-sm'} flex items-center gap-2`}>
+                            <span className="text-sm">{fullTitle}</span>
+                        </div>
                         <DayNavigation {...{ locale, year, month, day }} position="right" />
                     </div>
 

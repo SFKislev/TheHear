@@ -63,7 +63,7 @@ export default function InnerLink({ href, locale, children }) {
 
     return (
         <>
-            <span onClick={handleClick} className="cursor-pointer inline-block">
+            <span onClickCapture={handleClick} className="cursor-pointer inline-block">
                 <Link href={href} hrefLang={locale}>
                     {children}
                 </Link>

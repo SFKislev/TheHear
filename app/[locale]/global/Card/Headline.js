@@ -40,7 +40,7 @@ export default function Headline({ country, locale, summary, typography, index }
     return (
         <>
             <Link href={`/${locale}/${country}`} hrefLang={locale} onClick={handleClick}>
-                <h2 className={`animate-headline w-full text-lg font-semibold break-words px-1`}
+            <h3 className={`animate-headline w-full text-lg font-semibold break-words px-1`}
                     style={{
                         ...updatedTypography,
                         width: '100%',
@@ -48,7 +48,7 @@ export default function Headline({ country, locale, summary, typography, index }
                         fontFamily: updatedTypography.fontFamily
                     }} key={summary.id}>
                     {headline}
-                </h2>
+            </h3>
             </Link>
             {showProgress && typeof window !== 'undefined' && createPortal(
                 <div className="fixed inset-0 w-full h-full z-[9999] pointer-events-auto">

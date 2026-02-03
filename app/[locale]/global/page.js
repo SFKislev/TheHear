@@ -1,6 +1,7 @@
 import { getAICountrySortServer, getAllCountriesLatestSummaries, getGlobalOverview } from "@/utils/database/globalData";
 import GlobalPageContent from "./GlobalPageContent";
 import { GlobalLdJson } from "./metadata";
+import UniversalFooter from "@/components/UniversalFooter";
 
 export const revalidate = 900 // 15 minutes
 export const dynamicParams = false
@@ -15,7 +16,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }) {
     const { locale } = await params;
     
-    const title = locale === 'heb' ? 'סקירה גלובלית' : '🌍 Global Overview | The news as they evolve | The Hear';
+    const title = locale === 'heb' ? 'חדשות גלובליות בזמן אמת' : 'Live global news - the headlines as they evolve';
     const description = locale === 'heb' 
         ? 'סקירה גלובלית של חדשות מכל העולם'
         : 'Global overview of news from around the world';
@@ -85,6 +86,11 @@ export default async function GlobalPage({ params }) {
                 AICountrySort={AICountrySort}
                 countrySummaries={countrySummaries}
                 globalOverview={globalOverview}
+            />
+
+            <UniversalFooter
+                locale={locale}
+                pageType="global-live"
             />
         </>
     );

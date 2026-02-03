@@ -28,7 +28,7 @@ const cleanSummaryText = (text) => {
 
 export default function Summary({ summary, country, active, locale, yesterday }) {
     const useLocalLanguage = useTranslate(state => state.useLocalLanguage)
-    const setDate = useTime(state => state.setDate);
+    const setManualDate = useTime(state => state.setManualDate);
     const summaryRef = useRef(null);
     const pathname = usePathname();
 
@@ -77,7 +77,7 @@ export default function Summary({ summary, country, active, locale, yesterday })
             is_yesterday: yesterday
         });
 
-        setDate(summary.timestamp);
+        setManualDate(summary.timestamp);
         if (yesterday) {
             const yesterdayDate = new Date(summary.timestamp);
             redirect(`/${locale}/${country}/${createDateString(yesterdayDate)}`);
@@ -99,17 +99,27 @@ export default function Summary({ summary, country, active, locale, yesterday })
             }}
             onClick={clickHandler}
         >
-            <h3 className={`${active && !isDatePage ? 'text-blue' : ''} ${active && isDatePage ? 'underline underline-offset-4 decoration-gray-400 decoration-1' : ''} mb-2 ${locale === 'heb' ? 'text-[17px]' : 'text-base'} font-medium`}
-                style={{
-                    lineHeight: active ? '1.5' : '1.4',
-                    marginTop: active ? '0px' : '12px',
-                    marginBottom: '10px',
-                }}
-            >
-                <span className={`font-mono ${locale === 'heb' ? 'text-sm' : 'text-sm'}`}>{timestamp}</span>
-                <span className="mx-1">{locale == 'heb' ? '⇠' : '⇢'}</span>
-                <span>{headline}</span>
-            </h3>
+            {active && !isDatePage ? (
+                <h2 className={`text-blue mb-2 ${locale === 'heb' ? 'text-[17px]' : 'text-base'} font-medium`}
+                    style={{ lineHeight: '1.5', marginTop: '0px', marginBottom: '10px' }}
+                >
+                    <span className={`font-mono ${locale === 'heb' ? 'text-sm' : 'text-sm'}`}>{timestamp}</span>
+                    <span className="mx-1">{locale == 'heb' ? '⇠' : '⇢'}</span>
+                    <span>{headline}</span>
+                </h2>
+            ) : (
+                <h3 className={`${active && isDatePage ? 'underline underline-offset-4 decoration-gray-400 decoration-1' : ''} mb-2 ${locale === 'heb' ? 'text-[17px]' : 'text-base'} font-medium`}
+                    style={{
+                        lineHeight: active ? '1.5' : '1.4',
+                        marginTop: active ? '0px' : '12px',
+                        marginBottom: '10px',
+                    }}
+                >
+                    <span className={`font-mono ${locale === 'heb' ? 'text-sm' : 'text-sm'}`}>{timestamp}</span>
+                    <span className="mx-1">{locale == 'heb' ? '⇠' : '⇢'}</span>
+                    <span>{headline}</span>
+                </h3>
+            )}
             <CustomTooltip title={disclaimer} placement={locale === 'heb' ? 'top' : 'right'}>
                 <span className={`${locale === 'heb' ? 'pl-2' : 'pr-2'} align-middle cursor-help text-sm ${active ? 'text-gray-600' : 'text-gray-200'}`} tabIndex={0}>⌨</span>
             </CustomTooltip>

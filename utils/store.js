@@ -2,7 +2,10 @@ import { create } from "zustand";
 
 export const useTime = create(set => ({
     date: new Date(),
+    lastManualInteractionAt: null,
     setDate: (date) => set({ date }),
+    setManualDate: (date) => set({ date, lastManualInteractionAt: Date.now() }),
+    clearManualInteraction: () => set({ lastManualInteractionAt: null }),
 }));
 
 export const useFont = create(set => ({

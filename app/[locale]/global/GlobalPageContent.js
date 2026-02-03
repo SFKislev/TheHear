@@ -10,7 +10,6 @@ import EnglishFonts from "@/utils/typography/EnglishFonts";
 import useMobile from "@/components/useMobile";
 import Loader from "@/components/loader";
 import { useFont } from "@/utils/store";
-import { ServerCountryNavigation } from "@/utils/ServerSideLinks";
 
 export default function GlobalPageContent({ locale, AICountrySort, countrySummaries, globalOverview }) {
     const router = useRouter();
@@ -24,16 +23,16 @@ export default function GlobalPageContent({ locale, AICountrySort, countrySummar
     }, [setFont]);
 
     return (
-        <div className={`absolute flex flex-col w-full h-full overflow-auto ${locale === 'heb' ? 'direction-rtl' : 'direction-ltr'}`}>
+        <div style={{ paddingBottom: "var(--footer-offset, 3rem)" }} className={`absolute flex flex-col w-full h-full overflow-auto ${locale === 'heb' ? 'direction-rtl' : 'direction-ltr'}`}>
             <HebrewFonts />
             <EnglishFonts />
 
             {/* Mobile title bar - visible only on small screens via CSS */}
             <div className="md:hidden bg-white border-b border-gray-200 py-2 px-4 text-center">
                 {globalOverview && (
-                    <h1 className={`text-gray-800 ${locale === 'heb' ? 'frank-re text-base py-2' : 'font-["Geist"] font-bold text-sm py-1'}`}>
+                    <h2 className={`text-gray-800 ${locale === 'heb' ? 'frank-re text-base py-2' : 'font-["Geist"] font-bold text-sm py-1'}`}>
                         {locale === 'heb' ? globalOverview.hebrew.headline : globalOverview.english.headline}
-                    </h1>
+                    </h2>
                 )}
             </div>
 
@@ -62,8 +61,6 @@ export default function GlobalPageContent({ locale, AICountrySort, countrySummar
                 <GlobalGrid {...{locale, AICountrySort, countrySummaries}} />
             </div>
 
-            {/* Navigation links for crawlers */}
-            <ServerCountryNavigation locale={locale} currentCountry="global" />
         </div>
     );
 }

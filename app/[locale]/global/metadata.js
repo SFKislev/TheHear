@@ -23,8 +23,8 @@ export function GlobalLdJson({ locale, countrySummaries, globalOverview }) {
 
     const image = `${baseUrl}/logo192.png`;
     const title = locale === 'heb'
-        ? `🌍 דוכן עיתונים גלובלי | The Hear`
-        : `🌍 Global News Feed | International news as they evolve | The Hear`;
+        ? `חדשות גלובליות בזמן אמת`
+        : `Live global newsstand - the headlines as they evolve`;
     
     // Prepare country summaries as abstracts
     const abstracts = [];

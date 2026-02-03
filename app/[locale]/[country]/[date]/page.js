@@ -6,10 +6,6 @@ import CountryPageContent from "../CountryPage_content";
 import { getWebsiteName } from "@/utils/sources/getCountryData";
 import { redirect } from "next/navigation";
 import { createMetadata, LdJson } from "./metadata";
-import { countries } from "@/utils/sources/countries";
-import ArchiveLinksData from "../TopBar/settings/ArchiveLinksData";
-import CountryLinksData from "../TopBar/CountryLinksData";
-import DateLinksData from "../TopBar/DateLinksData";
 import { isHebrewContentAvailable } from "@/utils/daily summary utils";
 
 // Archive pages are immutable historical content that rarely changes
@@ -171,11 +167,6 @@ export default async function Page({ params }) {
             <>
                 {/* This correctly handles all your SEO needs for the entire collection */}
                 <LdJson {...{ country, locale, daySummary, headlines, initialSummaries, sources }} date={parsedDate} />
-
-                {/* Navigation links for crawlers */}
-                <ArchiveLinksData locale={locale} country={country} />
-                <CountryLinksData locale={locale} currentCountry={country} />
-                <DateLinksData locale={locale} country={country} currentDate={parsedDate} />
 
                 {/* This is the interactive UI for your users */}
                 <CountryPageContent

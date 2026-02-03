@@ -163,7 +163,7 @@ export default function LandingPageContent({ randomSeed }) {
                 className="text-2xl md:text-3xl font-semibold text-gray-800 mb-2 text-center"
                 style={typographyStyle}
               >
-                <span className="text-blue">The Hear</span> is a news observatory.
+                The Hear is a news observatory.
               </h1>
               <p className="text-sm text-gray-700 font-normal text-center">
                 {/* Main headline description */}
