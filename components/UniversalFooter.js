@@ -8,31 +8,8 @@ import { countries } from "@/utils/sources/countries";
 import { createDateString } from "@/utils/utils";
 import FlagIcon from "@/components/FlagIcon";
 import HebrewFonts from "@/utils/typography/HebrewFonts";
+import { getCountryLaunchDate } from "@/utils/launchDates";
 import { Archive, Info, X } from "lucide-react";
-
-const countryLaunchDates = {
-    'israel': new Date('2024-07-04'),
-    'germany': new Date('2024-07-28'),
-    'us': new Date('2024-07-31'),
-    'italy': new Date('2024-08-28'),
-    'russia': new Date('2024-08-29'),
-    'iran': new Date('2024-08-29'),
-    'france': new Date('2024-08-29'),
-    'lebanon': new Date('2024-08-29'),
-    'poland': new Date('2024-08-30'),
-    'uk': new Date('2024-09-05'),
-    'india': new Date('2024-09-05'),
-    'ukraine': new Date('2024-09-05'),
-    'spain': new Date('2024-09-05'),
-    'netherlands': new Date('2024-09-05'),
-    'china': new Date('2024-09-06'),
-    'japan': new Date('2024-09-07'),
-    'turkey': new Date('2024-09-07'),
-    'uae': new Date('2024-09-08'),
-    'palestine': new Date('2024-09-10'),
-    'kenya': new Date('2025-11-05'),
-    'finland': new Date('2025-02-20')
-};
 
 const labels = {
     about: { en: 'about', heb: 'אודות' },
@@ -77,7 +54,7 @@ function formatMonthLabel(year, month, locale) {
 }
 
 function getArchiveMonths(country, locale) {
-    const launchDate = countryLaunchDates[country] || new Date('2024-07-04');
+    const launchDate = getCountryLaunchDate(country);
     const now = new Date();
     const months = [];
     let currentDate = new Date(launchDate.getFullYear(), launchDate.getMonth(), 1);

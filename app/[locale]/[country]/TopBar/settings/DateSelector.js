@@ -13,30 +13,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { createDateString } from '@/utils/utils';
 import { LinearProgress } from "@mui/material";
 import InnerLink from "@/components/InnerLink";
-
-// Per-country launch dates - actual dates when data became available
-const countryLaunchDates = {
-    'israel': new Date('2024-07-04'),
-    'germany': new Date('2024-07-28'),
-    'us': new Date('2024-07-31'),
-    'italy': new Date('2024-08-28'),
-    'russia': new Date('2024-08-29'),
-    'iran': new Date('2024-08-29'),
-    'france': new Date('2024-08-29'),
-    'lebanon': new Date('2024-08-29'),
-    'poland': new Date('2024-08-30'),
-    'uk': new Date('2024-09-05'),
-    'india': new Date('2024-09-05'),
-    'ukraine': new Date('2024-09-05'),
-    'spain': new Date('2024-09-05'),
-    'netherlands': new Date('2024-09-05'),
-    'china': new Date('2024-09-06'),
-    'japan': new Date('2024-09-07'),
-    'turkey': new Date('2024-09-07'),
-    'uae': new Date('2024-09-08'),
-    'palestine': new Date('2024-09-10'),
-    'finland': new Date('2025-02-20')
-};
+import { getCountryLaunchDate } from "@/utils/launchDates";
 
 
 export function DateSelector({ locale, country }) {
@@ -91,7 +68,7 @@ export function DateSelector({ locale, country }) {
     const tomorrow = isToday ? null : add(todayDate, { days: 1 });
 
     // Get the minimum date for this country (when data became available)
-    const minDate = countryLaunchDates[country] || new Date('2024-07-04'); // fallback to earliest date
+    const minDate = getCountryLaunchDate(country);
 
     const setDay = (newDate) => {
         setIsNavigating(true);

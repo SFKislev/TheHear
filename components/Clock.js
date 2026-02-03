@@ -7,30 +7,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { createDateString } from '@/utils/utils';
 import { LinearProgress } from "@mui/material";
 import { createPortal } from "react-dom";
-
-// Per-country launch dates - actual dates when data became available
-const countryLaunchDates = {
-    'israel': new Date('2024-07-04'),
-    'germany': new Date('2024-07-28'),
-    'us': new Date('2024-07-31'),
-    'italy': new Date('2024-08-28'),
-    'russia': new Date('2024-08-29'),
-    'iran': new Date('2024-08-29'),
-    'france': new Date('2024-08-29'),
-    'lebanon': new Date('2024-08-29'),
-    'poland': new Date('2024-08-30'),
-    'uk': new Date('2024-09-05'),
-    'india': new Date('2024-09-05'),
-    'ukraine': new Date('2024-09-05'),
-    'spain': new Date('2024-09-05'),
-    'netherlands': new Date('2024-09-05'),
-    'china': new Date('2024-09-06'),
-    'japan': new Date('2024-09-07'),
-    'turkey': new Date('2024-09-07'),
-    'uae': new Date('2024-09-08'),
-    'palestine': new Date('2024-09-10'),
-    'finland': new Date('2025-02-20')
-};
+import { getCountryLaunchDate } from "@/utils/launchDates";
 
 export default function Clock({locale, date, country}) {
     const [displayDate, setDisplayDate] = useState(date);
@@ -102,7 +79,7 @@ export default function Clock({locale, date, country}) {
     const clickableClass = !isPresent && country ? 'cursor-pointer' : '';
 
     const today = new Date();
-    const minDate = country ? (countryLaunchDates[country] || new Date('2024-07-04')) : new Date('2024-07-04');
+    const minDate = country ? getCountryLaunchDate(country) : getCountryLaunchDate();
 
     const handleDateChange = (newDate) => {
         if (country && pathname) {

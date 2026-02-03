@@ -5,6 +5,7 @@ import MonthlyArchiveGrid from "./MonthlyArchiveGrid";
 import { createMetadata, LdJson } from "./metadata";
 import { redirect } from "next/navigation";
 import UniversalFooter from "@/components/UniversalFooter";
+import { COUNTRY_LAUNCH_DATES } from "@/utils/launchDates";
 
 // Historical months are immutable - cache forever
 // Current month updates daily
@@ -14,35 +15,12 @@ export const revalidate = false; // Cache historical months forever
 export const dynamicParams = false;
 
 export async function generateStaticParams() {
-    const countryLaunchDates = {
-        'israel': new Date('2024-07-04'),
-        'germany': new Date('2024-07-28'),
-        'us': new Date('2024-07-31'),
-        'italy': new Date('2024-08-28'),
-        'russia': new Date('2024-08-29'),
-        'iran': new Date('2024-08-29'),
-        'france': new Date('2024-08-29'),
-        'lebanon': new Date('2024-08-29'),
-        'poland': new Date('2024-08-30'),
-        'uk': new Date('2024-09-05'),
-        'india': new Date('2024-09-05'),
-        'ukraine': new Date('2024-09-05'),
-        'spain': new Date('2024-09-05'),
-        'netherlands': new Date('2024-09-05'),
-        'china': new Date('2024-09-06'),
-        'japan': new Date('2024-09-07'),
-        'turkey': new Date('2024-09-07'),
-        'uae': new Date('2024-09-08'),
-        'palestine': new Date('2024-09-10'),
-        'finland': new Date('2025-02-20')
-    };
-
     const routes = [];
     const currentDate = new Date();
     const locales = ['en', 'heb'];
 
     Object.keys(countries).forEach(country => {
-        const launchDate = countryLaunchDates[country];
+        const launchDate = COUNTRY_LAUNCH_DATES[country];
         if (!launchDate) return;
 
         locales.forEach(locale => {
@@ -127,4 +105,3 @@ export default async function MonthlyArchivePage({ params }) {
         </>
     );
 }
-

@@ -1,28 +1,5 @@
 import { countries } from "@/utils/sources/countries"
-
-// Per-country launch dates - actual dates when data became available
-const countryLaunchDates = {
-    'israel': new Date('2024-07-04'),
-    'germany': new Date('2024-07-28'),
-    'us': new Date('2024-07-31'),
-    'italy': new Date('2024-08-28'),
-    'russia': new Date('2024-08-29'),
-    'iran': new Date('2024-08-29'),
-    'france': new Date('2024-08-29'),
-    'lebanon': new Date('2024-08-29'),
-    'poland': new Date('2024-08-30'),
-    'uk': new Date('2024-09-05'),
-    'india': new Date('2024-09-05'),
-    'ukraine': new Date('2024-09-05'),
-    'spain': new Date('2024-09-05'),
-    'netherlands': new Date('2024-09-05'),
-    'china': new Date('2024-09-06'),
-    'japan': new Date('2024-09-07'),
-    'turkey': new Date('2024-09-07'),
-    'uae': new Date('2024-09-08'),
-    'palestine': new Date('2024-09-10'),
-    'finland': new Date('2025-02-20')
-};
+import { COUNTRY_LAUNCH_DATES } from "@/utils/launchDates"
 
 // Revalidate every 24 hours (current month updates daily)
 export const revalidate = 86400
@@ -38,7 +15,7 @@ export async function GET() {
         // Exclude Finland - no archive data available
         if (country === 'finland') return;
 
-        const countryLaunchDate = countryLaunchDates[country];
+        const countryLaunchDate = COUNTRY_LAUNCH_DATES[country];
         if (!countryLaunchDate) return;
 
         locales.forEach(locale => {

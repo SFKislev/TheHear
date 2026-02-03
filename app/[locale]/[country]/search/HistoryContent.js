@@ -12,6 +12,7 @@ import HistoryCountryNavigator from './HistoryCountryNavigator';
 import EnglishFonts from '@/utils/typography/EnglishFonts';
 import HebrewFonts from '@/utils/typography/HebrewFonts';
 import { countries } from '@/utils/sources/countries';
+import { getCountryLaunchDate } from '@/utils/launchDates';
 import useMobile from '@/components/useMobile';
 import Loader from '@/components/loader';
 
@@ -78,29 +79,7 @@ export default function HistoryContent({ locale, country }) {
         ? `ארכיון חדשות ${countryName}`
         : `${countryName} News Archive`;
 
-    // Country launch dates and helper functions
-    const countryLaunchDates = {
-        'israel': new Date('2024-07-04'),
-        'germany': new Date('2024-07-28'),
-        'us': new Date('2024-07-31'),
-        'italy': new Date('2024-08-28'),
-        'russia': new Date('2024-08-29'),
-        'iran': new Date('2024-08-29'),
-        'france': new Date('2024-08-29'),
-        'lebanon': new Date('2024-08-29'),
-        'poland': new Date('2024-08-30'),
-        'uk': new Date('2024-09-05'),
-        'india': new Date('2024-09-05'),
-        'ukraine': new Date('2024-09-05'),
-        'spain': new Date('2024-09-05'),
-        'netherlands': new Date('2024-09-05'),
-        'china': new Date('2024-09-06'),
-        'japan': new Date('2024-09-07'),
-        'turkey': new Date('2024-09-07'),
-        'uae': new Date('2024-09-08'),
-        'palestine': new Date('2024-09-10'),
-        'finland': new Date('2025-02-20')
-    };
+    // Country launch date
 
     const getCountryDisplayName = (countryCode) => {
         const countryNames = {
@@ -128,7 +107,7 @@ export default function HistoryContent({ locale, country }) {
         return countryNames[countryCode] || countryCode;
     };
 
-    const launchDate = countryLaunchDates[country] || new Date('2024-07-04');
+    const launchDate = getCountryLaunchDate(country);
     
     return (
         <>
