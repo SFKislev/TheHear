@@ -84,17 +84,10 @@ export async function middleware(request) {
 
   // Handle root path - redirect based on user location
   if (segments.length === 0) {
-    // TEMPORARILY DISABLED during initial crawl period (thehear.org migration)
-    // Re-enable after 2-3 months once indexing is stable
-    // This temporarily redirects homepage to /about to boost its SEO importance
-
-    // const userCountry = getUserCountry(request);
-    // // Special case: Israel should redirect to Hebrew version
-    // const locale = userCountry === 'israel' ? 'heb' : 'en';
-    // return NextResponse.redirect(new URL(`/${locale}/${userCountry}`, request.url));
-
-    // Temporary: redirect to /about for crawlers and users
-    return NextResponse.redirect(new URL('/about', request.url));
+    const userCountry = getUserCountry(request);
+    // Special case: Israel should redirect to Hebrew version
+    const locale = userCountry === 'israel' ? 'heb' : 'en';
+    return NextResponse.redirect(new URL(`/${locale}/${userCountry}`, request.url));
   }
 
   // Path with locale: /locale/country
