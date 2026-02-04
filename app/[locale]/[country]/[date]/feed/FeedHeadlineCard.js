@@ -5,7 +5,6 @@ import { getTypographyOptions } from "@/utils/typography/typography";
 import { checkRTL } from "@/utils/utils";
 import Headline from "../../Source/Headine";
 import Subtitle from "../../Source/Subtitle";
-import Image from "next/image";
 
 export default function HeadlineCard({ headline, country, locale, countryTimezone }) {
     // Normalize website_id to match source keys using fuzzy matching
@@ -100,10 +99,10 @@ export default function HeadlineCard({ headline, country, locale, countryTimezon
                 <div className="flex justify-between items-center gap-4 py-2 my-2 px-6 mt-auto">
                     <div className="flex gap-2 items-center">
                         {domain && (
-                            <Image 
+                            <img
                                 src={`https://www.google.com/s2/favicons?sz=64&domain=${domain}`}
-                                width={16} 
-                                height={16} 
+                                width={16}
+                                height={16}
                                 alt=""
                                 style={{ verticalAlign: 'middle' }}
                             />

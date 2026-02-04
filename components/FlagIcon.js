@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { countryToAlpha2 } from "country-to-iso";
 
 const getFlagUrl = (country, size = '16x12') => {
@@ -10,7 +9,7 @@ const getFlagUrl = (country, size = '16x12') => {
 export default function FlagIcon({ country }) {
     const flagUrl = getFlagUrl(country);
     return (
-        <Image
+        <img
             src={flagUrl}
             alt={`Flag of ${country}`}
             width={16}

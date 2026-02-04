@@ -8,7 +8,6 @@
  */
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { Calendar, ExternalLink } from 'lucide-react';
 import { createDateString } from '@/utils/utils';
 import { getWebsiteName, getSourceData } from '@/utils/sources/getCountryData';
@@ -237,18 +236,16 @@ export default function SearchResultItem({
                             {result.type !== 'headlines' && <span className="text-xs text-gray-400">•</span>}
                             <div className={`flex items-center gap-1 text-xs bg-blue-100 text-blue-800 py-1 rounded font-mono ${result.type === 'headlines' ? 'pl-0' : 'px-2'}`}>
                                 {sourceDomain && (
-                                    <Image 
+                                    <img
                                         src={`https://www.google.com/s2/favicons?sz=64&domain=${sourceDomain}`}
-                                        width={12} 
-                                        height={12} 
+                                        width={12}
+                                        height={12}
                                         alt=""
                                         style={{ verticalAlign: 'middle' }}
                                         onError={(e) => {
-                                            // Silently hide failed favicons
                                             e.target.style.display = 'none';
                                         }}
                                         onLoad={(e) => {
-                                            // Show successful favicons
                                             e.target.style.display = 'inline';
                                         }}
                                     />

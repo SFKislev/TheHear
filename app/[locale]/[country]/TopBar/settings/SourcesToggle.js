@@ -6,7 +6,6 @@ import PopUpCleaner from "@/components/PopUp";
 import { getSourceData, getSourceOrder } from "@/utils/sources/getCountryData";
 import { useOrder, useActiveWebsites } from "@/utils/store";
 import { List } from "@mui/icons-material";
-import Image from "next/image";
 import { Suspense, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -124,7 +123,7 @@ export function SourcesGrid({ open, country, locale, sources, centered }) {
                                     </td>
                                     <td className={`mt-8 p-2 ${!source.hasData ? 'text-gray-500' : ''}`}>
                                         <div className="flex items-center gap-2">
-                                            <Image src={`https://www.google.com/s2/favicons?sz=64&domain=${source.website || 'example.com'}`}
+                                            <img src={`https://www.google.com/s2/favicons?sz=64&domain=${source.website || 'example.com'}`}
                                                 width={16} height={16} alt=""
                                                 style={{ verticalAlign: 'middle', opacity: source.hasData ? 1 : 0.5 }}
                                             />

@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
 import FlagIcon from "@/components/FlagIcon";
 import useLandingHeadlines from './useLandingHeadlines';
 
@@ -53,7 +52,7 @@ export function RandomSampleCards() {
                 </div>
                 <span className="border-r border-gray-300 h-4 mx-2"></span>
                 <div className="flex items-center">
-                  <Image 
+                  <img
                     src={`https://www.google.com/s2/favicons?sz=64&domain=${headlineData.link}`}
                     alt={`${source} favicon`}
                     width={16}

@@ -1,7 +1,6 @@
 import IconButton from "@/components/IconButton";
 import { useTranslate } from "@/utils/store";
 import { Languages } from "lucide-react";
-import Image from "next/image";
 import { useParams } from "next/navigation";
 
 export function SourceFooter({ source, headline, url, headlines, pageDate }) {
@@ -61,7 +60,7 @@ export function SourceFooter({ source, headline, url, headlines, pageDate }) {
         <div className="flex justify-between items-center gap-4 bg-white p-2 px-2">
             <div className="flex gap-2 items-center">
                 {domain && (
-                    <Image src={`https://www.google.com/s2/favicons?sz=64&domain=${domain}`}
+                    <img src={`https://www.google.com/s2/favicons?sz=64&domain=${domain}`}
                         width={16} height={16} alt=""
                         style={{
                             verticalAlign: 'middle'
