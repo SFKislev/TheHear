@@ -12,12 +12,13 @@ import { useFont, useTime, useTranslate, useActiveWebsites } from "@/utils/store
 import { checkRTL, choose } from "@/utils/utils";
 import TranslatedLabel from "./TranslatedLabel";
 import { getSourceData } from "@/utils/sources/getCountryData";
+import RightClickMenu from "./RightClickMenu";
 
 const SourceSlider = dynamic(() => import('./SourceSlider'));
 
 const randomFontIndex = Math.floor(Math.random() * 100)
 
-export default function SourceCard({ source, headlines, country, locale, isLoading, pageDate, isVerticalScreen }) {
+export default function SourceCard({ source, headlines, country, locale, isLoading, pageDate, isVerticalScreen, sources }) {
     const translate = useTranslate((state) => state.translate);
     const date = useTime((state) => state.date);
     const font = useFont((state) => state.font);
@@ -27,6 +28,7 @@ export default function SourceCard({ source, headlines, country, locale, isLoadi
     const [isPresent, setIsPresent] = useState(true);
     const [showLiveHint, setShowLiveHint] = useState(false);
     const liveHintStartedRef = useRef(false);
+    const [contextMenu, setContextMenu] = useState({ open: false, x: 0, y: 0 });
 
     const index = websites.length > 0 ? websites.indexOf(source) : 1
     const shouldRender = headline && index !== -1;
@@ -121,6 +123,10 @@ export default function SourceCard({ source, headlines, country, locale, isLoadi
 
     return (
         <div style={{ order: index }}
+            onContextMenu={(e) => {
+                e.preventDefault();
+                setContextMenu({ open: true, x: e.clientX, y: e.clientY });
+            }}
             className={`source-card group
             ${isVerticalScreen ? (index % 5 === 0 ? 'col-span-2' : 'col-span-1') : `col-span-1 ${index === 0 ? 'col-span-2' : ''} ${(index === 7 || index === 8) ? 'max-xl:col-span-1 qhd:col-span-1' : ''} ${(index === 11 || index === 12 || index === 13) ? 'max-qhd:col-span-1 qhd:col-span-2' : ''}`}
             relative bg-neutral-100 hover:bg-white hover:shadow-xl
@@ -154,6 +160,12 @@ export default function SourceCard({ source, headlines, country, locale, isLoadi
                     <SourceFooter url={headlines && headlines.length > 0 ? headlines[0].link : ''} {...{ headline, headlines, source, pageDate }} />
                 </div>
             </div>
+            <RightClickMenu
+                open={contextMenu.open}
+                position={{ x: contextMenu.x, y: contextMenu.y }}
+                close={() => setContextMenu({ open: false, x: 0, y: 0 })}
+                {...{ country, locale, sources }}
+            />
         </div>
     );
 }

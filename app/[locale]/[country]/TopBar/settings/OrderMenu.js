@@ -4,7 +4,7 @@ import { TrendingUp, Shield, ArrowRightLeft, ArrowLeftRight, List, ChevronDown, 
 import { useState } from "react";
 import { createPortal } from "react-dom";
 
-export default function OrderMenu({ open, close, locale, order, setOrder }) {
+export default function OrderMenu({ open, close, locale, order, setOrder, centered }) {
     const [isExplanationExpanded, setIsExplanationExpanded] = useState(false);
 
     const handleSortChange = (event) => {
@@ -16,7 +16,7 @@ export default function OrderMenu({ open, close, locale, order, setOrder }) {
     const menuContent = (
         <>
             <PopUpCleaner open={open} close={close} />
-            <div className={`fixed z-[9999] ${locale == 'heb' ? 'left-auto right-auto' : 'right-4'} top-[120px] bg-white shadow-xl rounded-lg p-6 pt-4 border border-gray-200`} style={{ direction: 'ltr' }}>
+            <div className={`fixed z-[9999] ${centered ? 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2' : `${locale == 'heb' ? 'left-auto right-auto' : 'right-4'} top-[120px]`} bg-white shadow-xl rounded-lg p-6 pt-4 border border-gray-200`} style={{ direction: 'ltr' }}>
                 <div className="w-64 bg-white rounded-sm text-sm">
                     <div className="text-sm underline underline-offset-4 font-bold mb-2 font-['Geist'] flex justify-start items-start">Source Order</div>
 

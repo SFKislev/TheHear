@@ -36,7 +36,7 @@ export default function SourcesToggle({ country, locale, sources }) {
     );
 }
 
-function SourcesGrid({ open, country, locale, sources }) {
+export function SourcesGrid({ open, country, locale, sources, centered }) {
     const activeWebsites = useActiveWebsites(state => state.activeWebsites)
     const setActiveWebsites = useActiveWebsites(state => state.setActiveWebsites)
     const order = useOrder(state => state.order);
@@ -80,7 +80,7 @@ function SourcesGrid({ open, country, locale, sources }) {
 
     if (!open) return null;
     return (
-        <div className={`fixed top-[120px] ${locale === 'heb' ? 'left-4' : 'right-4'} bg-white rounded-lg shadow-lg p-4 h-[65vh] w-[55vw] z-[9999]`}>
+        <div className={`fixed ${centered ? 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2' : `top-[120px] ${locale === 'heb' ? 'left-4' : 'right-4'}`} bg-white rounded-lg shadow-lg p-4 h-[65vh] w-[55vw] z-[9999]`}>
             <div className="h-full overflow-y-auto custom-scrollbar direction-ltr pr-4">
                 <table className="border border-white text-sm">
                     <thead className="border-b border-dashed border-gray-300">
