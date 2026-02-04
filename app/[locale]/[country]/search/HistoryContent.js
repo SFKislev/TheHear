@@ -18,7 +18,7 @@ import Loader from '@/components/loader';
 
 export default function HistoryContent({ locale, country }) {
     const router = useRouter();
-    const { isMobile, isLoading } = useMobile();
+    const { isMobile, isHydrated } = useMobile();
     const [archiveMenuOpen, setArchiveMenuOpen] = useState(false);
     const [aboutMenuOpen, setAboutMenuOpen] = useState(false);
 
@@ -58,18 +58,13 @@ export default function HistoryContent({ locale, country }) {
 
     // Redirect mobile users to the root page
     useEffect(() => {
-        if (!isLoading && isMobile) {
+        if (isHydrated && isMobile) {
             router.replace(`/${locale}/${country}`);
         }
-    }, [isMobile, isLoading, router, locale, country]);
-
-    // Show loading until mobile detection is complete
-    if (isLoading) {
-        return <Loader />;
-    }
+    }, [isMobile, isHydrated, router, locale, country]);
 
     // Don't render anything on mobile (will redirect)
-    if (isMobile) {
+    if (isHydrated && isMobile) {
         return null;
     }
 
@@ -111,6 +106,11 @@ export default function HistoryContent({ locale, country }) {
     
     return (
         <>
+            {!isHydrated && (
+                <div className="absolute inset-0 z-50">
+                    <Loader />
+                </div>
+            )}
             <EnglishFonts />
             <HebrewFonts />
             <div style={{ paddingBottom: "var(--footer-offset, 3rem)" }} className="min-h-screen bg-white">

@@ -23,7 +23,7 @@ export default function CountryPageContent({ sources, initialSummaries, yesterda
     const currentSummary = useCurrentSummary();
     const [isRightPanelCollapsed, setIsRightPanelCollapsed] = useState(false);
     const { setCollapsed } = useRightPanel();
-    const { isMobile, isLoading } = useMobile();
+    const { isMobile, isHydrated } = useMobile();
     const { isVerticalScreen } = useVerticalScreen();
     const { setFont } = useFont();
     const [aboutOpen, setAboutOpen] = useState(false);
@@ -61,13 +61,13 @@ export default function CountryPageContent({ sources, initialSummaries, yesterda
         };
     }, [userCountryState]);
 
-    // Show loading until mobile detection is complete
-    if (isLoading) {
-        return <Loader />;
-    }
-
     return (
         <>
+            {!isHydrated && (
+                <div className="absolute inset-0 z-50">
+                    <Loader />
+                </div>
+            )}
             <FirstVisitModal openAbout={() => setAboutOpen(true)} country={country} locale={locale} pageDate={pageDate} />
             <AboutMenu open={aboutOpen} onClose={() => setAboutOpen(false)} />
             <div id='main' style={{ paddingBottom: "var(--footer-offset, 3rem)" }} className={`absolute flex flex-col sm:flex-row w-full h-full overflow-auto sm:overflow-hidden ${effectiveLocale === 'heb' ? 'direction-rtl' : 'direction-ltr'}`}>

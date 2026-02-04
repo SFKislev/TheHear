@@ -13,7 +13,7 @@ import { useFont } from "@/utils/store";
 
 export default function GlobalPageContent({ locale, AICountrySort, countrySummaries, globalOverview }) {
     const router = useRouter();
-    const { isMobile, isLoading } = useMobile();
+    const { isMobile } = useMobile();
     const [isGlobalSummaryCollapsed, setIsGlobalSummaryCollapsed] = useState(false);
     const { setFont } = useFont();
 
