@@ -61,7 +61,7 @@ export default async function Page({ params }) {
     // Ensure newest headlines first for correct live display
     headlines.sort((a, b) => b.timestamp - a.timestamp);
 
-    // Get today's summaries from Firestore
+    // Get today's + yesterday's summaries from Firestore
     const initialSummaries = await getCountryDaySummaries(country, today, 1);
 
     // Merge yesterday's data from JSON snapshot (with deduplication to avoid overlap with metadata)
@@ -97,6 +97,11 @@ export default async function Page({ params }) {
     Object.values(sources).forEach(source => {
         source.headlines.sort((a, b) => b.timestamp - a.timestamp);
     });
+
+    // Graceful fallback around day rollover: if no hourly summaries yet, render with yesterday's daily summary.
+    if (initialSummaries.length === 0 && yesterdaySummary) {
+        initialSummaries.push(yesterdaySummary);
+    }
 
     if (initialSummaries.length === 0) {
         return 'no summaries found';

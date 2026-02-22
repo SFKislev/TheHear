@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import RightPanel from "./RightPanel";
 import SideSlider from "./SideSlider";
 import TopBar from "./TopBar/TopBar";
@@ -19,6 +19,33 @@ import DateNavigator from '@/components/DateNavigator';
 import { useSearchParams } from "next/navigation";
 import { orderOptionLabels } from "@/utils/sources/getCountryData";
 
+function OrderParamSync({ country, order, setOrder }) {
+    const searchParams = useSearchParams();
+
+    useEffect(() => {
+        const orderParam = searchParams.get('order');
+        if (!orderParam) return;
+
+        const normalizedParam = orderParam.trim().toLowerCase();
+        let nextOrder = null;
+        const useCampaignPresets = country === 'us' || country === 'israel';
+
+        if (normalizedParam === 'liberal') {
+            nextOrder = useCampaignPresets ? 'campaignLiberal' : 'progressiveToConservative';
+        } else if (normalizedParam === 'conservative') {
+            nextOrder = useCampaignPresets ? 'campaignConservative' : 'conservativeToProgressive';
+        } else if (Object.prototype.hasOwnProperty.call(orderOptionLabels, normalizedParam)) {
+            nextOrder = normalizedParam;
+        }
+
+        if (nextOrder && nextOrder !== order) {
+            setOrder(nextOrder);
+        }
+    }, [searchParams, country, order, setOrder]);
+
+    return null;
+}
+
 export default function CountryPageContent({ sources, initialSummaries, yesterdaySummary, daySummary, locale, country, pageDate, userCountry }) {
     const [userCountryState, setUserCountryState] = useState(userCountry);
     const typography = getTypographyOptions(country);
@@ -29,7 +56,6 @@ export default function CountryPageContent({ sources, initialSummaries, yesterda
     const { isVerticalScreen } = useVerticalScreen();
     const { setFont } = useFont();
     const { order, setOrder } = useOrder();
-    const searchParams = useSearchParams();
     const [aboutOpen, setAboutOpen] = useState(false);
 
     // Force English behavior on mobile
@@ -65,29 +91,11 @@ export default function CountryPageContent({ sources, initialSummaries, yesterda
         };
     }, [userCountryState]);
 
-    useEffect(() => {
-        const orderParam = searchParams.get('order');
-        if (!orderParam) return;
-
-        const normalizedParam = orderParam.trim().toLowerCase();
-        let nextOrder = null;
-        const useCampaignPresets = country === 'us' || country === 'israel';
-
-        if (normalizedParam === 'liberal') {
-            nextOrder = useCampaignPresets ? 'campaignLiberal' : 'progressiveToConservative';
-        } else if (normalizedParam === 'conservative') {
-            nextOrder = useCampaignPresets ? 'campaignConservative' : 'conservativeToProgressive';
-        } else if (Object.prototype.hasOwnProperty.call(orderOptionLabels, normalizedParam)) {
-            nextOrder = normalizedParam;
-        }
-
-        if (nextOrder && nextOrder !== order) {
-            setOrder(nextOrder);
-        }
-    }, [searchParams, order, setOrder]);
-
     return (
         <>
+            <Suspense fallback={null}>
+                <OrderParamSync country={country} order={order} setOrder={setOrder} />
+            </Suspense>
             {!isHydrated && (
                 <div className="absolute inset-0 z-50">
                     <Loader />

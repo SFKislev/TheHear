@@ -49,8 +49,9 @@ export async function fetchDailySnapshot(country, date) {
         }
 
         if (!response.ok) {
-            // Only warn on unexpected status codes (404 is expected for missing snapshots)
-            if (response.status !== 404) {
+            // Treat 404 as expected for missing snapshots; for very recent dates, 403 can also happen before publish.
+            const isExpectedMissing = response.status === 404 || (isRecentDate && response.status === 403);
+            if (!isExpectedMissing) {
                 console.warn(`[fetchDailySnapshot] Unexpected status ${response.status} for ${country} ${dateStr}`);
             }
             return null;

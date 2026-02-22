@@ -1,4 +1,4 @@
-import { endOfDay, sub, endOfMonth, startOfMonth } from "date-fns";
+import { endOfDay, sub, endOfMonth, startOfDay, startOfMonth } from "date-fns";
 import { initializeApp } from 'firebase/app';
 import { collection, doc, getDocs, getDoc, limit, onSnapshot, orderBy, query, where, getFirestore } from "firebase/firestore";
 import { unstable_cache } from "next/cache";
@@ -61,12 +61,12 @@ function prepareHeadline(doc) {
 export const getCountryDayHeadlines = unstable_cache(async (countryName, day, daysInclude = 1) => {
   const headlinesCollection = getCountryCollectionRef(countryName, 'headlines');
 
-  const theDay = endOfDay(day);
-  const dayBefore = sub(theDay, { days: daysInclude });
+  const rangeStart = startOfDay(sub(day, { days: daysInclude }));
+  const rangeEnd = endOfDay(day);
   const q = query(
     headlinesCollection,
-    where('timestamp', '>=', dayBefore),
-    where('timestamp', '<=', theDay),
+    where('timestamp', '>=', rangeStart),
+    where('timestamp', '<=', rangeEnd),
     orderBy('timestamp', 'desc'),
   );
 
@@ -125,12 +125,12 @@ function prepareSummary(doc) {
 export const getCountryDaySummaries = unstable_cache(async (countryName, day, daysInclude = 1) => {
   const summariesCollection = getCountryCollectionRef(countryName, 'summaries');
 
-  const theDay = endOfDay(day);
-  const dayBefore = sub(theDay, { days: daysInclude });
+  const rangeStart = startOfDay(sub(day, { days: daysInclude }));
+  const rangeEnd = endOfDay(day);
   const q = query(
     summariesCollection,
-    where('timestamp', '>=', dayBefore),
-    where('timestamp', '<=', theDay),
+    where('timestamp', '>=', rangeStart),
+    where('timestamp', '<=', rangeEnd),
     orderBy('timestamp', 'desc'),
   );
 
