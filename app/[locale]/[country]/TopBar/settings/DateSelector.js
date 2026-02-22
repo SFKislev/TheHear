@@ -9,35 +9,51 @@ import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { LabeledContent } from "@/components/LabeledIcon";
 import { useTime } from "@/utils/store";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { createDateString } from '@/utils/utils';
 import { LinearProgress } from "@mui/material";
-import InnerLink from "@/components/InnerLink";
 import { getCountryLaunchDate } from "@/utils/launchDates";
 
 
 export function DateSelector({ locale, country }) {
-    const { date, setDate } = useTime()
+    const { date } = useTime()
     const [open, setOpen] = useState(false)
     const [isNavigating, setIsNavigating] = useState(false)
+    const [calendarPosition, setCalendarPosition] = useState({ top: 0, left: 0 })
     const router = useRouter()
-    const pathname = usePathname()
     const calendarRef = useRef(null)
+    const triggerRef = useRef(null)
+
+    const updateCalendarPosition = () => {
+        if (!triggerRef.current) return;
+        const rect = triggerRef.current.getBoundingClientRect();
+        setCalendarPosition({
+            top: rect.bottom + 8,
+            left: rect.left,
+        });
+    };
 
     // Handle clicking outside to close calendar
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (calendarRef.current && !calendarRef.current.contains(event.target)) {
+            const clickedInsideCalendar = calendarRef.current && calendarRef.current.contains(event.target);
+            const clickedInsideTrigger = triggerRef.current && triggerRef.current.contains(event.target);
+            if (!clickedInsideCalendar && !clickedInsideTrigger) {
                 setOpen(false);
             }
         };
 
         if (open) {
+            updateCalendarPosition();
             document.addEventListener('mousedown', handleClickOutside);
+            window.addEventListener('resize', updateCalendarPosition);
+            window.addEventListener('scroll', updateCalendarPosition, true);
         }
 
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
+            window.removeEventListener('resize', updateCalendarPosition);
+            window.removeEventListener('scroll', updateCalendarPosition, true);
         };
     }, [open]);
 
@@ -91,7 +107,7 @@ export function DateSelector({ locale, country }) {
                 document.body
             )}
             <LabeledContent label={<span dir="ltr">{label}</span>} clickable={false} tooltip="select date">
-                <div className="flex items-center gap-1 relative" style={{ direction: 'ltr' }}>
+                <div ref={triggerRef} className="flex items-center gap-1 relative" style={{ direction: 'ltr' }}>
                     <>
                         <IconButton
                             size="small"
@@ -114,63 +130,67 @@ export function DateSelector({ locale, country }) {
                             <ArrowForwardIos fontSize="small" sx={{ fontSize: '0.8rem' }} />
                         </IconButton>
                     </>
-
-                    {open && (
-                        <div ref={calendarRef} className="absolute top-full left-0 mt-2 z-10 bg-white shadow-lg direction-ltr">
-                            <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                <DateCalendar 
-                                    maxDate={today} 
-                                    minDate={minDate}
-                                    onChange={(date) => {
-                                        setDay(date);
-                                        setOpen(false);
-                                    }}
-                                    value={date}
-                                    sx={{
-                                        fontFamily: "monospace",
-                                        '& *': {
-                                            fontFamily: "monospace !important"
-                                        },
-                                        '& .MuiPickersCalendarHeader-root': {
-                                            fontFamily: "monospace"
-                                        },
-                                        '& .MuiPickersDay-root': {
-                                            fontFamily: "monospace"
-                                        },
-                                        '& .MuiPickersCalendarHeader-label': {
-                                            fontFamily: "monospace"
-                                        },
-                                        '& .MuiPickersCalendarHeader-switchViewButton': {
-                                            fontFamily: "monospace"
-                                        },
-                                        '& .MuiDayCalendar-weekDayLabel': {
-                                            fontFamily: "monospace"
-                                        },
-                                        '& .MuiPickersYear-yearButton': {
-                                            fontFamily: "monospace",
-                                            fontSize: '0.8rem'
-                                        },
-                                        '& .MuiPickersYear-yearButton.Mui-selected': {
-                                            backgroundColor: 'black',
-                                            color: 'white',
-                                            '&:hover': {
-                                                backgroundColor: 'black'
-                                            }
-                                        },
-                                        '& .MuiPickersDay-root.Mui-selected': {
-                                            backgroundColor: 'black',
-                                            color: 'white',
-                                            '&:hover': {
-                                                backgroundColor: 'black'
-                                            }
-                                        }
-                                    }}
-                                />
-                            </LocalizationProvider>
-                        </div>
-                    )}
                 </div>
             </LabeledContent>
+            {open && typeof window !== 'undefined' && createPortal(
+                <div
+                    ref={calendarRef}
+                    className="fixed z-[9999] bg-white shadow-lg direction-ltr"
+                    style={{ top: `${calendarPosition.top}px`, left: `${calendarPosition.left}px` }}
+                >
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <DateCalendar
+                            maxDate={today}
+                            minDate={minDate}
+                            onChange={(date) => {
+                                setDay(date);
+                                setOpen(false);
+                            }}
+                            value={date}
+                            sx={{
+                                fontFamily: "monospace",
+                                '& *': {
+                                    fontFamily: "monospace !important"
+                                },
+                                '& .MuiPickersCalendarHeader-root': {
+                                    fontFamily: "monospace"
+                                },
+                                '& .MuiPickersDay-root': {
+                                    fontFamily: "monospace"
+                                },
+                                '& .MuiPickersCalendarHeader-label': {
+                                    fontFamily: "monospace"
+                                },
+                                '& .MuiPickersCalendarHeader-switchViewButton': {
+                                    fontFamily: "monospace"
+                                },
+                                '& .MuiDayCalendar-weekDayLabel': {
+                                    fontFamily: "monospace"
+                                },
+                                '& .MuiPickersYear-yearButton': {
+                                    fontFamily: "monospace",
+                                    fontSize: '0.8rem'
+                                },
+                                '& .MuiPickersYear-yearButton.Mui-selected': {
+                                    backgroundColor: 'black',
+                                    color: 'white',
+                                    '&:hover': {
+                                        backgroundColor: 'black'
+                                    }
+                                },
+                                '& .MuiPickersDay-root.Mui-selected': {
+                                    backgroundColor: 'black',
+                                    color: 'white',
+                                    '&:hover': {
+                                        backgroundColor: 'black'
+                                    }
+                                }
+                            }}
+                        />
+                    </LocalizationProvider>
+                </div>,
+                document.body
+            )}
         </>
     );
 }
