@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import CloseButton from "./CloseButton";
 import Headline from "./Headine";
 import SourceName from "./SourceName";
@@ -26,8 +26,8 @@ export default function SourceCard({ source, headlines, country, locale, isLoadi
     const [translations, setTranslations] = useState({});
     const websites = useActiveWebsites(state => state.activeWebsites);
     const [isPresent, setIsPresent] = useState(true);
-    const [showLiveHint, setShowLiveHint] = useState(false);
-    const liveHintStartedRef = useRef(false);
+    // const [showLiveHint, setShowLiveHint] = useState(false);
+    // const liveHintStartedRef = useRef(false);
     const [contextMenu, setContextMenu] = useState({ open: false, x: 0, y: 0 });
 
     const index = websites.length > 0 ? websites.indexOf(source) : 1
@@ -104,17 +104,17 @@ export default function SourceCard({ source, headlines, country, locale, isLoadi
         setIsPresent(new Date() - date < 60 * 1000 * 5);
     }, [date]);
 
-    useEffect(() => {
-        if (pageDate) return;
-        if (!shouldRender) return;
-        if (isLoading) return;
-        if (liveHintStartedRef.current) return;
-        liveHintStartedRef.current = true;
-        setShowLiveHint(true);
-        const durationMs = Math.floor(3000 + Math.random() * 2000);
-        const timer = setTimeout(() => setShowLiveHint(false), durationMs);
-        return () => clearTimeout(timer);
-    }, [pageDate, shouldRender, isLoading]);
+    // useEffect(() => {
+    //     if (pageDate) return;
+    //     if (!shouldRender) return;
+    //     if (isLoading) return;
+    //     if (liveHintStartedRef.current) return;
+    //     liveHintStartedRef.current = true;
+    //     setShowLiveHint(true);
+    //     const durationMs = Math.floor(3000 + Math.random() * 2000);
+    //     const timer = setTimeout(() => setShowLiveHint(false), durationMs);
+    //     return () => clearTimeout(timer);
+    // }, [pageDate, shouldRender, isLoading]);
 
     // Early return if shouldn't render
     if (!shouldRender) {
@@ -145,11 +145,11 @@ export default function SourceCard({ source, headlines, country, locale, isLoadi
                             {...{ typography, date, isLoading }}
                             align={isRTL ? 'right' : 'left'}
                         />
-                        {showLiveHint && (
+                        {/* {showLiveHint && (
                             <span className="inline-flex items-center justify-center h-4 w-4 rounded-full bg-white/80 shadow-sm border border-gray-200">
                                 <span className="h-2.5 w-2.5 rounded-full border-2 border-gray-300 border-t-gray-600 animate-spin" />
                             </span>
-                        )}
+                        )} */}
                     </div>
                     <Headline headline={displayHeadline}
                         {...{ typography, isLoading }} />
