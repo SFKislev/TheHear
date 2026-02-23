@@ -1,7 +1,7 @@
 import { getCountryDailySummary, getCountryDayHeadlines, getCountryDaySummaries, getCountryDayHeadlinesFromMetadata } from "@/utils/database/countryData";
 import { fetchDailySnapshot } from "@/utils/database/fetchDailySnapshot";
 import { filterToStrictDay } from "@/utils/database/filterDayData";
-import { parse, sub } from "date-fns";
+import { format, isValid, parse, startOfDay, sub } from "date-fns";
 import { getWebsiteName, getSourceData } from "@/utils/sources/getCountryData";
 import { redirect } from "next/navigation";
 import { countries } from "@/utils/sources/countries";
@@ -126,19 +126,24 @@ export default async function FeedPage({ params }) {
         // If mobile behavior is needed, handle it client-side in FeedView.
         const isMobile = false;
 
-        // Date parsing (no current date comparison for static generation)
+        // Strict date validation (including non-existent dates like 31-02-2026)
         const parsedDate = parse(date, 'dd-MM-yyyy', new Date(2000, 0, 1));
-        parsedDate.setHours(12, 0, 0, 0);
-
-        // Skip date validation for static generation - handle redirects client-side if needed
-        // Archive pages are historical and won't be "today" after they're built
-        if (isNaN(parsedDate.getTime())) {
+        const isValidRequestedDate = isValid(parsedDate) && format(parsedDate, 'dd-MM-yyyy') === date;
+        if (!isValidRequestedDate) {
             redirect(`/${locale}/${country}`);
         }
+        const requestedDay = startOfDay(parsedDate);
+        const today = startOfDay(new Date());
+
+        // Today's and future dates belong to the live page.
+        if (requestedDay >= today) {
+            redirect(`/${locale}/${country}`);
+        }
+        parsedDate.setHours(12, 0, 0, 0);
 
         // Check if date is before country launch - fail fast before expensive Firestore queries
         const launchDate = getCountryLaunchDate(country);
-        if (launchDate && parsedDate < launchDate) {
+        if (launchDate && requestedDay < startOfDay(launchDate)) {
             redirect(`/${locale}/${country}`);
         }
 
