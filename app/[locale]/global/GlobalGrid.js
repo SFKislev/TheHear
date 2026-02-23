@@ -110,7 +110,7 @@ export default function GlobalGrid({ locale, AICountrySort: initialAICountrySort
         <div className={`custom-scrollbar overflow-y-auto grid ${getGridColumnClasses()} gap-4 p-4`}>
             {visibleCountries.map((country, index) => (
                 <GlobalCard 
-                    key={index} 
+                    key={country}
                     {...{ country, locale, index, typography }} 
                     pinned={pinnedCountries.indexOf(country)} 
                     initialSummary={countrySummaries?.[country] || null}

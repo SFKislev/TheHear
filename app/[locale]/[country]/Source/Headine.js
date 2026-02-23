@@ -4,36 +4,45 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 export default function Headline({ headline, typography, isLoading, isPresent }) {
     const [animationDuration, setAnimationDuration] = useState(0);
-    const prevSignatureRef = useRef(null);
+    const [isAnimating, setIsAnimating] = useState(false);
+    const prevTextRef = useRef(null);
     const hasMountedRef = useRef(false);
-    const signature = useMemo(() => {
+    const animationTimerRef = useRef(null);
+    const textSignature = useMemo(() => {
         if (!headline) return '';
-        return [
-            headline.id || '',
-            headline.headline || '',
-            headline.subtitle || '',
-            headline.timestamp ? new Date(headline.timestamp).toISOString() : ''
-        ].join('|');
+        return String(headline.headline || '').trim();
     }, [headline]);
-    const shouldAnimate = hasMountedRef.current &&
-        !!prevSignatureRef.current &&
-        signature !== prevSignatureRef.current;
 
-    // Generate random animation duration when component mounts or headline changes
+    // Generate random animation duration only when displayed headline text changes.
     useEffect(() => {
         if (!hasMountedRef.current) {
             hasMountedRef.current = true;
-            prevSignatureRef.current = signature;
+            prevTextRef.current = textSignature;
             return;
         }
 
-        if (signature && signature !== prevSignatureRef.current) {
-            prevSignatureRef.current = signature;
-            // Always use shorter duration (0.7-3.2 seconds)
+        if (textSignature && textSignature !== prevTextRef.current) {
+            prevTextRef.current = textSignature;
+            // Red-to-black fade duration (0.7-3.2 seconds)
             const randomDuration = Math.random() * 2.5 + 0.7;
             setAnimationDuration(randomDuration);
+            setIsAnimating(true);
+            if (animationTimerRef.current) {
+                clearTimeout(animationTimerRef.current);
+            }
+            animationTimerRef.current = setTimeout(() => {
+                setIsAnimating(false);
+            }, randomDuration * 1000);
         }
-    }, [signature]);
+    }, [textSignature]);
+
+    useEffect(() => {
+        return () => {
+            if (animationTimerRef.current) {
+                clearTimeout(animationTimerRef.current);
+            }
+        };
+    }, []);
 
     if (isLoading) {
         return (
@@ -59,14 +68,14 @@ export default function Headline({ headline, typography, isLoading, isPresent })
     const headlineContent = (
         <div className="relative">
             <h3
-                className={`animate-headline w-full text-lg font-semibold break-words line-clamp-6`}
+                className={`${isAnimating ? 'animate-headline' : ''} w-full text-lg font-semibold break-words line-clamp-6`}
                 style={{ 
                     ...typography, 
                     width: '100%', 
                     direction: isRTL ? 'rtl' : 'ltr',
-                    animationDuration: animationDuration ? `${animationDuration}s` : '0s'
+                    animationDuration: isAnimating && animationDuration ? `${animationDuration}s` : '0s'
                 }}
-                key={signature}
+                key={textSignature}
             >
                 {txt}
             </h3>

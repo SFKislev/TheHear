@@ -7,27 +7,45 @@ import { countries } from '../sources/countries';
 
 let cachedFirestore;
 let cachedDb;
+let cachedLoadPromise;
 
 export default function useFirebase() {
   const [firestore, setFirestore] = useState(cachedFirestore);
   const [db, setDb] = useState(cachedDb);
-  const [ready, setReady] = useState(false);
+  const [ready, setReady] = useState(Boolean(cachedFirestore && cachedDb));
 
   useEffect(() => {
     const loadFirebase = async () => {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (cachedFirestore && cachedDb) {
+        setDb(cachedDb);
+        setFirestore(cachedFirestore);
+        setReady(true);
+        return;
+      }
 
-      const { initializeApp } = await import('firebase/app');
-      const _firestore = await import('firebase/firestore');
+      if (!cachedLoadPromise) {
+        cachedLoadPromise = (async () => {
+          const { getApps, getApp, initializeApp } = await import('firebase/app');
+          const _firestore = await import('firebase/firestore');
+          const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+          const _db = _firestore.getFirestore(app);
+          cachedFirestore = _firestore;
+          cachedDb = _db;
+          return { _firestore, _db };
+        })();
+      }
 
-      const app = initializeApp(firebaseConfig);
-      const _db = _firestore.getFirestore(app);
+      const { _firestore, _db } = await cachedLoadPromise;
       setDb(_db);
       setFirestore(_firestore);
       setReady(true);
     }
-    if (!firestore) loadFirebase()
-  }, []);
+    if (!firestore || !db) {
+      loadFirebase();
+    } else {
+      setReady(true);
+    }
+  }, [firestore, db]);
 
 
   // ----------------- Helpers -----------------

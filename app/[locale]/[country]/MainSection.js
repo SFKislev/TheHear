@@ -11,8 +11,8 @@ import { useActiveWebsites } from "@/utils/store";
 
 
 export default function MainSection({ sources, country, locale, pageDate, initialSummaries, yesterdaySummary, daySummary, isVerticalScreen }) {
-    useWebsitesManager(country, sources)
     const { sources: managedSources, loading: isLoading } = useSourcesManager(country, sources, !Boolean(pageDate));
+    useWebsitesManager(country, managedSources)
     const { isMobile } = useMobile();
     const activeWebsites = useActiveWebsites(state => state.activeWebsites);
 
@@ -33,12 +33,12 @@ export default function MainSection({ sources, country, locale, pageDate, initia
             
             {Object.keys(managedSources).map((source) => (
                     <SourceCard
-                        key={source+managedSources[source].headlines.length}
+                        key={source}
                         headlines={managedSources[source].headlines}
-                        {...{ source, country, locale, isLoading, pageDate, isVerticalScreen, sources }}
+                        {...{ source, country, locale, isLoading, pageDate, isVerticalScreen, sources: managedSources }}
                     />
             ))}
-            <AddSourceButton {...{ locale, country, sources }} />
+            <AddSourceButton {...{ locale, country, sources: managedSources }} />
         </div>
     );
 }
