@@ -52,10 +52,11 @@ export default function Settings({ locale, country, sources, isRightPanelCollaps
         return () => window.removeEventListener('resize', checkScreenSize);
     }, []);
 
-    // Force the hiding based on direct check as a fallback
+    // Keep this aligned with path-level rules from TopBar/SettingsButton.
+    const normalizedCountry = String(country || '').toLowerCase();
     const shouldHideLanguage = hideLanguageToggle ||
-        (locale === 'heb' && country === 'Israel') ||
-        (locale === 'en' && (country === 'US' || country === 'UK'));
+        (locale === 'heb' && normalizedCountry === 'israel') ||
+        (locale === 'en' && (normalizedCountry === 'us' || normalizedCountry === 'uk'));
 
     // Color scheme: sky for regular pages, amber for date pages
     const isDatePage = !!pageDate;

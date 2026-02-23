@@ -14,6 +14,10 @@ const allCountries = [...englishSpeakingCountries, ...hebrewSpeakingCountries];
 
 export function SettingsButton({ locale, country, sources, isRightPanelCollapsed, userCountry, pageDate, settingsOpen, setSettingsOpen }) {
     const translate = useTranslate(state => state.translate);
+    const normalizedCountry = String(country || '').toLowerCase();
+    const shouldHideTranslate =
+        (locale === 'heb' && normalizedCountry === 'israel') ||
+        (locale === 'en' && (normalizedCountry === 'us' || normalizedCountry === 'uk'));
 
     // Color scheme: sky for regular pages, amber for date pages
     const isDatePage = !!pageDate;
@@ -27,28 +31,30 @@ export function SettingsButton({ locale, country, sources, isRightPanelCollapsed
     return (
         <>
             <div className={`flex items-center ${buttonClasses} rounded-md px-3 py-2 gap-4`}>
-                <TranslateToggle
-                    {...{ locale, country, sources, userCountry, pageDate }}
-                    tooltipTitle={translateTooltipTitle}
-                    tooltipAlwaysOpen={showTranslateReminder}
-                    tooltipSlotProps={{
-                        tooltip: {
-                            sx: {
-                                bgcolor: '#111827',
-                                color: '#F9FAFB',
-                                border: '1px solid #F9FAFB',
-                            },
-                        },
-                        arrow: {
-                            sx: {
-                                color: '#111827',
-                                '&::before': {
+                {!shouldHideTranslate && (
+                    <TranslateToggle
+                        {...{ locale, country, sources, userCountry, pageDate }}
+                        tooltipTitle={translateTooltipTitle}
+                        tooltipAlwaysOpen={showTranslateReminder}
+                        tooltipSlotProps={{
+                            tooltip: {
+                                sx: {
+                                    bgcolor: '#111827',
+                                    color: '#F9FAFB',
                                     border: '1px solid #F9FAFB',
                                 },
                             },
-                        },
-                    }}
-                />
+                            arrow: {
+                                sx: {
+                                    color: '#111827',
+                                    '&::before': {
+                                        border: '1px solid #F9FAFB',
+                                    },
+                                },
+                            },
+                        }}
+                    />
+                )}
                 <CustomTooltip title="About the Hear" arrow>
                     <TopBarButton size="small" component={Link} href="/about">
                         <InfoOutlined />
