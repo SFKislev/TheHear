@@ -1,7 +1,7 @@
 'use client';
 
 import Clock from "@/components/Clock";
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useGlobalSort } from "@/utils/store";
 import CustomTooltip from "@/components/CustomTooltip";
 import UnfoldMoreIcon from '@mui/icons-material/UnfoldMore';
@@ -11,10 +11,10 @@ import FilterCountries from './FilterCountries';
 import useMobile from "@/components/useMobile";
 
 export default function GlobalTopBar({ locale }) {
-    const [loadingSort, setLoadingSort] = useState(null);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [expandAll, setExpandAll] = useState(false);
     const [filterOpen, setFilterOpen] = useState(false);
+    const sortDropdownRef = useRef(null);
     const { globalSort, setGlobalSort, setAllExpanded, filteredCountries } = useGlobalSort();
     const { isMobile } = useMobile();
 
@@ -28,14 +28,21 @@ export default function GlobalTopBar({ locale }) {
     ];
 
     const handleSortChange = (sortType) => {
-        setLoadingSort(sortType);
+        setGlobalSort(sortType);
         setDropdownOpen(false);
-        // Simulate loading time
-        setTimeout(() => {
-            setGlobalSort(sortType);
-            setLoadingSort(null);
-        }, 300);
     };
+
+    useEffect(() => {
+        const handlePointerDown = (event) => {
+            if (!sortDropdownRef.current) return;
+            if (!sortDropdownRef.current.contains(event.target)) {
+                setDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener('pointerdown', handlePointerDown);
+        return () => document.removeEventListener('pointerdown', handlePointerDown);
+    }, []);
 
     const toggleExpandAll = () => {
         const newExpandState = !expandAll;
@@ -60,19 +67,16 @@ export default function GlobalTopBar({ locale }) {
 
                         {/* Sorting Options Dropdown */}
                         <div className="flex-1 flex items-center justify-end gap-2">
-                            <div className="relative">
+                            <div className="relative" ref={sortDropdownRef}>
                                 <button 
+                                    type="button"
                                     className={`px-2 py-1 text-xs ${globalSort ? 'bg-gray-100 hover:bg-gray-200' : 'bg-gray-50 hover:bg-gray-200'} rounded-md transition-colors font-['Geist'] flex items-center gap-1`}
-                                    onClick={() => setDropdownOpen(!dropdownOpen)}
-                                    onBlur={() => setTimeout(() => setDropdownOpen(false), 100)}
+                                    onClick={() => setDropdownOpen(prev => !prev)}
                                 >
                                     <span className="mr-1">Sort by </span>
                                     <span className="font-medium">
                                         {sortOptions.find(option => option.value === globalSort)?.label || "SORT"}
                                     </span>
-                                    {loadingSort && (
-                                        <div className="w-4 h-4 border-2 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
-                                    )}
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                                         <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
                                     </svg>
@@ -83,8 +87,9 @@ export default function GlobalTopBar({ locale }) {
                                         <div className="p-2">
                                             <div className="flex flex-col divide-y divide-gray-100">
                                                 {sortOptions.map((sortOption) => (
-                                                    <div
+                                                    <button
                                                         key={sortOption.value}
+                                                        type="button"
                                                         onClick={() => handleSortChange(sortOption.value)}
                                                         className={`flex flex-col py-2 px-3 hover:bg-gray-50 cursor-pointer ${globalSort === sortOption.value ? 'bg-gray-100' : ''}`}
                                                     >
@@ -95,7 +100,7 @@ export default function GlobalTopBar({ locale }) {
                                                             )}
                                                         </div>
                                                         <span className="text-[10px] text-gray-500 mt-1">{sortOption.title}</span>
-                                                    </div>
+                                                    </button>
                                                 ))}
                                             </div>
                                         </div>
