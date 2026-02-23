@@ -6,22 +6,10 @@ import { useTranslate } from "@/utils/store";
 import { Translate } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 
-
-const englishSpeakingCountries = ['us', 'canada', 'australia', 'uk', 'ireland', 'new zealand', 'south africa', 'kenya'];
-const hebrewSpeakingCountries = ['israel'];
-const allCountries = [...englishSpeakingCountries, ...hebrewSpeakingCountries];
-
-export default function TranslateToggle({ locale, country, sources, userCountry, pageDate, tooltipTitle = "Translate" }) {
+export default function TranslateToggle({ sources, pageDate, tooltipTitle = "Translate to English", tooltipAlwaysOpen = false, tooltipSlotProps }) {
     const translate = useTranslate(state => state.translate);
     const setTranslate = useTranslate(state => state.setTranslate);
     const [on, setOn] = useState(false);
-
-    // Initialize translation state based on country and user location
-    useEffect(() => {
-        if (!allCountries.includes(country) && userCountry !== country) {
-            setTranslate(Object.keys(sources));
-        }
-    }, [locale, country, sources, setTranslate, userCountry]);
 
     // Sync the toggle state with the actual translation state
     useEffect(() => {
@@ -39,7 +27,15 @@ export default function TranslateToggle({ locale, country, sources, userCountry,
     const activeColor = isDatePage ? '#92400e' : '#0000FF';
     
     return (
-        <CustomTooltip title={tooltipTitle} placement="bottom">
+        <CustomTooltip
+            title={tooltipTitle}
+            placement="bottom"
+            open={tooltipAlwaysOpen ? true : undefined}
+            disableHoverListener={tooltipAlwaysOpen}
+            disableFocusListener={tooltipAlwaysOpen}
+            disableTouchListener={tooltipAlwaysOpen}
+            slotProps={tooltipSlotProps}
+        >
             <TopBarButton onClick={handleClick}>
                 <Translate sx={{ color: on ? activeColor : '' }} />
             </TopBarButton>
