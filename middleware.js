@@ -81,6 +81,8 @@ export async function middleware(request) {
   }
 
   const segments = pathname.split('/').filter(Boolean);
+  const searchParams = request.nextUrl.search || '';
+  const isLocale = (value) => value === 'en' || value === 'heb';
 
   // Handle root path - redirect based on user location
   if (segments.length === 0) {
@@ -90,8 +92,19 @@ export async function middleware(request) {
     return NextResponse.redirect(new URL(`/${locale}/${userCountry}`, request.url));
   }
 
+  // Normalize invalid locale prefixes: /{invalid-locale}/{country-or-global}/... -> /en/{country-or-global}/...
+  if (segments.length >= 2 && !isLocale(segments[0])) {
+    const candidate = segments[1];
+    const validTarget = await getCountry(candidate);
+    if (validTarget) {
+      const remainder = segments.slice(2).join('/');
+      const normalizedPath = `/en/${validTarget}${remainder ? `/${remainder}` : ''}${searchParams}`;
+      return NextResponse.redirect(new URL(normalizedPath, request.url));
+    }
+  }
+
   // Path with locale: /locale/country
-  if (segments.length >= 2 && (segments[0] === 'en' || segments[0] === 'heb')) {
+  if (segments.length >= 2 && isLocale(segments[0])) {
     const locale = segments[0];
     const countryCandidate = segments[1];
     const valid = await getCountry(countryCandidate);

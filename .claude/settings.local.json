@@ -3,7 +3,8 @@
     "allow": [
       "Bash(dir:*)",
       "Bash(powershell -File:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "WebFetch(domain:www.thehear.org)"
     ],
     "deny": [],
     "ask": []

@@ -5,7 +5,7 @@ import { format, isValid, parse, startOfDay, sub } from "date-fns";
 import { getWebsiteName, getSourceData } from "@/utils/sources/getCountryData";
 import { redirect } from "next/navigation";
 import { countries } from "@/utils/sources/countries";
-import { isHebrewContentAvailable, getHeadline } from "@/utils/daily summary utils";
+import { getHeadline } from "@/utils/daily summary utils";
 import FeedJsonLd from "./FeedJsonLd";
 import FeedView from "./FeedView";
 import FeedFooter from "./FeedFooter";
@@ -22,6 +22,76 @@ import { getCountryLaunchDate } from "@/utils/launchDates";
 export const revalidate = 604800; // 7 days in seconds
 // Enforce static generation; build should fail if route becomes dynamic again.
 export const dynamic = 'error';
+
+const TITLE_MAX_CHARS = 72;
+const TITLE_SUFFIX = ' | The Hear';
+const HEBREW_ARCHIVE_SUFFIX = ' | \u05D0\u05E8\u05DB\u05D9\u05D5\u05DF \u05DB\u05D5\u05EA\u05E8\u05D5\u05EA';
+
+function truncateForTitle(text, maxChars) {
+    if (!text) return '';
+    const normalized = text.replace(/\s+/g, ' ').trim();
+    if (normalized.length <= maxChars) return normalized;
+    if (maxChars <= 3) return '';
+    return `${normalized.slice(0, maxChars - 3).trim()}...`;
+}
+
+function buildSeoTitle({ flagEmoji, corePrefix, headline }) {
+    const cleanFlag = (flagEmoji || '').trim();
+    const cleanPrefix = (corePrefix || '').replace(/\s+/g, ' ').trim();
+    const cleanHeadline = (headline || '').replace(/\s+/g, ' ').trim();
+    const separator = ': ';
+
+    let useSuffix = true;
+    let useFlag = !!cleanFlag;
+    let activeHeadline = cleanHeadline;
+
+    const getPrefix = () => (useFlag ? `${cleanFlag} ${cleanPrefix}` : cleanPrefix);
+    const compose = (withHeadline = true) =>
+        `${getPrefix()}${withHeadline && activeHeadline ? `${separator}${activeHeadline}` : ''}${useSuffix ? TITLE_SUFFIX : ''}`.trim();
+
+    // 1) Try full title first.
+    let candidate = compose(true);
+    if (candidate.length <= TITLE_MAX_CHARS) return candidate;
+
+    // 2) Remove brand suffix first.
+    useSuffix = false;
+    candidate = compose(true);
+    if (candidate.length <= TITLE_MAX_CHARS) return candidate;
+
+    // 3) Remove flag next.
+    useFlag = false;
+    candidate = compose(true);
+    if (candidate.length <= TITLE_MAX_CHARS) return candidate;
+
+    // 4) Keep full headline; if still long, let Google truncate in SERP.
+    return candidate;
+}
+
+function buildHebrewSeoTitle({ countryName, hebrewDate, headline }) {
+    const cleanCountry = (countryName || '').replace(/\s+/g, ' ').trim();
+    const cleanDate = (hebrewDate || '').replace(/\s+/g, ' ').trim();
+    const cleanHeadline = (headline || '').replace(/\s+/g, ' ').trim();
+    const separator = ': ';
+    const prefix = `${cleanCountry}, ${cleanDate}`;
+
+    let useArchiveSuffix = true;
+    let activeHeadline = cleanHeadline;
+
+    const compose = (withHeadline = true) =>
+        `${prefix}${withHeadline && activeHeadline ? `${separator}${activeHeadline}` : ''}${useArchiveSuffix ? HEBREW_ARCHIVE_SUFFIX : ''}`.trim();
+
+    // 1) Full Hebrew title format
+    let candidate = compose(true);
+    if (candidate.length <= TITLE_MAX_CHARS) return candidate;
+
+    // 2) Remove archive suffix first
+    useArchiveSuffix = false;
+    candidate = compose(true);
+    if (candidate.length <= TITLE_MAX_CHARS) return candidate;
+
+    // 3) Keep full headline; if still long, let Google truncate in SERP.
+    return candidate;
+}
 
 // Generate SEO metadata for feed view
 export async function generateMetadata({ params }) {
@@ -55,9 +125,12 @@ export async function generateMetadata({ params }) {
     const daySummary = jsonData?.dailySummary ?? (jsonData ? null : await getCountryDailySummary(country, parsedDate));
     const currentHeadline = daySummary ? getHeadline(daySummary, locale) : null;
 
+    const englishDate = format(parsedDate, 'd MMM yyyy');
+    const hebrewDate = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', year: 'numeric' }).format(parsedDate);
+    const titlePrefix = `${countryName} headlines, ${englishDate}`;
     const title = locale === 'heb'
-        ? `${flagEmoji} ${countryName} | ${formattedDate} | ארכיון כותרות`
-        : `${flagEmoji} ${countryName} | ${formattedDate} | Headline Archive`;
+        ? buildHebrewSeoTitle({ countryName, hebrewDate, headline: currentHeadline })
+        : buildSeoTitle({ flagEmoji, corePrefix: titlePrefix, headline: currentHeadline });
 
     const countryInDescription = (country === 'us' || country === 'uk') ? `the ${countryName}` : countryName;
     const description = locale === 'heb'
@@ -208,15 +281,8 @@ export default async function FeedPage({ params }) {
         const daySummary = data.dailySummary;
         const yesterdaySummary = yesterdayData?.dailySummary ?? (yesterdayData ? null : await getCountryDailySummary(country, yesterday));
 
-        // Hebrew content check - only check today's content (feed pages show single day)
-        if (locale === 'heb') {
-            const hasHebrewContent = initialSummaries.some(summary => isHebrewContentAvailable(summary)) ||
-                (daySummary && isHebrewContentAvailable(daySummary));
-
-            if (!hasHebrewContent) {
-                redirect(`/en/${country}/${date}/feed`);
-            }
-        }
+        // Hebrew feed URLs remain first-class localized pages.
+        // Do not redirect to English; locale-specific canonical/hreflang handles localization.
 
         // Prepare sources for JSON-LD
         const sources = {};
