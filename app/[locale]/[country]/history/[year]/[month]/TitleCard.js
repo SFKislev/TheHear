@@ -104,7 +104,7 @@ export default function TitleCard({ country, locale, year, month }) {
                             dangerouslySetInnerHTML={{
                                 __html: locale === 'heb'
                                     ? `עמוד זה מרכז את הסיפורים העיקריים שסופרו בכותרות הראשיות בתקשורת ${countries[country]?.hebrew || country} ב-${currentMonthName}, ${currentYear}.<br/><br/>הכותרות והסקירות היומיות, שנועדו לתעד את הכותרות הראשיות בזמן אמת, נכתבו על ידי בינה. בחרו תאריך כדי לראות את הכותרות עצמן, כפי שהתרחשו וללא עריכה.`
-                                    : `This page chronicles the main stories that unfolded in ${countries[country]?.english || country} media on ${currentMonthName}, ${currentYear}.<br/><br/>The daily titles and overviews, meant to function as a real time, micro-history <strong>record of news headlines</strong>, were written by an AI. Pick a date to see the <strong>actual headlines</strong> as they played out, unedited.`
+                                    : `This page chronicles the main stories of ${country === 'us' || country === 'uk' ? 'the ' : ''}${countries[country]?.english || country} during ${currentMonthName}, ${currentYear}.<br/><br/>The daily titles and overviews, meant to function as a real time, micro-history <strong>record of news headlines</strong>, were written by an AI. Pick a date to see the <strong>actual headlines</strong> as they played out, unedited.`
                             }}
                         />
                     )}

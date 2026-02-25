@@ -21,7 +21,7 @@ export const COUNTRY_LAUNCH_DATES = {
     'turkey': new Date('2024-09-07'),
     'uae': new Date('2024-09-08'),
     'palestine': new Date('2024-09-10'),
-    'finland': new Date('2025-02-20'),
+    'finland': new Date('2025-11-01'),
     'kenya': new Date('2025-11-05')
 };
 

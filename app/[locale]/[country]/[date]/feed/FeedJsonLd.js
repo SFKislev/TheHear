@@ -1,6 +1,7 @@
 import { getHeadline, getSummaryContent } from "@/utils/daily summary utils";
 import { countries } from "@/utils/sources/countries";
 import { getSourceData } from "@/utils/sources/getCountryData";
+import { format } from "date-fns";
 
 // Flag emoji mapping for countries
 const countryFlags = {
@@ -26,6 +27,59 @@ const countryFlags = {
     "uae": "🇦🇪"
 };
 
+const TITLE_MAX_CHARS = 72;
+const TITLE_SUFFIX = " | The Hear";
+const HEBREW_ARCHIVE_SUFFIX = " | \u05D0\u05E8\u05DB\u05D9\u05D5\u05DF \u05DB\u05D5\u05EA\u05E8\u05D5\u05EA";
+
+function buildSeoTitle({ flagEmoji, corePrefix, headline }) {
+    const cleanFlag = (flagEmoji || "").trim();
+    const cleanPrefix = (corePrefix || "").replace(/\s+/g, " ").trim();
+    const cleanHeadline = (headline || "").replace(/\s+/g, " ").trim();
+    const separator = ": ";
+
+    let useSuffix = true;
+    let useFlag = !!cleanFlag;
+
+    const getPrefix = () => (useFlag ? `${cleanFlag} ${cleanPrefix}` : cleanPrefix);
+    const compose = () =>
+        `${getPrefix()}${cleanHeadline ? `${separator}${cleanHeadline}` : ""}${useSuffix ? TITLE_SUFFIX : ""}`.trim();
+
+    let candidate = compose();
+    if (candidate.length <= TITLE_MAX_CHARS) return candidate;
+
+    useSuffix = false;
+    candidate = compose();
+    if (candidate.length <= TITLE_MAX_CHARS) return candidate;
+
+    useFlag = false;
+    candidate = compose();
+    if (candidate.length <= TITLE_MAX_CHARS) return candidate;
+
+    return candidate;
+}
+
+function buildHebrewSeoTitle({ countryName, hebrewDate, headline }) {
+    const cleanCountry = (countryName || "").replace(/\s+/g, " ").trim();
+    const cleanDate = (hebrewDate || "").replace(/\s+/g, " ").trim();
+    const cleanHeadline = (headline || "").replace(/\s+/g, " ").trim();
+    const separator = ": ";
+    const prefix = `${cleanCountry}, ${cleanDate}`;
+
+    let useArchiveSuffix = true;
+
+    const compose = () =>
+        `${prefix}${cleanHeadline ? `${separator}${cleanHeadline}` : ""}${useArchiveSuffix ? HEBREW_ARCHIVE_SUFFIX : ""}`.trim();
+
+    let candidate = compose();
+    if (candidate.length <= TITLE_MAX_CHARS) return candidate;
+
+    useArchiveSuffix = false;
+    candidate = compose();
+    if (candidate.length <= TITLE_MAX_CHARS) return candidate;
+
+    return candidate;
+}
+
 export default function FeedJsonLd({ country, locale, date, daySummary, headlines, initialSummaries }) {
     const countryData = countries[country] || {};
     const countryName = locale === 'heb' ? countryData.hebrew || country : countryData.english || country;
@@ -42,6 +96,19 @@ export default function FeedJsonLd({ country, locale, date, daySummary, headline
     const title = locale === 'heb'
         ? `${flagEmoji} ${countryName} | ${formattedDateDisplay} | ארכיון כותרות`
         : `${flagEmoji} ${countryName} | ${formattedDateDisplay} | Headline Archive`;
+
+    const dateForSeoTitle = date instanceof Date ? date : new Date(date);
+    const englishDate = format(dateForSeoTitle, "d MMM yyyy");
+    const hebrewDate = new Intl.DateTimeFormat("he-IL", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        timeZone: timezone
+    }).format(dateForSeoTitle);
+    const titlePrefix = `${countryName} headlines, ${englishDate}`;
+    const seoTitle = locale === "heb"
+        ? buildHebrewSeoTitle({ countryName, hebrewDate, headline })
+        : buildSeoTitle({ flagEmoji, corePrefix: titlePrefix, headline });
 
     const url = `https://www.thehear.org/${locale}/${country}/${formattedDate}/feed`;
 
@@ -187,7 +254,7 @@ export default function FeedJsonLd({ country, locale, date, daySummary, headline
             {
                 '@type': 'CollectionPage',
                 '@id': url,
-                'name': title,
+                'name': seoTitle,
                 'description': description,
                 'url': url,
                 'inLanguage': locale === 'heb' ? 'he' : 'en',

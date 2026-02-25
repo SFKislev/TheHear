@@ -30,7 +30,7 @@ export default function MonthlyArchiveGrid({
     
     const pageDescription = locale === 'heb'
         ? `דף זה מתעד את הכותרות העיקריות מחדשות ${countryName} ב-${monthName}. הכותרות היומיות והסקירות, שנועדו לשמש כתיעוד בזמן אמת של כותרות חדשות, נכתבו על ידי בינה מלאכותית. בחר תאריך כדי לראות את הכותרות כפי שהתרחשו, ללא עריכה.`
-        : `This page chronicles the main stories that unfolded in ${countryName} media on ${monthName}. The daily titles and overviews, meant to function as a real time, micro-history record of news headlines, were written by an AI. Pick a date to see the actual headlines as they played out, unedited.`;
+        : `This page chronicles the main stories of ${country === 'us' || country === 'uk' ? 'the ' : ''}${countryName} during ${monthName}. Pick a date to view the actual headlines as they appeared, unedited.`;
 
     if (!dailySummaries || dailySummaries.length === 0) {
         return (

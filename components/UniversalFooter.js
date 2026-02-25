@@ -53,6 +53,14 @@ function formatMonthLabel(year, month, locale) {
     return d.toLocaleDateString(locale === 'heb' ? 'he' : 'en', { month: 'long', year: 'numeric' });
 }
 
+function isCountryAvailableForMonthlyArchive(countryCode, year, month) {
+    if (!year || !month) return true;
+    const launchDate = getCountryLaunchDate(countryCode);
+    const launchMonthStart = new Date(launchDate.getFullYear(), launchDate.getMonth(), 1);
+    const targetMonthStart = new Date(parseInt(year, 10), parseInt(month, 10) - 1, 1);
+    return targetMonthStart >= launchMonthStart;
+}
+
 function getArchiveMonths(country, locale) {
     const launchDate = getCountryLaunchDate(country);
     const now = new Date();
@@ -149,7 +157,13 @@ export default function UniversalFooter({ locale, pageType, country, date, year,
     const isMonthlyArchive = pageType === 'monthly-archive';
     const countryName = country ? getCountryName(country, locale) : '';
     const months = country ? getArchiveMonths(country, locale) : [];
-    const countryCodes = Object.keys(countries).filter(code => code !== 'uae');
+    const countryCodes = useMemo(() => {
+        return Object.keys(countries).filter((code) => {
+            if (code === 'uae') return false;
+            if (!isMonthlyArchive) return true;
+            return isCountryAvailableForMonthlyArchive(code, year, month);
+        });
+    }, [isMonthlyArchive, year, month]);
     const countryHref = (code) => isMonthlyArchive && year && month
         ? `/${locale}/${code}/history/${year}/${month}`
         : `/${locale}/${code}`;
@@ -374,9 +388,7 @@ export default function UniversalFooter({ locale, pageType, country, date, year,
                                 onClick={(e) => e.stopPropagation()}
                             >
                                 <div className="grid grid-cols-2 gap-[1px] bg-gray-200">
-                                    {Object.keys(countries)
-                                        .filter(code => code !== 'uae')
-                                        .map(code => (
+                                    {countryCodes.map(code => (
                                             <InnerLink
                                                 key={code}
                                                 href={countryHref(code)}

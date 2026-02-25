@@ -2,6 +2,11 @@ import { countries } from "@/utils/sources/countries";
 import { getSourceData } from "@/utils/sources/getCountryData";
 import { getSummaryContent } from "@/utils/daily summary utils";
 
+function countryWithArticle(countryCode, countryName) {
+    return (countryCode === "us" || countryCode === "uk") ? `the ${countryName}` : countryName;
+}
+
+
 export function createMetadata({ country, locale, year, month }) {
     const countryData = countries[country];
     if (!countryData) {
@@ -24,10 +29,12 @@ export function createMetadata({ country, locale, year, month }) {
     const title = isHebrew 
         ? `ארכיון חדשות ${countryName} - ${monthName} | The Hear`
         : `${countryName} News Archive - ${monthName} | The Hear`;
+
+    const countryInSentence = countryWithArticle(country, countryName);
     
     const description = isHebrew
         ? `דף זה מתעד את הכותרות העיקריות מחדשות ${countryName} ב-${monthName}. הכותרות היומיות והסקירות, שנועדו לשמש כתיעוד בזמן אמת של כותרות חדשות, נכתבו על ידי בינה מלאכותית. בחר תאריך כדי לראות את הכותרות כפי שהתרחשו, ללא עריכה.`
-        : `This page chronicles the main stories that unfolded in ${countryName} media on ${monthName}. The daily titles and overviews, meant to function as a real time, micro-history record of news headlines, were written by an AI. Pick a date to see the actual headlines as they played out, unedited.`;
+        : `This page chronicles the main stories of ${countryInSentence} during ${monthName}. Pick a date to view the actual headlines as they appeared, unedited.`;
 
     const keywords = isHebrew
         ? `${countryName}, חדשות, ארכיון, ${monthName}, סיכומים יומיים, עיתונות`
@@ -93,10 +100,12 @@ export function LdJson({ country, locale, year, month, dailySummaries, headlines
     const title = isHebrew 
         ? `ארכיון חדשות ${countryName} - ${monthName} | The Hear`
         : `${countryName} News Archive - ${monthName} | The Hear`;
+
+    const countryInSentence = countryWithArticle(country, countryName);
     
     const description = isHebrew
         ? `דף זה מתעד את הכותרות העיקריות מחדשות ${countryName} ב-${monthName}. הכותרות היומיות והסקירות, שנועדו לשמש כתיעוד בזמן אמת של כותרות חדשות, נכתבו על ידי בינה מלאכותית. בחר תאריך כדי לראות את הכותרות כפי שהתרחשו, ללא עריכה.`
-        : `This page chronicles the main stories that unfolded in ${countryName} media on ${monthName}. The daily titles and overviews, meant to function as a real time, micro-history record of news headlines, were written by an AI. Pick a date to see the actual headlines as they played out, unedited.`;
+        : `This page chronicles the main stories of ${countryInSentence} during ${monthName}. Pick a date to view the actual headlines as they appeared, unedited.`;
 
     const image = 'https://www.thehear.org/logo192.png';
     

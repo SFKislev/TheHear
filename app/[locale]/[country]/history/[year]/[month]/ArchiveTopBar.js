@@ -7,6 +7,7 @@ import ArchiveCountryNavigator from './ArchiveCountryNavigator';
 import { countries } from '@/utils/sources/countries';
 import CustomTooltip from '@/components/CustomTooltip';
 import useMobile from '@/components/useMobile';
+import { getCountryLaunchDate } from '@/utils/launchDates';
 
 function MonthNavigation({ country, locale, year, month, monthName, position = 'left' }) {
     const { isMobile } = useMobile();
@@ -21,12 +22,20 @@ function MonthNavigation({ country, locale, year, month, monthName, position = '
     const nextMonth = currentMonth === 12 ? 1 : currentMonth + 1;
     const nextYear = currentMonth === 12 ? currentYear + 1 : currentYear;
     
-    // Check if navigation months should be available based on launch dates and current date
+    // Bound navigation by actual route existence window:
+    // [country launch month .. current month]
+    const launchDate = getCountryLaunchDate(country);
+    const launchMonthStart = new Date(launchDate.getFullYear(), launchDate.getMonth(), 1);
+    const prevMonthDate = new Date(prevYear, prevMonth - 1, 1);
+
     const today = new Date();
+    const currentMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
     const nextMonthDate = new Date(nextYear, nextMonth - 1, 1);
-    const hasNextMonth = nextMonthDate <= today;
+    const hasPrevMonth = prevMonthDate >= launchMonthStart;
+    const hasNextMonth = nextMonthDate <= currentMonthStart;
 
     if (position === 'left') {
+        if (!hasPrevMonth) return null;
         const prevMonthName = new Date(prevYear, prevMonth - 1).toLocaleDateString(locale === 'heb' ? 'he' : 'en', { month: 'long', year: 'numeric' });
         return (
             <div className="flex items-center gap-2">
@@ -81,8 +90,8 @@ export default function ArchiveTopBar({ country, locale, year, month, monthName 
     const countryData = countries[country] || {};
     const countryName = locale === 'heb' ? countryData.hebrew : countryData.english;
     const fullTitle = locale === 'heb'
-        ? `ארכיון כותרות מ־${countryName}, ${monthName} ${year}`
-        : `Headlines archive from ${countryName}, ${monthName} ${year}`;
+        ? `ארכיון כותרות מ־${countryName}, ${monthName}`
+        : `Headlines archive from ${countryName}, ${monthName}`;
 
     return (
         <nav className="sticky top-0 w-full bg-white z-50 py-1 direction-ltr border-b border-gray-200">
