@@ -39,6 +39,16 @@ export async function GET() {
         priority: 0.8
     });
 
+    // Country overview roots (English) - one entry per tracked country
+    Object.keys(countries).forEach((country) => {
+        res.push({
+            url: `${baseUrl}/en/${country}`,
+            lastModified: now,
+            changeFrequency: 'hourly',
+            priority: 0.8
+        });
+    });
+
     // Convert to XML format
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

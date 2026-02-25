@@ -11,7 +11,8 @@
     "lint": "next lint",
     "generate-search": "node scripts/generate-search-index.js",
     "export-search-data": "node scripts/export-search-data.mjs",
-    "submit-to-bing": "node utils/scripts/submit-to-bing.js 257bd493-6f33-4794-9014-6e0c079e01f9"
+    "submit-to-bing": "node utils/scripts/submit-to-bing.js 257bd493-6f33-4794-9014-6e0c079e01f9",
+    "probe-google-ads-keyword-access": "node indexing/ads-api/google-ads-keyword-access-probe.mjs"
   },
   "dependencies": {
     "@ai-sdk/google": "^1.1.20",

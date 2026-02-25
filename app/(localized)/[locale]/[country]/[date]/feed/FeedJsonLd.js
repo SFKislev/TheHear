@@ -293,7 +293,10 @@ export default function FeedJsonLd({ country, locale, date, daySummary, headline
                             'publishingPrinciples': 'https://www.thehear.org/methodology',
                             'masthead': 'https://www.thehear.org/about'
                         },
-                        'about': `Daily news summary for ${countryName}`,
+                        'about': {
+                            '@type': 'Thing',
+                            'name': `Daily news summary for ${countryName}`
+                        },
                         'inLanguage': locale === 'heb' ? 'he' : 'en'
                     }
                 }),
@@ -301,10 +304,9 @@ export default function FeedJsonLd({ country, locale, date, daySummary, headline
                     'hasPart': hourlySummaries
                 }),
                 'isPartOf': {
-                    '@type': 'ItemList',
+                    '@type': 'CreativeWorkSeries',
                     'name': `${countryName} News Archive`,
-                    'description': `Chronological archive of ${totalHeadlines} news headlines from ${countryName}`,
-                    'numberOfItems': totalHeadlines
+                    'url': `https://www.thehear.org/${locale}/${country}/history`
                 },
                 'publisher': {
                     '@type': 'NewsMediaOrganization',

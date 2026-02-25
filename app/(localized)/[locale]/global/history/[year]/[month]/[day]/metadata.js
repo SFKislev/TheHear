@@ -21,7 +21,7 @@ export async function createMetadata({ params }) {
     
     const description = isHebrew
         ? `דף זה מתעד את הכותרות החדשות העיקריות מתאריך ה-${dateString}. הכותרות היומיות והסקירות, שנועדו לשמש כתיעוד בזמן אמת של כותרות חדשות, נכתבו על ידי בינה מלאכותית. בחר מדינה כדי לראות את הכותרות כפי שהתרחשו, ללא עריכה.`
-        : `This page chronicles the main stories that unfolded across the world on ${dateString}. The daily titles and overviews, meant to function as a real time, micro-history record of global news headlines, were written by an AI. View headlines from all countries on a single day.`;
+        : `This page chronicles the main stories from across the world on ${dateString}. View the actual headlines from all countries on a single day.`;
 
     const keywords = isHebrew
         ? `חדשות עולמיות, ארכיון, ${dateString}, סיכומים יומיים, עיתונות בינלאומית`
@@ -87,7 +87,7 @@ export function LdJson({ locale, year, month, day, currentDate, dailySummaries, 
     
     const description = isHebrew
         ? `דף זה מתעד את הכותרות החדשות העיקריות מתאריך ה-${dateString}. הכותרות היומיות והסקירות, שנועדו לשמש כתיעוד בזמן אמת של כותרות חדשות, נכתבו על ידי בינה מלאכותית. בחר מדינה כדי לראות את הכותרות כפי שהתרחשו, ללא עריכה.`
-        : `This page chronicles the main stories that unfolded across the world on ${dateString}. The daily titles and overviews, meant to function as a real time, micro-history record of global news headlines, were written by an AI. View headlines from all countries on a single day.`;
+        : `This page chronicles the main stories from across the world on ${dateString}. View the actual headlines from all countries on a single day.`;
 
     const image = 'https://www.thehear.org/logo192.png';
     

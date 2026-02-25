@@ -258,6 +258,12 @@ Use this block for ongoing conversation and memory updates.
 - Added cross-engine signal snapshot: high crawler request volume on Vercel, Bing query-fit examples, Bing weekly performance (224 impressions, 2.2% CTR), and Bing AI citation count (520 in the last month).
 - Added Semrush snapshot gap: 20 organic keywords, estimated traffic of 1, reported 14.3k backlinks, and unresolved mismatch between authority signals and organic outcomes.
 - Added Wikipedia backlink operation update: ~30 cross-language Wikipedia backlinks as a deliberate authority-building effort.
+- Applied for Google Ads API Basic access (pending review) to enable Keyword Plan usage beyond Explorer restrictions.
+- Set up isolated tooling for scaled keyword planning probes at `indexing/ads-api/google-ads-keyword-access-probe.mjs`.
+- Ran IndexNow catch-up submissions for SEO-related page updates (excluding UAE):
+- submitted feed + country history URLs for the last 120 days.
+- submitted an additional older backfill window (365 to 120 days ago) for feed + country history pages.
+- observed batch run total of 9,652 URLs with HTTP 200 acceptance responses across batches.
 - Replaced open questions with working answers from current operational evidence, clarified backlink interpretation (legacy redirects + mostly nofollow citations), and added two strategic risks: keyword strategy at archive scale and ambient-news bounce/engagement interpretation.
 - Added synthesis from legacy SEO documents: preserved key lessons, documented non-solutions to avoid repeating, and clarified the strategic tension between full-archive indexing and reduced-sitemap trust-building.
 - Next: record post-change GSC trends after enough time has passed for recrawl/reindex.
@@ -282,6 +288,17 @@ Use this block for ongoing conversation and memory updates.
 - Verification:
 - Local checks confirmed broken monthly country links removed for pre-launch months.
 - Production build passed successfully (`next build`), with one non-blocking ESLint serialization warning from the toolchain.
+
+### 2026-02-25 (Sitemap + Structured Data Follow-Up)
+- Sitemap coverage correction:
+- Confirmed live sitemap status for Ahrefs-reported URLs: `/en/global` and `/en/iran/history/2025/07` were present, while `/en/us` was missing from sitemap coverage.
+- Updated `app/sitemap-static.xml/route.js` to include all country roots under `/en/{country}` (20 pages from central `countries` list, excluding UAE).
+- Verified on localhost (`/sitemap-static.xml`) that `/en/us` and all expected `/en/{country}` roots are present.
+- Global history metadata copy update:
+- Updated English description template in `app/(localized)/[locale]/global/history/[year]/[month]/[day]/metadata.js` to shorter wording focused on "actual headlines."
+- Feed JSON-LD validation hardening (targeted):
+- In `app/(localized)/[locale]/[country]/[date]/feed/FeedJsonLd.js`, changed `mainEntity.about` from string to `Thing` object and changed `isPartOf` from `ItemList` to `CreativeWorkSeries`.
+- Verified on localhost feed page (`/en/us/16-02-2025/feed`) that JSON-LD now emits `about.@type = Thing` and `isPartOf.@type = CreativeWorkSeries`.
 
 ### 2026-02-25 (Localization Layout + Route-Group Validation)
 - What changed:
