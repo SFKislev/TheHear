@@ -4,7 +4,7 @@ import { ArrowBackIosNew, ArrowForwardIos, SortByAlpha, Sort, CalendarMonth } fr
 import { IconButton, LinearProgress } from '@mui/material';
 import InnerLink from '@/components/InnerLink';
 import CustomTooltip from '@/components/CustomTooltip';
-import { DateSelector } from '@/app/[locale]/[country]/TopBar/settings/DateSelector';
+import { DateSelector } from '@/app/(localized)/[locale]/[country]/TopBar/settings/DateSelector';
 import useMobile from '@/components/useMobile';
 
 // Custom DateSelector for global archive with calendar icon

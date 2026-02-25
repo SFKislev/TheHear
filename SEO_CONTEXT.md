@@ -283,6 +283,29 @@ Use this block for ongoing conversation and memory updates.
 - Local checks confirmed broken monthly country links removed for pre-launch months.
 - Production build passed successfully (`next build`), with one non-blocking ESLint serialization warning from the toolchain.
 
+### 2026-02-25 (Localization Layout + Route-Group Validation)
+- What changed:
+- Moved locale routes under `app/(localized)/[locale]/...` and static pages under `app/(static)/...`.
+- Added locale-aware root layout at `app/(localized)/[locale]/layout.js` to server-render `<html lang>` and `<html dir>` by locale (`en/ltr`, `heb -> he/rtl`).
+- Kept public URL structure unchanged (route groups are pathless in Next.js).
+- Why we changed it:
+- Ahrefs reported hreflang present but missing HTML language signal; this change ensures crawler-visible `lang/dir` is emitted in SSR HTML.
+- What we observed (data/source):
+- Localhost checks on `2026-02-25` confirmed on key routes:
+- `200` responses on localized live/global/history/feed pages and static pages.
+- Correct SSR HTML language signals:
+- `/en/...` -> `<html lang="en" dir="ltr">`
+- `/heb/...` -> `<html lang="he" dir="rtl">`
+- Canonical + `hreflang` alternates (`en`, `he`, `x-default`) present on tested localized pages.
+- Redirect/namespace normalization still valid:
+- `/us` -> `/en/us`, `/global` -> `/en/global`, `/{invalid-locale}/...` -> `/en/...` (`307`).
+- Crawl entry points healthy:
+- `robots.txt` and sitemap endpoints return `200` with expected content types.
+- Decision:
+- Keep the route-group nesting and locale layout approach; no breaking SEO regression observed in local crawlability checks.
+- Next step:
+- After deployment, verify the same signals on production URLs and monitor GSC for recrawl/index movement rather than immediate ranking changes.
+
 ## Update Template
 Copy this template for each new entry:
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react';
-import { getGridColumnClasses } from '@/app/[locale]/global/responsiveGrid';
+import { getGridColumnClasses } from '@/app/(localized)/[locale]/global/responsiveGrid';
 import { countries } from '@/utils/sources/countries';
 import InnerLink from '@/components/InnerLink';
 import GlobalArchiveCard from './GlobalArchiveCard';

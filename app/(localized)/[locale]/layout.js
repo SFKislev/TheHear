@@ -1,13 +1,11 @@
-// import { WebVitals } from "@/components/web-vitals";
-import "./globals.css";
+import "../../globals.css";
 import LazyAnalytics from "@/components/LazyAnalytics";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import PWAMeta from "@/components/PWAMeta";
-import ConditionalEmotionRegistry from "./ConditionalEmotionRegistry";
-import { fontVariables } from "./fonts";
+import ConditionalEmotionRegistry from "../../ConditionalEmotionRegistry";
+import { fontVariables } from "../../fonts";
 import EnglishFonts from "@/utils/typography/EnglishFonts";
 import HebrewFonts from "@/utils/typography/HebrewFonts";
-
 
 export const metadata = {
   title: "The Hear",
@@ -64,16 +62,21 @@ export const metadata = {
 };
 
 export const viewport = {
-  width: 'device-width',
+  width: "device-width",
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
   themeColor: "#000000"
 };
 
-export default function RootLayout({ children }) {
+export default async function LocalizedRootLayout({ children, params }) {
+  const { locale } = await params;
+  const isHebrew = locale === "heb";
+  const htmlLang = isHebrew ? "he" : "en";
+  const htmlDir = isHebrew ? "rtl" : "ltr";
+
   return (
-    <html className={fontVariables}>
+    <html lang={htmlLang} dir={htmlDir} className={fontVariables}>
       <head>
         <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png" />
@@ -98,7 +101,6 @@ export default function RootLayout({ children }) {
         <ConditionalEmotionRegistry>
           <LazyAnalytics />
           <ServiceWorkerRegistration />
-          {/* <WebVitals /> */}
           {children}
         </ConditionalEmotionRegistry>
       </body>
