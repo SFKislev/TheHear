@@ -323,6 +323,55 @@ Use this block for ongoing conversation and memory updates.
 - Next step:
 - After deployment, verify the same signals on production URLs and monitor GSC for recrawl/index movement rather than immediate ranking changes.
 
+### 2026-02-26 (Idea Log: Ads API + Procedural Archive Relevance Layer)
+- What changed:
+- Logged a candidate strategy to use Google Ads API keyword planning signals to identify demand patterns by archive intent, then procedurally apply constrained, page-relevant copy adjustments across archive templates (AI-assisted).
+- Explicitly framed this as optimization of relevance signals, not manual one-off keyword editing per page.
+- Why we changed it:
+- Current indexing constraints and archive scale make ad hoc/manual page tuning impractical; demand-informed procedural updates may improve query-fit while preserving product-truth archive structure.
+- What we observed (data/source):
+- Team discussion flagged that live pages are designed for short "glance" behavior by intent, and that archive SEO work must avoid generic engagement assumptions.
+- Team constraint confirmed: true controlled indexing tests are not feasible at this scale because crawler/index selection cannot be experimentally controlled.
+- Decision:
+- Keep this as a strategic idea to revisit once Ads API access and guardrails are ready; treat rollout as iterative optimization under real crawler conditions, not as A/B-style controlled indexing experimentation.
+- Next step:
+- If pursued, define strict quality constraints for procedural copy generation (factual, date/country-specific, low template duplication risk) before any broad deployment.
+
+### 2026-02-26 (Feed Page Ground-Truth Check to Prevent Repeated Advice)
+- What changed:
+- Verified current feed implementation already includes explicit archive-intent anchors and SSR context text; recorded this as established baseline.
+- Why we changed it:
+- Repeated recommendations about adding basic archive-intent copy/internal context were no longer accurate and created noise in strategy discussions.
+- What we observed (data/source):
+- In `app/(localized)/[locale]/[country]/[date]/feed/FeedView.js`, feed pages already render an intro block stating page purpose (main-headline archive), country, date, and headline count.
+- In `app/(localized)/[locale]/[country]/[date]/feed/page.js`, metadata already includes country/date/headline-aware title logic, canonical + hreflang alternates, and index/follow directives.
+- In `app/(localized)/[locale]/[country]/[date]/feed/FeedTopbar.js`, the current daily headline is rendered as `h1`.
+- In `app/(localized)/[locale]/[country]/[date]/feed/FeedJsonLd.js`, structured data already models feed pages as `CollectionPage` with archive-oriented context, `mainEntity`, `hasPart`, breadcrumb, and series linkage.
+- Decision:
+- Treat "add archive-intent copy/internal context on feed pages" as already implemented; do not re-propose as a primary next step unless a specific regression is found.
+- Next step:
+- Focus future feed SEO discussions on unresolved issues (query mapping quality at low volume, indexing selection behavior, and demand-to-template alignment), not baseline copy presence.
+
+### 2026-02-26 (Non-Feed Crawl Reduction: JSON-LD + Sitemap Adjustment)
+- What changed:
+- Removed feed JSON-LD breadcrumb reference to non-feed date URL (`/{locale}/{country}/{date}`) and kept breadcrumb target on the feed URL only.
+- Deprecated `sitemap-date-pages.xml` output so it now returns an empty `urlset` (no non-feed date URLs advertised).
+- Why we changed it:
+- Vercel observability showed substantial crawler activity on non-feed date routes even though feed pages are the intended indexing target.
+- What we observed (data/source):
+- Feed JSON-LD previously linked to non-feed date URL in breadcrumb item position 3.
+- A dedicated `sitemap-date-pages.xml` route was still generating non-feed date URLs at scale.
+- Local verification on `localhost:3000` confirmed:
+- `/sitemap.xml` lists only static/feed/archive/global-archive sitemaps.
+- `/sitemap-date-pages.xml` is valid but empty.
+- Feed page URL checks no longer expose non-feed date URL from feed JSON-LD breadcrumb path.
+- User-facing behavior remains unchanged by this step:
+- Feed pages still expose intentional links to the interactive non-feed time-machine route (for example via `FeedFooter` "Time Machine View" and feed popup link).
+- Decision:
+- Keep user-facing links to non-feed time-machine pages (product UX), while reducing machine-discovery signals for non-feed URLs.
+- Next step:
+- Monitor Vercel observability and GSC crawl trends to confirm non-feed crawler share declines over the next recrawl window.
+
 ## Update Template
 Copy this template for each new entry:
 

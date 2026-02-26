@@ -342,13 +342,7 @@ export default function FeedJsonLd({ country, locale, date, daySummary, headline
                     {
                         '@type': 'ListItem',
                         'position': 3,
-                        'name': formattedDateDisplay,
-                        'item': `https://www.thehear.org/${locale}/${country}/${formattedDate}`
-                    },
-                    {
-                        '@type': 'ListItem',
-                        'position': 4,
-                        'name': 'Feed View',
+                        'name': `${formattedDateDisplay} Feed`,
                         'item': url
                     }
                 ]
