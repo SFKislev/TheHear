@@ -1,18 +1,20 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import logoA from './logo/thehear-round.webp';
-import logoB from './logo/thehear-round.webp';
-import logoC from './logo/thehear-round.webp';
 import Image from 'next/image';
 import InnerLink from './InnerLink';
 
-export default function DynamicLogoSmall({ locale, showDivider = true, mobileReducedPadding = false }) {
+export default function DynamicLogoSmall({ locale, showDivider = true, mobileReducedPadding = false, alwaysVisible = false }) {
     const [isFakeHover, setIsFakeHover] = useState(false);
 
     // Add fake hover effect every 30 seconds
     useEffect(() => {
+        if (alwaysVisible) {
+            setIsFakeHover(true);
+            return;
+        }
+
         const intervalId = setInterval(() => {
             setIsFakeHover(true);
 
@@ -25,7 +27,7 @@ export default function DynamicLogoSmall({ locale, showDivider = true, mobileRed
 
         // This return function is for the useEffect cleanup, not for the interval callback
         return () => clearInterval(intervalId);
-    }, []);
+    }, [alwaysVisible]);
 
     return (
         <>

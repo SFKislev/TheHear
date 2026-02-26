@@ -23,6 +23,20 @@ export async function GET() {
         priority: 0.95
     });
 
+    res.push({
+        url: `${baseUrl}/legal`,
+        lastModified: new Date('2026-02-26'),
+        changeFrequency: 'monthly',
+        priority: 0.95
+    });
+
+    res.push({
+        url: `${baseUrl}/contact`,
+        lastModified: new Date('2026-02-26'),
+        changeFrequency: 'monthly',
+        priority: 0.95
+    });
+
     // Global overview pages - high priority, frequently updated real-time content
     // These pages provide unique AI-generated analysis of global news coverage
     res.push({

@@ -372,6 +372,23 @@ Use this block for ongoing conversation and memory updates.
 - Next step:
 - Monitor Vercel observability and GSC crawl trends to confirm non-feed crawler share declines over the next recrawl window.
 
+### 2026-02-26 (Trust/EEAT Surface Expansion: Legal + Contact + Footer Standardization)
+- What changed:
+- Added a new static legal page at `/legal` with Terms of Use, scraping-method explanation, copyright/source-rights boundaries, privacy section, and contact references.
+- Added a new static contact page at `/contact` with a simple submission form (name/email/topic/message) and `ContactPage` metadata/JSON-LD.
+- Added backend endpoint `/api/contact` to accept contact submissions and store them in Firestore (`- metadata -/contact/submissions`) with basic validation and anti-spam honeypot field.
+- Standardized static trust pages to use `UniversalFooter` (about/methodology/legal/contact), including explicit footer links to Legal and Contact.
+- Updated footer wording/UX details: "select country" label on about/legal contexts, right-side action-group dividers, and contact mail icon usage.
+- Why we changed it:
+- Increase visible trust/completeness signals (entity transparency, policies, contactability) while keeping site UX consistent and lightweight during ongoing indexing pressure.
+- What we observed (data/source):
+- Local build validation succeeded with lint disabled (`next build --no-lint`) and generated routes include `/legal`, `/contact`, and `/api/contact`.
+- Default `next build` still fails in this environment on known ESLint parser serialization issue (`Cannot serialize key "parse" in parser`), consistent with prior non-blocking tooling noise.
+- Decision:
+- Keep legal/contact pages live as trust hygiene and crawlable static endpoints; treat contact form storage as interim ingestion layer until final delivery channel (email/dashboard/webhook) is selected.
+- Next step:
+- Decide message handling path for contact submissions (email forwarding vs admin inbox vs webhook) and then wire operational alerting/triage.
+
 ## Update Template
 Copy this template for each new entry:
 

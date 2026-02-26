@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
@@ -10,29 +10,39 @@ import FlagIcon from "@/components/FlagIcon";
 import HebrewFonts from "@/utils/typography/HebrewFonts";
 import { getCountryLaunchDate } from "@/utils/launchDates";
 import { Archive, Info, X } from "lucide-react";
+import MailIcon from "@mui/icons-material/Mail";
 
 const labels = {
-    about: { en: 'about', heb: 'אודות' },
-    methodology: { en: 'Methodology', heb: 'מתודולוגיה' },
-    global: { en: 'global view', heb: 'כותרות גלובליות' },
-    countries: { en: 'change country', heb: 'בחר מדינה' },
-    selectCountry: { en: 'select country', heb: 'בחר מדינה' },
-    archives: { en: 'the archives', heb: 'הארכיונים' },
-    changeMonth: { en: 'change month', heb: 'בחר חודש' },
-    live: { en: 'Live', heb: 'חי' },
-    liveHeadlinesFrom: { en: 'live headlines from', heb: 'כותרות חיות מ' },
-    liveGlobalNews: { en: 'live global news', heb: 'חדשות חיות מהעולם' },
-    closeMenu: { en: 'Close footer menu', heb: 'סגור תפריט' },
-    hideFooter: { en: 'Hide footer', heb: 'הסתר תחתית' },
+    about: { en: 'about', heb: '\u05d0\u05d5\u05d3\u05d5\u05ea' },
+    methodology: { en: 'Methodology', heb: '\u05de\u05ea\u05d5\u05d3\u05d5\u05dc\u05d5\u05d2\u05d9\u05d4' },
+    contact: { en: 'Contact', heb: '\u05e6\u05d5\u05e8 \u05e7\u05e9\u05e8' },
+    legal: { en: 'Legal', heb: '\u05ea\u05e0\u05d0\u05d9 \u05e9\u05d9\u05de\u05d5\u05e9' },
+    global: { en: 'global view', heb: '\u05db\u05d5\u05ea\u05e8\u05d5\u05ea \u05d2\u05dc\u05d5\u05d1\u05dc\u05d9\u05d5\u05ea' },
+    countries: { en: 'change country', heb: '\u05d1\u05d7\u05e8 \u05de\u05d3\u05d9\u05e0\u05d4' },
+    selectCountry: { en: 'select country', heb: '\u05d1\u05d7\u05e8 \u05de\u05d3\u05d9\u05e0\u05d4' },
+    archives: { en: 'the archives', heb: '\u05d4\u05d0\u05e8\u05db\u05d9\u05d5\u05e0\u05d9\u05dd' },
+    changeMonth: { en: 'change month', heb: '\u05d1\u05d7\u05e8 \u05d7\u05d5\u05d3\u05e9' },
+    live: { en: 'Live', heb: '\u05d7\u05d9' },
+    liveHeadlinesFrom: { en: 'live headlines from', heb: '\u05db\u05d5\u05ea\u05e8\u05d5\u05ea \u05d7\u05d9\u05d5\u05ea \u05de' },
+    liveGlobalNews: { en: 'live global news', heb: '\u05d7\u05d3\u05e9\u05d5\u05ea \u05d7\u05d9\u05d5\u05ea \u05de\u05d4\u05e2\u05d5\u05dc\u05dd' },
+    closeMenu: { en: 'Close footer menu', heb: '\u05e1\u05d2\u05d5\u05e8 \u05ea\u05e4\u05e8\u05d9\u05d8' },
+    hideFooter: { en: 'Hide footer', heb: '\u05d4\u05e1\u05ea\u05e8 \u05ea\u05d7\u05ea\u05d9\u05ea' },
 };
 
 function getLabel(key, locale, countryName) {
     if (key === 'archives' && countryName) {
         return locale === 'heb'
-            ? `ארכיון ${countryName}`
+            ? `\u05d0\u05e8\u05db\u05d9\u05d5\u05df ${countryName}`
             : `the ${countryName} archives`;
     }
     return locale === 'heb' ? labels[key].heb : labels[key].en;
+}
+
+function getCountryMenuLabel(locale, pageType) {
+    if (pageType === 'legal' || pageType === 'about') {
+        return locale === 'heb' ? labels.selectCountry.heb : labels.selectCountry.en;
+    }
+    return locale === 'heb' ? labels.countries.heb : labels.countries.en;
 }
 
 function getCountryName(country, locale) {
@@ -85,32 +95,32 @@ function getH1Text({ locale, pageType, country, date, year, month, day }) {
     if (pageType === 'live') {
         const needsThe = locale === 'en' && (country === 'us' || country === 'uk');
         const fromPart = needsThe ? `from the ${countryName}` : `from ${countryName}`;
-        return locale === 'heb' ? `כותרות חיות מ${countryName}` : `Live Headlines ${fromPart}`;
+        return locale === 'heb' ? `\u05db\u05d5\u05ea\u05e8\u05d5\u05ea \u05d7\u05d9\u05d5\u05ea \u05de${countryName}` : `Live Headlines ${fromPart}`;
     }
     if (pageType === 'feed' || pageType === 'date') {
         const dateLabel = formatDateLabel(date, locale);
         return locale === 'heb'
-            ? `ארכיון כותרות מ${countryName}, ${dateLabel}`
+            ? `\u05d0\u05e8\u05db\u05d9\u05d5\u05df \u05db\u05d5\u05ea\u05e8\u05d5\u05ea \u05de${countryName}, ${dateLabel}`
             : `Headline Archive from ${countryName}, ${dateLabel}`;
     }
     if (pageType === 'monthly-archive') {
         const monthLabel = formatMonthLabel(year, month, locale);
         return locale === 'heb'
-            ? `ארכיון חדשות מ${countryName}, ${monthLabel}`
+            ? `\u05d0\u05e8\u05db\u05d9\u05d5\u05df \u05d7\u05d3\u05e9\u05d5\u05ea \u05de${countryName}, ${monthLabel}`
             : `Headlines Archive from ${countryName}, ${monthLabel}`;
     }
     if (pageType === 'global-live') {
-        return locale === 'heb' ? 'חדשות מהעולם בזמן אמת' : 'Live Global News';
+        return locale === 'heb' ? '\u05d7\u05d3\u05e9\u05d5\u05ea \u05d7\u05d9\u05d5\u05ea \u05de\u05d4\u05e2\u05d5\u05dc\u05dd' : 'Live Global News';
     }
     if (pageType === 'global-archive') {
         const dateObj = date || new Date(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10));
         const dateLabel = formatDateLabel(dateObj, locale);
         return locale === 'heb'
-            ? `ארכיון חדשות גלובלי ל־${dateLabel}`
+            ? `\u05d0\u05e8\u05db\u05d9\u05d5\u05df \u05d7\u05d3\u05e9\u05d5\u05ea \u05d2\u05dc\u05d5\u05d1\u05dc\u05d9 \u05dc${dateLabel}`
             : `Global Headlines Archive for ${dateLabel}`;
     }
     if (pageType === 'search') {
-        return locale === 'heb' ? `חיפוש כותרות ב${countryName}` : `Headline Search in ${countryName}`;
+        return locale === 'heb' ? `\u05d7\u05d9\u05e4\u05d5\u05e9 \u05db\u05d5\u05ea\u05e8\u05d5\u05ea \u05d1${countryName}` : `Headline Search in ${countryName}`;
     }
     return '';
 }
@@ -147,16 +157,17 @@ export default function UniversalFooter({ locale, pageType, country, date, year,
     }, [hidden]);
 
     useEffect(() => {
-        if (openMenu) {
-            setOpenMenu(null);
-        }
+        // Close any open menu when route changes.
+        setOpenMenu(null);
     }, [pathname]);
 
     const h1Text = getH1Text({ locale, pageType, country, date, year, month, day });
     const isGlobalPage = pageType === 'global-live' || pageType === 'global-archive';
     const isMonthlyArchive = pageType === 'monthly-archive';
     const countryName = country ? getCountryName(country, locale) : '';
-    const months = country ? getArchiveMonths(country, locale) : [];
+    const months = useMemo(() => {
+        return country ? getArchiveMonths(country, locale) : [];
+    }, [country, locale]);
     const countryCodes = useMemo(() => {
         return Object.keys(countries).filter((code) => {
             if (code === 'uae') return false;
@@ -242,6 +253,16 @@ export default function UniversalFooter({ locale, pageType, country, date, year,
                                 </span>
                             </InnerLink>
                         )}
+                        <InnerLink href="/contact" locale={locale}>
+                            <span className="underline underline-offset-2">
+                                {getLabel('contact', locale)}
+                            </span>
+                        </InnerLink>
+                        <InnerLink href="/legal" locale={locale}>
+                            <span className="underline underline-offset-2">
+                                {getLabel('legal', locale)}
+                            </span>
+                        </InnerLink>
                     </div>
                     {country && pageType !== 'search' && (
                         <details className="mt-3">
@@ -284,7 +305,7 @@ export default function UniversalFooter({ locale, pageType, country, date, year,
                     {!isGlobalPage && (
                         <details className="mt-3">
                             <summary className="cursor-pointer font-medium">
-                                {getLabel('countries', locale)}
+                                {getCountryMenuLabel(locale, pageType)}
                             </summary>
                             <div className="mt-2 flex flex-wrap gap-2">
                                 {countryCodes.map(code => (
@@ -328,7 +349,7 @@ export default function UniversalFooter({ locale, pageType, country, date, year,
                 )}
                 {!isGlobalPage && !isMonthlyArchive && (
                     <>
-                        <span className="text-gray-300">|</span>
+                        {h1Text && <span className="text-gray-300">|</span>}
                         <InnerLink href={`/${locale}/global`} locale={locale}>
                             <span className="text-gray-700 hover:text-blue bg-gray-100 hover:bg-gray-200 rounded-lg px-2 py-1 inline-block">
                                 {getLabel('global', locale)}
@@ -373,7 +394,7 @@ export default function UniversalFooter({ locale, pageType, country, date, year,
                                 aria-controls="footer-countries"
                                 onClick={() => setOpenMenu(openMenu === 'countries' ? null : 'countries')}
                             >
-                                {getLabel('countries', locale)}
+                                {getCountryMenuLabel(locale, pageType)}
                             </button>
                         </div>
                         <div
@@ -488,10 +509,21 @@ export default function UniversalFooter({ locale, pageType, country, date, year,
                 </div>
                 <div className="flex h-full flex-wrap items-center gap-2" dir={isHeb ? 'rtl' : undefined}>
                     {pageType !== 'live' && !isGlobalPage && !isMonthlyArchive && pageType !== 'search' && (
-                        <Link href="/methodology" hrefLang={locale} className="text-gray-700 hover:text-blue bg-gray-100 hover:bg-gray-200 rounded-lg px-2 py-1 inline-block">
+                        <>
+                        <span className="text-gray-300">|</span>
+                        <Link href="/methodology" hrefLang={locale} className="text-gray-700 hover:text-blue bg-white hover:bg-blue-50 rounded-lg px-2 py-1 inline-block">
                             {getLabel('methodology', locale)}
                         </Link>
+                        </>
                     )}
+                    <span className="text-gray-300">|</span>
+                    <Link href="/contact" hrefLang={locale} className="flex items-center justify-center text-gray-700 hover:text-blue bg-white hover:bg-blue-50 rounded-lg px-2 py-1 inline-block" aria-label={getLabel('contact', locale)}>
+                        <MailIcon fontSize="inherit" />
+                    </Link>
+                    <span className="text-gray-300">|</span>
+                    <Link href="/legal" hrefLang={locale} className="text-gray-700 hover:text-blue bg-white hover:bg-blue-50 rounded-lg px-2 py-1 inline-block">
+                        {getLabel('legal', locale)}
+                    </Link>
                     {!isHeb && (
                         <button
                             type="button"

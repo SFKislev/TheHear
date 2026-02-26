@@ -1,7 +1,7 @@
 import LandingPageContent from './LandingPage_content';
 import TopBar from './TopBar';
-import Footer from './footer';
 import { createMetadata, LdJson } from './metadata';
+import UniversalFooter from "@/components/UniversalFooter";
 
 export async function generateMetadata() {
     return createMetadata();
@@ -23,10 +23,10 @@ export default function Page() {
             {/* SSR page with proper links and content */}
             <div className="min-h-screen flex flex-col">
                 <TopBar />
-                <main className="flex-grow">
+                <main className="flex-grow" style={{ paddingBottom: "var(--footer-offset, 3rem)" }}>
                     <LandingPageContent randomSeed={randomSeed} />
                 </main>
-                <Footer />
+                <UniversalFooter locale="en" pageType="about" />
             </div>
         </>
     );
