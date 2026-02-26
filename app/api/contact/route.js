@@ -1,6 +1,7 @@
 import { initializeApp, getApp, getApps } from "firebase/app";
 import { addDoc, collection, getFirestore, serverTimestamp } from "firebase/firestore";
 import { firebaseConfig } from "@/utils/database/firebaseConfig";
+import nodemailer from "nodemailer";
 
 function isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -40,9 +41,50 @@ export async function POST(request) {
             );
         }
 
+        const smtpHost = process.env.SMTP_HOST || "smtp.gmail.com";
+        const smtpPort = Number(process.env.SMTP_PORT || "465");
+        const smtpUser = process.env.SMTP_USER;
+        const smtpPass = process.env.SMTP_PASS;
+        const contactTo = process.env.CONTACT_TO || smtpUser;
+        const contactFrom = process.env.CONTACT_FROM || smtpUser;
+
+        if (!smtpUser || !smtpPass || !contactTo || !contactFrom) {
+            return Response.json(
+                { ok: false, error: "Contact service is not configured yet." },
+                { status: 500 }
+            );
+        }
+
+        const transporter = nodemailer.createTransport({
+            host: smtpHost,
+            port: smtpPort,
+            secure: smtpPort === 465,
+            auth: {
+                user: smtpUser,
+                pass: smtpPass,
+            },
+        });
+
+        const subjectTopic = topic ? ` - ${topic}` : "";
+        const subject = `[The Hear Contact] ${name}${subjectTopic}`;
+        const text = [
+            `Name: ${name}`,
+            `Email: ${email}`,
+            `Topic: ${topic || "n/a"}`,
+            "",
+            message,
+        ].join("\n");
+
+        await transporter.sendMail({
+            from: contactFrom,
+            to: contactTo,
+            replyTo: email,
+            subject,
+            text,
+        });
+
         const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
         const db = getFirestore(app);
-
         await addDoc(collection(db, "- metadata -", "contact", "submissions"), {
             name,
             email,
@@ -50,6 +92,7 @@ export async function POST(request) {
             message,
             createdAt: serverTimestamp(),
             source: "contact-page",
+            emailDelivered: true,
         });
 
         return Response.json({ ok: true });
@@ -61,4 +104,3 @@ export async function POST(request) {
         );
     }
 }
-

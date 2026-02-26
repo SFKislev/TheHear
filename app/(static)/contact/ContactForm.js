@@ -126,7 +126,7 @@ export default function ContactForm() {
             </button>
 
             {status.text && (
-                <p className={status.type === "error" ? "text-red-700" : "text-green-700"}>
+                <p className={status.type === "error" ? "text-gray-700 bg-red-100 rounded px-3 py-2" : "text-gray-700 bg-green-100 rounded px-3 py-2"}>
                     {status.text}
                 </p>
             )}
