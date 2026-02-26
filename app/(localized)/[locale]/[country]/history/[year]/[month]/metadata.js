@@ -128,7 +128,7 @@ export function LdJson({ country, locale, year, month, dailySummaries, headlines
                         'name': 'The Hear - AI Overviews'
                     },
                     'about': `Daily news summary for ${countryName} - ${formattedDate}`,
-                    'url': `https://www.thehear.org/${locale}/${country}/${formattedDate}`
+                    'url': `https://www.thehear.org/${locale}/${country}/${formattedDate}/feed`
                 });
             }
         });

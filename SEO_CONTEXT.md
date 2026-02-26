@@ -1,6 +1,6 @@
 # SEO Context Memory
 
-Last updated: 2026-02-25
+Last updated: 2026-02-26
 Owner: ongoing team notes
 
 ## Purpose
@@ -388,6 +388,26 @@ Use this block for ongoing conversation and memory updates.
 - Keep legal/contact pages live as trust hygiene and crawlable static endpoints; treat contact form storage as interim ingestion layer until final delivery channel (email/dashboard/webhook) is selected.
 - Next step:
 - Decide message handling path for contact submissions (email forwarding vs admin inbox vs webhook) and then wire operational alerting/triage.
+
+### 2026-02-26 (Feed Canonicalization Cleanup: Date hreflang + Monthly JSON-LD URLs)
+- What changed:
+- Updated non-feed date page alternates (`hreflang` languages map) to point to feed URLs:
+- `https://www.thehear.org/en/{country}/{date}/feed`
+- `https://www.thehear.org/heb/{country}/{date}/feed`
+- Updated monthly archive JSON-LD `hasPart` item URLs from non-feed day URLs to feed day URLs:
+- `https://www.thehear.org/{locale}/{country}/{dd-MM-yyyy}/feed`
+- Why we changed it:
+- Bots were still discovering and crawling non-feed date pages through machine-readable SEO signals, even after sitemap/date-page de-emphasis.
+- This aligns localization and structured-data discovery with the intended indexing target (`/feed`).
+- What we observed (data/source):
+- Local verification on `localhost:3000` confirmed:
+- Date page `/en/us/24-02-2026` renders canonical + `hreflang` alternates all targeting `/feed`.
+- Monthly archive `/en/us/history/2026/02` JSON-LD now emits day URLs as `/feed` variants (no sampled non-feed date URLs in extracted set).
+- Decision:
+- Keep this change and continue treating feed pages as the crawl/index target for date-specific archives.
+- Intentionally did not change `robots.txt` in this pass.
+- Next step:
+- Monitor crawl mix in Vercel/GSC; if non-feed crawl share remains high, consider phased robots policy after noindex cleanup window.
 
 ## Update Template
 Copy this template for each new entry:

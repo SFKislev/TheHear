@@ -149,9 +149,9 @@ export async function createMetadata(params) {
         alternates: {
             canonical: url,
             languages: {
-                'en': `https://www.thehear.org/en/${country}/${date}`,
-                'he': `https://www.thehear.org/heb/${country}/${date}`,
-                'x-default': `https://www.thehear.org/en/${country}/${date}`
+                'en': `https://www.thehear.org/en/${country}/${date}/feed`,
+                'he': `https://www.thehear.org/heb/${country}/${date}/feed`,
+                'x-default': `https://www.thehear.org/en/${country}/${date}/feed`
             }
         },
     };
