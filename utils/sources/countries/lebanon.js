@@ -33,6 +33,22 @@ const lebanonData = {
         "he": "אַל-מַנָּאר"
       }
     },
+    "almanar_en": {
+      "name": "Al Manar English",
+      "description": "Al Manar English is the English-language service of Al Manar, the Hezbollah-affiliated Lebanese satellite television station. It presents news from a pro-Hezbollah and pro-Iran perspective for an international audience.",
+      "translations": {
+        "en": "Al Manar English",
+        "he": "אַל-מַנָּאר בְּאַנְגְּלִית"
+      }
+    },
+    "almanar_fr": {
+      "name": "Al Manar French",
+      "description": "Al Manar French is the French-language service of Al Manar, the Hezbollah-affiliated Lebanese satellite television station. It presents news from a pro-Hezbollah and pro-Iran perspective for a French-speaking audience.",
+      "translations": {
+        "en": "Al Manar French",
+        "he": "אַל-מַנָּאר בְּצָרְפָתִית"
+      }
+    },
     "annahar": {
       "name": "النهار",
       "description": "An-Nahar is one of Lebanon's leading Arabic-language daily newspapers, known for its liberal stance and high-quality journalism. It has a significant influence on Lebanese public opinion.",
@@ -128,6 +144,8 @@ const lebanonData = {
       "mtv",
       "annahar",
       "almanar",
+      "almanar_en",
+      "almanar_fr",
       "alakhbar",
       "lebanon24",
       "naharnet",
@@ -154,6 +172,8 @@ const lebanonData = {
       "janoubia",
       "kataeb",
       "almanar",
+      "almanar_en",
+      "almanar_fr",
       "tayyar",
       "addiyar"
     ],
@@ -172,10 +192,14 @@ const lebanonData = {
       "tayyar",
       "addiyar",
       "alakhbar",
-      "almanar"
+      "almanar",
+      "almanar_en",
+      "almanar_fr"
     ],
     "conservativeToProgressive": [
       "almanar",
+      "almanar_en",
+      "almanar_fr",
       "alakhbar",
       "addiyar",
       "tayyar",
@@ -197,6 +221,8 @@ const lebanonData = {
       "lbci",
       "mtv",
       "almanar",
+      "almanar_en",
+      "almanar_fr",
       "lorientlejour",
       "naharnet",
       "aljoumhouria",
