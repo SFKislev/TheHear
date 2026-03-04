@@ -11,12 +11,11 @@ import FilterCountries from './FilterCountries';
 import useMobile from "@/components/useMobile";
 
 export default function GlobalTopBar({ locale }) {
+    const { globalSort, setGlobalSort, allExpanded: storeAllExpanded, setAllExpanded, filteredCountries } = useGlobalSort();
+    const { isMobile } = useMobile();
     const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [expandAll, setExpandAll] = useState(false);
     const [filterOpen, setFilterOpen] = useState(false);
     const sortDropdownRef = useRef(null);
-    const { globalSort, setGlobalSort, setAllExpanded, filteredCountries } = useGlobalSort();
-    const { isMobile } = useMobile();
 
     const sortOptions = [
         { label: "AI", value: "ai", title: "An AI reads and sorts the headlines, acting as a live editor" },
@@ -45,9 +44,7 @@ export default function GlobalTopBar({ locale }) {
     }, []);
 
     const toggleExpandAll = () => {
-        const newExpandState = !expandAll;
-        setExpandAll(newExpandState);
-        setAllExpanded(newExpandState);
+        setAllExpanded(!storeAllExpanded);
     };
 
     return (
@@ -109,12 +106,12 @@ export default function GlobalTopBar({ locale }) {
                             </div>
                             {!isMobile && (
                                 <>
-                                    <CustomTooltip title={expandAll ? "Collapse all overviews" : "Expand all overviews"}>
+                                    <CustomTooltip title={storeAllExpanded ? "Collapse all overviews" : "Expand all overviews"}>
                                         <button
                                             onClick={toggleExpandAll}
                                             className="p-1 rounded-full text-gray-500 hover:bg-gray-100"
                                         >
-                                            {expandAll ?
+                                            {storeAllExpanded ?
                                                 <UnfoldLessIcon style={{ fontSize: '1.1rem' }} /> :
                                                 <UnfoldMoreIcon style={{ fontSize: '1.1rem' }} />
                                             }

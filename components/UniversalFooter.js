@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
@@ -330,7 +330,12 @@ export default function UniversalFooter({ locale, pageType, country, date, year,
                 className={`universal-footer-fixed fixed bottom-0 left-0 right-0 h-12 w-full border-t border-gray-200 bg-white px-3 ${textSizeClass} ${fontClass} ${openMenu ? 'z-[100]' : 'z-40'}`}
                 dir={isHeb ? 'rtl' : 'ltr'}
             >
-            <div className={`flex h-full flex-wrap items-center gap-2 ${isHeb ? '' : 'justify-between'}`}>
+            <div className={`relative flex h-full flex-wrap items-center gap-2 ${isHeb ? '' : 'justify-between'}`}>
+                {isGlobalPage && (
+                    <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden md:inline text-gray-900 select-text font-medium">
+                        an AI that reads all headlines
+                    </span>
+                )}
                 {isHeb && <div className="flex-1 min-w-0" />}
                 <div className={isHeb ? 'flex h-full flex-wrap items-center gap-4' : 'contents'} dir={isHeb ? 'rtl' : undefined}>
                 <div className="flex h-full flex-wrap items-center gap-2" dir={isHeb ? 'rtl' : undefined}>

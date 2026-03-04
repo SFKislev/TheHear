@@ -60,7 +60,10 @@ export default function GlobalGrid({ locale, AICountrySort: initialAICountrySort
         let order = [...AICountrySort]
 
         if (globalSort == 'cohesion') {
-            order = Object.entries(globalCountryCohesion).sort((a, b) => b[1] - a[1]).map(c => c[0])
+            const cohesionEntries = Object.entries(globalCountryCohesion)
+            order = cohesionEntries.length > 0
+                ? cohesionEntries.sort((a, b) => b[1] - a[1]).map(c => c[0])
+                : order
         } else if (globalSort == 'population') {
             order = Object.entries(countries).sort((a, b) => b[1].population - a[1].population).map(c => c[0])
         } else if (globalSort == 'softPower') {
@@ -69,7 +72,9 @@ export default function GlobalGrid({ locale, AICountrySort: initialAICountrySort
             order = Object.entries(countries).sort((a, b) => a[1].pressFreedom - b[1].pressFreedom).map(c => c[0])
         } else if (globalSort == 'recency') {
             const timestampEntries = Object.entries(globalCountryTimestamps)
-            order = timestampEntries.sort((a, b) => new Date(b[1]) - new Date(a[1])).map(c => c[0])
+            order = timestampEntries.length > 0
+                ? timestampEntries.sort((a, b) => new Date(b[1]) - new Date(a[1])).map(c => c[0])
+                : order
         }
 
         // Apply pinned countries sorting

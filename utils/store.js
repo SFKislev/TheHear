@@ -61,7 +61,7 @@ const getInitialFilteredCountries = () => {
 };
 
 export const useGlobalSort = create(set => ({
-    globalSort: 'ai',
+    globalSort: 'cohesion',
     setGlobalSort: (sort) => set({ globalSort: sort }),
     pinnedCountries: [],
     setPinnedCountries: (countries) => set({ pinnedCountries: countries }),
