@@ -49,7 +49,7 @@ export function SourcesGrid({ open, country, locale, sources, centered }) {
             id,
             description: sourceData.description,
             active: activeWebsites.includes(id),
-            name: sourceData.name,
+            name: sourceData.translations?.en || sourceData.name,
             website: sources[id] ? sources[id].headlines[0].link : '',
             hasData,
         }
