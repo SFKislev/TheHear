@@ -4,8 +4,7 @@ import EnglishFonts, { Typography_English } from "@/utils/typography/EnglishFont
 import Image from 'next/image';
 import FlagIcon from "@/components/FlagIcon";
 import { countries } from "@/utils/sources/countries";
-import DynamicLogo from "@/components/Logo";
-import DynamicLogoSmall from "@/components/Logo-small";
+import RandomMobileLogo from "@/components/RandomMobileLogo";
 import Link from 'next/link';
 // import { sources, RandomSampleCards } from "./SampleCards";  // Comment out this import
 import InnerLink from '@/components/InnerLink';
@@ -155,7 +154,7 @@ export default function LandingPageContent({ randomSeed }) {
           <div className="col-span-1 md:col-span-4 flex justify-center">
             <div className="h-full bg-white">
               <div className="no-underline">
-                <DynamicLogoSmall locale="en" showDivider={false} />
+                <RandomMobileLogo locale="en" desktopVariant="small" showDivider={false} />
               </div>
             </div>
           </div>

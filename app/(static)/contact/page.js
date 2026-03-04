@@ -1,4 +1,4 @@
-import DynamicLogoSmall from "@/components/Logo-small";
+import RandomMobileLogo from "@/components/RandomMobileLogo";
 import UniversalFooter from "@/components/UniversalFooter";
 import ContactForm from "./ContactForm";
 import { createMetadata, LdJson } from "./metadata";
@@ -19,7 +19,7 @@ export default function ContactPage() {
             >
                 <div className="w-full max-w-[600px]">
                     <div className="mb-3">
-                        <DynamicLogoSmall locale="en" showDivider={false} alwaysVisible />
+                        <RandomMobileLogo locale="en" desktopVariant="small" showDivider={false} alwaysVisible />
                     </div>
                     <h1 className="font-['Geist'] text-xl md:text-3xl text-black font-bold mb-6">Contact</h1>
 

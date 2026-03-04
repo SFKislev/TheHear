@@ -3,7 +3,7 @@
 import React from 'react';
 import FlagIcon from "@/components/FlagIcon";
 import { countries } from "@/utils/sources/countries";
-import DynamicLogo from "@/components/Logo";
+import RandomMobileLogo from "@/components/RandomMobileLogo";
 import InnerLink from '@/components/InnerLink';
 
 export default function MobilePage() {
@@ -11,7 +11,7 @@ export default function MobilePage() {
     <div className="min-h-screen bg-white p-4">
       {/* Logo */}
       <div className="flex justify-center mb-0 pt-2 mobile-logo-always-hover">
-        <DynamicLogo locale="en" />
+        <RandomMobileLogo locale="en" desktopVariant="large" mobileReducedPadding={true} />
       </div>
 
       {/* Title */}

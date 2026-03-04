@@ -7,6 +7,8 @@ import InnerLink from './InnerLink';
 
 export default function DynamicLogoSmall({ locale, showDivider = true, mobileReducedPadding = false, alwaysVisible = false }) {
     const [isFakeHover, setIsFakeHover] = useState(false);
+    const textTopPaddingClass = mobileReducedPadding ? '' : 'pt-8';
+    const backgroundTopClass = mobileReducedPadding ? 'top-[50%]' : 'top-[62%]';
 
     // Add fake hover effect every 30 seconds
     useEffect(() => {
@@ -32,7 +34,7 @@ export default function DynamicLogoSmall({ locale, showDivider = true, mobileRed
     return (
         <>
             <div className={`logo-hover-container flex items-center justify-center relative ${mobileReducedPadding ? 'pt-2' : 'pt-8'} ${isFakeHover ? 'fake-hover' : ''}`}>
-                <div className="logo-background absolute top-[62%] left-1/2 w-[210px] h-[40%] bg-[#EBEBEB] opacity-0 transform translate-y-[-50%] translate-x-[-50%] shadow-xl"
+                <div className={`logo-background absolute ${backgroundTopClass} left-1/2 w-[210px] h-[40%] bg-[#EBEBEB] opacity-0 transform translate-y-[-50%] translate-x-[-50%] shadow-xl`}
                     style={{
                         transition: 'opacity 0.2s ease',
                         transitionDelay: '.8s',
@@ -40,7 +42,7 @@ export default function DynamicLogoSmall({ locale, showDivider = true, mobileRed
                     }}
                 />
 
-                <div className="logo-text-right absolute left-1/2 top-[50%] pt-8 transform translate-y-[-50%] font-serif text-2xl text-black z-10 opacity-0 transition-opacity duration-100 delay-50 pointer-events-none"
+                <div className={`logo-text-right absolute left-1/2 top-[50%] ${textTopPaddingClass} transform translate-y-[-50%] font-serif text-2xl text-black z-10 opacity-0 transition-opacity duration-100 delay-50 pointer-events-none`}
                     style={{
                         fontFamily: 'CheltenhamCondensed, serif',
                         fontSize: '2rem',
@@ -55,7 +57,7 @@ export default function DynamicLogoSmall({ locale, showDivider = true, mobileRed
                         src={logoA} alt="The Hear Logo" />
                 </InnerLink>
 
-                <div className="logo-text-right pt-8 absolute left-1/2 top-[50%] transform translate-y-[-50%] font-serif text-2xl text-black z-10 opacity-0 transition-opacity duration-100 delay-500 pointer-events-none"
+                <div className={`logo-text-right ${textTopPaddingClass} absolute left-1/2 top-[50%] transform translate-y-[-50%] font-serif text-2xl text-black z-10 opacity-0 transition-opacity duration-100 delay-500 pointer-events-none`}
                     style={{
                         fontFamily: 'CheltenhamCondensed, serif',
                         fontSize: '2rem',

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from "react";
-import DynamicLogo from "@/components/Logo";
+import RandomMobileLogo from "@/components/RandomMobileLogo";
 import { useTranslate, useTime } from "@/utils/store";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import useSummariesManager from "@/utils/database/useSummariesManager";
@@ -87,7 +87,7 @@ export default function MobileSummary({ locale, country, pageDate, initialSummar
             className={`flex flex-col gap-2 px-2 h-full overflow-hidden ${isLogoHovered ? 'mobile-logo-active-hover' : ''}`}
             onClick={handleInteraction}
         >
-            <DynamicLogo locale={locale} padding="p-0" mobileReducedPadding={true} />
+            <RandomMobileLogo locale={locale} desktopVariant="large" padding="p-0" mobileReducedPadding={true} />
             
             <div 
                 className="flex-1 overflow-y-auto custom-scrollbar"

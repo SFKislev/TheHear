@@ -1,6 +1,6 @@
 import { createMetadata, LdJson } from "./metadata";
 import UniversalFooter from "@/components/UniversalFooter";
-import DynamicLogoSmall from "@/components/Logo-small";
+import RandomMobileLogo from "@/components/RandomMobileLogo";
 import Link from "next/link";
 
 export async function generateMetadata() {
@@ -16,7 +16,7 @@ export default function LegalPage() {
             <main className="min-h-screen flex items-center justify-center px-5 py-10 pb-20 bg-white">
                 <div className="w-full max-w-[600px]">
                     <div className="mb-3">
-                        <DynamicLogoSmall locale="en" showDivider={false} />
+                        <RandomMobileLogo locale="en" desktopVariant="small" showDivider={false} />
                     </div>
                     <h1 className="font-['Geist'] text-xl md:text-3xl text-black font-bold mb-6">Legal</h1>
 

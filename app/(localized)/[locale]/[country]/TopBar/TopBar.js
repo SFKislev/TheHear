@@ -157,7 +157,7 @@ export default function TopBar({ locale, country, sources, currentSummary, initi
             {/* Load Hebrew fonts when locale is Hebrew */}
             {effectiveLocale === 'heb' && <HebrewFonts />}
 
-            <nav className="sticky top-0 left-0 w-full bg-white z-10 border-b border-gray-200">
+            <nav className="sticky top-0 left-0 w-full bg-white z-40 border-b border-gray-200">
                 <div className="w-full mx-auto px-5">
                     <div className="flex items-center justify-between py-3">
                         {/* Left side: The Hear | TIME | FLAG */}
@@ -268,7 +268,7 @@ export default function TopBar({ locale, country, sources, currentSummary, initi
 
             {/* Settings Bar - always render but hide when closed so FontToggle can react to panel changes */}
             {!isVerticalScreen && (
-                <div className={`sticky top-[65px] left-0 w-full bg-white z-10 border-b border-gray-200 ${settingsOpen ? 'block' : 'hidden'}`}>
+                <div className={`sticky top-[65px] left-0 w-full bg-white z-30 border-b border-gray-200 ${settingsOpen ? 'block' : 'hidden'}`}>
                     <div className="w-full mx-auto px-4 py-3">
                         <div className="flex justify-end">
                             <Settings
