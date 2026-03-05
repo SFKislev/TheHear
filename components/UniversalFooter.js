@@ -331,7 +331,7 @@ export default function UniversalFooter({ locale, pageType, country, date, year,
                 dir={isHeb ? 'rtl' : 'ltr'}
             >
             <div className={`relative flex h-full flex-wrap items-center gap-2 ${isHeb ? '' : 'justify-between'}`}>
-                {isGlobalPage && (
+                {isGlobalPage && locale !== 'heb' && (
                     <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden md:inline text-gray-900 select-text font-medium">
                         an AI that reads all headlines
                     </span>
