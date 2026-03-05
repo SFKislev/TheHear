@@ -7,7 +7,7 @@ import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
 import { trackEngagedUser, hasNavigatedAway } from "@/utils/analytics";
 
-export default function InnerLink({ href, locale, children }) {
+export default function InnerLink({ href, locale, children, prefetch }) {
     const [showProgress, setShowProgress] = useState(false);
     const pathname = usePathname();
     const timeoutRef = useRef(null);
@@ -64,7 +64,7 @@ export default function InnerLink({ href, locale, children }) {
     return (
         <>
             <span onClickCapture={handleClick} className="cursor-pointer inline-block">
-                <Link href={href} hrefLang={locale}>
+                <Link href={href} hrefLang={locale} prefetch={prefetch}>
                     {children}
                 </Link>
             </span>

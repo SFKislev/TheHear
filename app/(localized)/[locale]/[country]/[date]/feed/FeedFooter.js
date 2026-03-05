@@ -33,7 +33,7 @@ export default function FeedFooter({ locale, country, date }) {
             <div className="flex flex-nowrap items-center justify-center min-w-0 flex-1 overflow-x-auto">
                 {/* 1. Time machine - hidden on mobile */}
                 <div className="hidden sm:block">
-                    <InnerLink href={timeMachineUrl} locale={locale}>
+                    <InnerLink href={timeMachineUrl} locale={locale} prefetch={false}>
                         <div className="text-xs bg-gradient-to-r from-green-100 to-green-200 px-4 py-1 rounded-xl cursor-pointer font-['Geist'] hover:shadow-lg hover:text-gray-800 whitespace-nowrap">
                             Time Machine View
                         </div>

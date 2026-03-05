@@ -53,7 +53,7 @@ export default function FeedPopup({ openAbout, country, locale, pageDate }) {
                 onClick={handleClose}
             >
                 <div onClick={e => e.stopPropagation()}>
-                    <InnerLink href={handleContentClick()} locale={locale}>
+                    <InnerLink href={handleContentClick()} locale={locale} prefetch={false}>
                         <div
                             className="w-full max-w-[400px] bg-white p-6 max-h-[80vh] overflow-auto shadow-xl border border-gray-100 rounded-xs cursor-pointer"
                             style={{

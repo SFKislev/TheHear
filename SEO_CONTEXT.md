@@ -438,6 +438,28 @@ Use this block for ongoing conversation and memory updates.
 - Aggregate top `pass-through` UA families and patch matcher with explicit additional patterns (`googleother`, `inspectiontool`, etc.) if confirmed.
 - Turn `BOT_DEBUG` back off after validation.
 
+### 2026-03-05 (Feed->Date Prefetch Suppression to Reduce Internal Non-Feed Crawl Noise)
+- What changed:
+- Added optional `prefetch` pass-through prop to `components/InnerLink.js` and forwarded it to Next.js `<Link>`.
+- Set `prefetch={false}` only on feed-page links that intentionally point to non-feed date routes:
+- `app/(localized)/[locale]/[country]/[date]/feed/FeedFooter.js` ("Time Machine View" link).
+- `app/(localized)/[locale]/[country]/[date]/feed/popup.js` (popup click-through to time-machine page).
+- Why we changed it:
+- Middleware debug logs showed many non-feed hits with browser-like UAs and fetch-style headers (`accept: */*`, `secFetchMode: cors`, `secFetchSite: same-origin`) consistent with internal prefetch/discovery traffic.
+- This created avoidable non-feed edge hits even when users/bots were primarily visiting feed pages.
+- What we observed (data/source):
+- Local checks on `localhost:3000` confirmed expected route behavior remains intact:
+- Human UA on non-feed date URL returns `200`.
+- Googlebot-like UA on non-feed date URL returns `308` to `/feed`.
+- Feed URL remains `200` for both.
+- Repo-level code scan confirmed feed pages had direct links to non-feed date routes via `InnerLink` and `InnerLink` previously used default Next.js prefetch behavior.
+- Decision:
+- Keep this as a surgical containment fix: only disable prefetch on feed->non-feed date links.
+- Preserve default prefetch behavior elsewhere (including date->date navigation on non-feed pages and feed->feed links).
+- Next step:
+- Deploy and monitor Vercel edge logs/observability for a drop in non-feed `pass-through` requests with fetch-style headers.
+- If needed, extend with additional targeted `prefetch={false}` only where feed pages still expose non-feed URLs.
+
 ## Update Template
 Copy this template for each new entry:
 
