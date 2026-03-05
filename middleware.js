@@ -27,10 +27,50 @@ const countryCodeToSlug = {
 };
 
 const BOT_USER_AGENT_RE = /bot|crawler|spider|crawling|googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|facebookexternalhit|twitterbot|rogerbot|linkedinbot|embedly|quora link preview|showyoubot|outbrain|pinterest|slackbot|vkshare|w3c_validator/i;
+const BOT_DEBUG_ENABLED = process.env.BOT_DEBUG === '1';
+const BOT_DEBUG_SAMPLE_RATE = (() => {
+  const rawRate = process.env.BOT_DEBUG_SAMPLE_RATE;
+  const parsedRate = rawRate === undefined ? 0.05 : Number(rawRate);
+  if (!Number.isFinite(parsedRate)) return 0.05;
+  return Math.min(1, Math.max(0, parsedRate));
+})();
 
 function isCrawlerRequest(request) {
   const userAgent = request.headers.get('user-agent') || '';
   return BOT_USER_AGENT_RE.test(userAgent);
+}
+
+function shouldEmitBotDebug(pathname, userAgent) {
+  if (!BOT_DEBUG_ENABLED || BOT_DEBUG_SAMPLE_RATE <= 0) return false;
+
+  // Deterministic sampling per path+UA keeps logs stable while limiting volume.
+  const key = `${pathname}|${userAgent}`;
+  let hash = 0;
+  for (let i = 0; i < key.length; i++) {
+    hash = (hash * 31 + key.charCodeAt(i)) % 100000;
+  }
+
+  return (hash / 100000) < BOT_DEBUG_SAMPLE_RATE;
+}
+
+function emitBotRedirectDebug(request, { pathname, locale, country, date, isCrawlerMatch, decision }) {
+  const userAgent = request.headers.get('user-agent') || '';
+  if (!shouldEmitBotDebug(pathname, userAgent)) return;
+
+  const payload = {
+    path: pathname,
+    locale,
+    country,
+    date,
+    isCrawlerMatch,
+    decision,
+    userAgent: userAgent.slice(0, 220),
+    accept: (request.headers.get('accept') || '').slice(0, 120),
+    secFetchSite: request.headers.get('sec-fetch-site') || '',
+    secFetchMode: request.headers.get('sec-fetch-mode') || '',
+  };
+
+  console.log(`[bot-feed-redirect] ${JSON.stringify(payload)}`);
 }
 
 function getUserCountry(request) {
@@ -151,11 +191,30 @@ export async function middleware(request) {
 
       // Keep human UX on interactive date pages, but funnel crawlers to bot-optimized feed pages.
       const isExactNonFeedDateRoute = isDateParam && segments.length === 3;
-      if (isExactNonFeedDateRoute && isCrawlerRequest(request)) {
+      const isCrawlerMatch = isExactNonFeedDateRoute && isCrawlerRequest(request);
+      if (isCrawlerMatch) {
+        emitBotRedirectDebug(request, {
+          pathname,
+          locale,
+          country: valid,
+          date: segments[2],
+          isCrawlerMatch: true,
+          decision: 'redirect-feed'
+        });
         return NextResponse.redirect(
           new URL(`/${locale}/${valid}/${segments[2]}/feed${searchParams}`, request.url),
           308
         );
+      }
+      if (isExactNonFeedDateRoute) {
+        emitBotRedirectDebug(request, {
+          pathname,
+          locale,
+          country: valid,
+          date: segments[2],
+          isCrawlerMatch: false,
+          decision: 'pass-through'
+        });
       }
 
       // Special case: redirect Hebrew search routes to English

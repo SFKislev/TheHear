@@ -409,6 +409,35 @@ Use this block for ongoing conversation and memory updates.
 - Next step:
 - Monitor crawl mix in Vercel/GSC; if non-feed crawl share remains high, consider phased robots policy after noindex cleanup window.
 
+### 2026-03-05 (Bot-Only Date->Feed Redirect + Safe Middleware Debug Logging)
+- What changed:
+- Added bot-only redirect in `middleware.js` for exact non-feed date routes (`/{locale}/{country}/{dd-MM-yyyy}`) to `/{locale}/{country}/{dd-MM-yyyy}/feed` with `308`.
+- Redirect preserves query parameters.
+- Added temporary debug logging in `middleware.js` behind env flags:
+- `BOT_DEBUG=1` enables logging.
+- `BOT_DEBUG_SAMPLE_RATE` controls sampled log volume (default `0.05` when debug is enabled).
+- Debug logs are emitted only for exact non-feed date routes and include route, UA snippet, selected request headers, and decision (`redirect-feed` vs `pass-through`).
+- Why we changed it:
+- Vercel observability still showed substantial crawler traffic on non-feed date routes despite canonical/sitemap/JSON-LD de-emphasis.
+- Needed to preserve human "time machine" UX while forcing known crawler traffic to bot-optimized feed pages.
+- Needed production evidence on remaining pass-through traffic to identify UA patterns not covered by current bot matcher.
+- What we observed (data/source):
+- Localhost validation (`localhost:3001`) showed expected split:
+- Human UA on `/en/us/05-09-2025` -> `200`.
+- Googlebot-like UA on `/en/us/05-09-2025` -> `308` to `/feed`.
+- `/feed` remained `200` for both human and bot UAs.
+- Live checks on `www.thehear.org` confirmed `308` for major crawler UAs (`Googlebot`, `bingbot`, `AhrefsBot`, `SemrushBot`, etc.).
+- Live checks also showed pass-through (`200`) for some nonstandard Google crawler identities (for example `Google-InspectionTool/1.0`, `GoogleOther`) because they are not matched by current `BOT_USER_AGENT_RE`.
+- Decision:
+- Keep bot-only redirect active for matched crawler UAs.
+- Run temporary sampled middleware logs in production for a short window to capture pass-through UA/header patterns on non-feed date routes.
+- Use those findings to expand matcher coverage surgically, then disable debug logging.
+- Next step:
+- Enable `BOT_DEBUG=1` in production (with conservative sampling, e.g. `BOT_DEBUG_SAMPLE_RATE=0.02` to `0.05`) for a few hours.
+- Read logs in Vercel Project -> Logs (Edge Functions) by filtering `[bot-feed-redirect]`.
+- Aggregate top `pass-through` UA families and patch matcher with explicit additional patterns (`googleother`, `inspectiontool`, etc.) if confirmed.
+- Turn `BOT_DEBUG` back off after validation.
+
 ## Update Template
 Copy this template for each new entry:
 
