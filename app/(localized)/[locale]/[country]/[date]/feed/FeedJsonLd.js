@@ -1,6 +1,5 @@
 import { getHeadline, getSummaryContent } from "@/utils/daily summary utils";
 import { countries } from "@/utils/sources/countries";
-import { getSourceData } from "@/utils/sources/getCountryData";
 import { format } from "date-fns";
 
 // Flag emoji mapping for countries
@@ -80,7 +79,7 @@ function buildHebrewSeoTitle({ countryName, hebrewDate, headline }) {
     return candidate;
 }
 
-export default function FeedJsonLd({ country, locale, date, daySummary, headlines, initialSummaries }) {
+export default function FeedJsonLd({ country, locale, date, daySummary, headlines }) {
     const countryData = countries[country] || {};
     const countryName = locale === 'heb' ? countryData.hebrew || country : countryData.english || country;
     const flagEmoji = countryFlags[country] || '';
@@ -117,21 +116,6 @@ export default function FeedJsonLd({ country, locale, date, daySummary, headline
         ? `ארכיון מלא של כותרות חדשות מ-${countryName} ל-${formattedDateDisplay} - כל הכותרות בסדר כרונולוגי`
         : `Complete chronological archive of news headlines from ${countryName} for ${formattedDateDisplay} - All ${headlines.length} headlines as they appeared throughout the day`;
 
-    // Helper to clean summary text
-    const cleanSummaryText = (text) => {
-        if (!text) return '';
-        const markers = ['HEBREWSUMMARY:', 'LOCALSUMMARY:', 'SUMMARY:'];
-        let cleanText = text;
-        for (const marker of markers) {
-            const markerIndex = text.indexOf(marker);
-            if (markerIndex !== -1) {
-                cleanText = text.substring(0, markerIndex).trim();
-                break;
-            }
-        }
-        return cleanText;
-    };
-
     // Prepare main content (daily summary) for SEO prominence
     const mainContent = daySummary ? getSummaryContent(daySummary, locale) : null;
     const rawMainHeadline = daySummary ? headline : '';
@@ -155,99 +139,11 @@ export default function FeedJsonLd({ country, locale, date, daySummary, headline
         mainHeadline = `${dateStr} - ${rawMainHeadline}`;
     }
 
-    // Prepare hourly summaries as structured AnalysisNewsArticle items
-    const hourlySummaries = [];
-    if (initialSummaries && Array.isArray(initialSummaries) && initialSummaries.length > 0) {
-        initialSummaries.forEach((summary, index) => {
-            // Get summary content
-            let summaryContent = '';
-            if (locale === 'heb') {
-                summaryContent = cleanSummaryText(summary.hebrewSummary || summary.summary || summary.translatedSummary);
-            } else {
-                summaryContent = cleanSummaryText(summary.summary || summary.translatedSummary || summary.hebrewSummary);
-            }
-
-            // Get summary headline
-            let summaryHeadline = '';
-            if (locale === 'heb') {
-                summaryHeadline = cleanSummaryText(summary.hebrewHeadline || summary.headline);
-            } else {
-                summaryHeadline = cleanSummaryText(summary.englishHeadline || summary.headline);
-            }
-
-            if (summaryContent && summaryContent.trim() && summaryContent.length > 20) {
-                // Add date + timestamp to headline for archival context (in local timezone)
-                const timestamp = summary.timestamp ? new Date(summary.timestamp) : null;
-                let dateTimePrefix = '';
-                if (timestamp) {
-                    // Format date and time in the country's local timezone
-                    // Include year for historical archive context
-                    const parts = new Intl.DateTimeFormat('en-US', {
-                        timeZone: timezone,
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric'
-                    }).formatToParts(timestamp);
-
-                    const month = parts.find(p => p.type === 'month').value;
-                    const day = parts.find(p => p.type === 'day').value;
-                    const year = parts.find(p => p.type === 'year').value;
-                    const dateStr = `${month} ${day} ${year}`; // No comma between day and year
-
-                    const timeStr = timestamp.toLocaleString('en-US', {
-                        timeZone: timezone,
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: false
-                    });
-                    dateTimePrefix = `${dateStr}, ${timeStr} - `;
-                }
-                const fullHeadline = summaryHeadline
-                    ? `${dateTimePrefix}${summaryHeadline}`
-                    : `${dateTimePrefix}News analysis ${index + 1}`;
-
-                hourlySummaries.push({
-                    '@type': 'AnalysisNewsArticle',
-                    'headline': fullHeadline,
-                    'articleBody': summaryContent.trim(),
-                    'datePublished': summary.timestamp ? new Date(summary.timestamp).toISOString() : date.toISOString(),
-                    'image': {
-                        '@type': 'ImageObject',
-                        'url': 'https://www.thehear.org/logo512.png',
-                        'width': 512,
-                        'height': 512
-                    },
-                    'author': {
-                        '@type': 'Organization',
-                        'name': 'The Hear AI Analysis',
-                        'url': 'https://www.thehear.org'
-                    },
-                    'publisher': {
-                        '@type': 'NewsMediaOrganization',
-                        'name': 'The Hear',
-                        'logo': {
-                            '@type': 'ImageObject',
-                            'url': 'https://www.thehear.org/logo192.png'
-                        },
-                        'url': 'https://www.thehear.org',
-                        'publishingPrinciples': 'https://www.thehear.org/methodology',
-                        'masthead': 'https://www.thehear.org/about'
-                    },
-                    'about': {
-                        '@type': 'Thing',
-                        'name': `Overview of Headlines from ${countryName}`
-                    },
-                    'inLanguage': locale === 'heb' ? 'he' : 'en'
-                });
-            }
-        });
-    }
-
     const image = 'https://www.thehear.org/logo192.png';
     const totalHeadlines = headlines?.length || 0;
+    const pageDateIso = date instanceof Date ? date.toISOString() : new Date(date).toISOString();
 
-    // Build comprehensive JSON-LD for a chronological news archive page
-    // This is a CollectionPage containing AnalysisNewsArticle items (AI summaries)
+    // Keep feed schema compact and page-level.
     const jsonLd = {
         '@context': 'https://schema.org',
         '@graph': [
@@ -258,19 +154,21 @@ export default function FeedJsonLd({ country, locale, date, daySummary, headline
                 'description': description,
                 'url': url,
                 'inLanguage': locale === 'heb' ? 'he' : 'en',
-                'datePublished': date instanceof Date ? date.toISOString() : new Date(date).toISOString(),
-                'dateModified': date instanceof Date ? date.toISOString() : new Date(date).toISOString(),
+                'datePublished': pageDateIso,
+                'dateModified': pageDateIso,
                 'about': {
                     '@type': 'Thing',
                     'name': `${countryName} News`,
                     'description': `Historical news archive from ${countryName} for ${formattedDateDisplay}`
                 },
+                'headline': mainHeadline || seoTitle,
+                'keywords': [countryName, formattedDateDisplay, 'news archive', 'headlines'],
                 ...(mainContent && mainHeadline && {
                     'mainEntity': {
                         '@type': 'AnalysisNewsArticle',
                         'headline': mainHeadline,
-                        'articleBody': mainContent,
-                        'datePublished': date instanceof Date ? date.toISOString() : new Date(date).toISOString(),
+                        'description': mainContent,
+                        'datePublished': pageDateIso,
                         'image': {
                             '@type': 'ImageObject',
                             'url': 'https://www.thehear.org/logo512.png',
@@ -300,9 +198,11 @@ export default function FeedJsonLd({ country, locale, date, daySummary, headline
                         'inLanguage': locale === 'heb' ? 'he' : 'en'
                     }
                 }),
-                ...(hourlySummaries.length > 0 && {
-                    'hasPart': hourlySummaries
-                }),
+                'mainEntityOfPage': {
+                    '@type': 'ItemList',
+                    'name': `${countryName} headline timeline`,
+                    'numberOfItems': totalHeadlines
+                },
                 'isPartOf': {
                     '@type': 'CreativeWorkSeries',
                     'name': `${countryName} News Archive`,

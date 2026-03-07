@@ -1,7 +1,7 @@
-import InnerLink from "@/components/InnerLink";
 import FlagIcon from "@/components/FlagIcon";
 import { Info } from "lucide-react";
 import { countries } from "@/utils/sources/countries";
+import InnerLink from "@/components/InnerLink";
 
 export default function FeedFooter({ locale, country, date }) {
     // Get country name - always use English for footer to avoid RTL issues

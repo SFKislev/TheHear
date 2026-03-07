@@ -460,6 +460,68 @@ Use this block for ongoing conversation and memory updates.
 - Deploy and monitor Vercel edge logs/observability for a drop in non-feed `pass-through` requests with fetch-style headers.
 - If needed, extend with additional targeted `prefetch={false}` only where feed pages still expose non-feed URLs.
 
+### 2026-03-06 (Feed JSON-LD Payload Reduction for Historical Archive Pages)
+- What changed:
+- Simplified `app/(localized)/[locale]/[country]/[date]/feed/FeedJsonLd.js` to emit compact page-level schema only.
+- Removed per-hour `hasPart` `AnalysisNewsArticle` items and stopped embedding large `articleBody` blobs for every summary in feed JSON-LD.
+- Kept core signals: `CollectionPage`, canonical page URL, archive context, publisher, breadcrumb, headline count, and optional main daily summary entity.
+- Why we changed it:
+- Live failing feed pages still showed healthy canonical/robots behavior, but historical feed HTML remained very large and included a substantial amount of self-generated structured-data text.
+- The previous schema was duplicating archive content in machine-readable form without clear evidence that it improved indexing selection.
+- What we observed (data/source):
+- Live checks on `2026-03-06` confirmed sample failing URLs such as `/en/italy/01-09-2024/feed` and `/en/turkey/12-11-2024/feed` returned `200`, `index,follow`, self-canonical `/feed`, and prerender headers (`X-Nextjs-Prerender: 1`).
+- Googlebot-like requests to exact non-feed date routes still returned `308` to `/feed`.
+- Local production build passed after the JSON-LD reduction (`next build`), with the same known non-blocking ESLint parser serialization warning as before.
+- Decision:
+- Treat oversized/over-detailed feed JSON-LD as a plausible remaining crawl/index quality drag and keep the compact schema version.
+- Next step:
+- Deploy this change, then request revalidation/inspection on a small set of previously failing `/feed` examples.
+- If validation still fails after a fresh recrawl window, prioritize reducing feed page client payload next (the feed timeline currently renders through client components, which likely duplicates archive data into the Next.js Flight payload).
+
+### 2026-03-07 (Feed Route Moved to Pages Router + Feed Payload Cleanup)
+- What changed:
+- Moved the feed URL family `/{locale}/{country}/{date}/feed` off Next.js App Router and into Pages Router at `pages/[locale]/[country]/[date]/feed.js`, keeping the public URL structure unchanged.
+- Removed the old App Router feed route owner `app/(localized)/[locale]/[country]/[date]/feed/page.js`.
+- Added `pages/_app.js` and `pages/_document.js` so the Pages Router feed route receives the same global styling/font setup as the rest of the site.
+- Extracted shared feed data/SEO logic into `utils/feedPage.js`.
+- Kept feed UI components shared, but the route is now owned by Pages Router; App Router no longer serves feed URLs.
+- Refactored feed rendering to stay mostly server-rendered while keeping only tiny client islands:
+- `FeedSummaryNav.js` for up/down summary chevrons.
+- `FeedLocalTime.js` for browser-local parenthesis timestamps.
+- Replaced runtime-random feed typography with deterministic typography so feed cards can stay server-rendered without client randomness.
+- Reduced feed payload further by normalizing serialized props:
+- daily summary object reduced to only feed-used fields.
+- English feed summary payload strips Hebrew fields and translated fields.
+- translated summary fields removed from feed payloads entirely because feed UI does not expose them.
+- Kept feed JSON-LD compact and page-level.
+- Added a local duplication-auditor CLI at `utils/scripts/audit-page-duplication.js` to inspect page-source duplication by bucket (`visibleText`, `__NEXT_DATA__`, `__next_f`, JSON-LD, meta).
+- Why we changed it:
+- Local/live inspection showed the major remaining duplication was framework-level payload, especially App Router `__next_f` / React Server Component output on feed pages.
+- Feed pages are the intended crawler/indexing target, so reducing framework duplication there was prioritized over more speculative template tweaks.
+- We also wanted a repeatable local tool to inspect exact string duplication inside page source rather than relying on one-off manual checks.
+- What we observed (data/source):
+- Before the route move, live App Router feed pages such as `https://www.thehear.org/en/us/15-06-2025/feed` returned large responses with `self.__next_f.push(...)` present and repeated archive strings across HTML and Flight payload.
+- After the Pages Router move on local dev (`http://localhost:3001/en/us/15-06-2025/feed`):
+- `__next_f` dropped to `0`.
+- `__NEXT_DATA__` remained, as expected for Pages Router.
+- Response size fell materially compared with the live App Router version.
+- Additional payload cleanup reduced local feed HTML further to roughly `407k` chars on the tested `/en/us/15-06-2025/feed` page.
+- Phrase-level verification on `"Iran Strikes Israel Again"` showed the post-cleanup state is now:
+- once in visible HTML.
+- once in `__NEXT_DATA__`.
+- no extra translated-headline copies on English pages.
+- Auditor output confirmed that remaining major duplication is now mostly legitimate repeated archive content (for example repeated `subtitle` or `link` values across distinct headline entries), not framework Flight duplication or unused locale fields.
+- Decision:
+- Keep feed URLs on Pages Router.
+- Treat the major framework-duplication problem as resolved enough to deploy.
+- Do not pursue more complex feed-data compression (for example subtitle dictionaries) yet; current remaining duplication mostly reflects real archive history and is unlikely to be the primary unresolved indexing blocker.
+- Keep using the duplication auditor to catch regressions and to compare local/live output after deploy.
+- Next step:
+- Deploy the Pages Router feed route and payload cleanup.
+- After deploy, compare one or two live feed URLs with the auditor.
+- Re-run GSC inspection/validation on a small set of previously failing exact `/feed` URLs.
+- Use the post-deploy recrawl window to judge whether the index-selection problem improves; if not, shift focus back to site-level trust/query-fit hypotheses rather than continuing micro-payload compression.
+
 ## Update Template
 Copy this template for each new entry:
 

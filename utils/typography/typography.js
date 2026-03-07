@@ -26,3 +26,30 @@ export const countryTypographyOptions = {
 export function getTypographyOptions(country) {
     return countryTypographyOptions[country] || countryTypographyOptions['default'];
 }
+
+function hashString(seed) {
+    let hash = 2166136261;
+
+    for (let i = 0; i < seed.length; i += 1) {
+        hash ^= seed.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
+    }
+
+    return hash >>> 0;
+}
+
+export function getDeterministicTypography({ country, fallbackCountry, seed, isRTL }) {
+    const primaryOptions = getTypographyOptions(country).options;
+    const effectiveFallback = fallbackCountry || (isRTL ? "israel" : "us");
+    const fallbackOptions = getTypographyOptions(effectiveFallback).options;
+    const primaryIndex = hashString(`${country}:${seed}:primary`) % primaryOptions.length;
+    const fallbackIndex = hashString(`${effectiveFallback}:${seed}:fallback`) % fallbackOptions.length;
+
+    const candidate = primaryOptions[primaryIndex];
+
+    if (!candidate || (candidate.direction === "rtl" && !isRTL) || (candidate.direction === "ltr" && isRTL)) {
+        return fallbackOptions[fallbackIndex];
+    }
+
+    return candidate;
+}

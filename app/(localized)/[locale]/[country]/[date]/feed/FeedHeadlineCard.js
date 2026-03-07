@@ -1,117 +1,135 @@
-'use client'
-
 import { getSourceData, getWebsiteName } from "@/utils/sources/getCountryData";
-import { getTypographyOptions } from "@/utils/typography/typography";
+import { getDeterministicTypography } from "@/utils/typography/typography";
 import { checkRTL } from "@/utils/utils";
-import Headline from "../../Source/Headine";
-import Subtitle from "../../Source/Subtitle";
+import FeedLocalTime from "./FeedLocalTime";
 
-export default function HeadlineCard({ headline, country, locale, countryTimezone }) {
-    // Normalize website_id to match source keys using fuzzy matching
+export default function HeadlineCard({ headline, country, countryTimezone }) {
     const normalizedWebsiteId = getWebsiteName(country, headline.website_id);
     const sourceData = getSourceData(country, normalizedWebsiteId);
-
-    // Use the original source name (already in the source's native language)
     const sourceName = sourceData?.name || headline.website_id;
-
     const timestamp = new Date(headline.timestamp);
-
-    // User's local time
-    const userTimeString = timestamp.toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
+    const headlineText = headline.headline || "";
+    const subtitleText = headline.subtitle || "";
+    const headlineIsRTL = checkRTL(headlineText) || checkRTL(sourceName);
+    const typographySeed = [
+        sourceName,
+        headlineText,
+        subtitleText,
+        headline.timestamp?.toString?.() || ""
+    ].join("|");
+    const finalTypo = getDeterministicTypography({
+        country,
+        seed: typographySeed,
+        isRTL: headlineIsRTL
     });
 
-    // Country's local time
-    let countryTimeString = userTimeString;
+    let countryTimeString = "";
     if (countryTimezone) {
         try {
-            countryTimeString = new Intl.DateTimeFormat('en-US', {
+            countryTimeString = new Intl.DateTimeFormat("en-US", {
                 timeZone: countryTimezone,
-                hour: '2-digit',
-                minute: '2-digit',
+                hour: "2-digit",
+                minute: "2-digit",
                 hour12: false
             }).format(timestamp);
-        } catch (e) {
-            countryTimeString = userTimeString;
+        } catch (error) {
+            countryTimeString = "";
         }
     }
+    const fallbackTimeString = `${String(timestamp.getUTCHours()).padStart(2, "0")}:${String(timestamp.getUTCMinutes()).padStart(2, "0")} UTC`;
+    const timeString = countryTimeString || fallbackTimeString;
 
-    // Show both times if they're different, with label for clarity
-    const timeString = countryTimeString === userTimeString
-        ? countryTimeString
-        : `${countryTimeString} (${userTimeString} in your timezone)`;
-
-    // Get favicon domain
-    let domain = '';
+    let domain = "";
     try {
-        if (headline.link && typeof headline.link === 'string' &&
-            (headline.link.startsWith('http://') || headline.link.startsWith('https://'))) {
-            domain = new URL(headline.link).hostname.replace('www.', '');
+        if (headline.link && typeof headline.link === "string" &&
+            (headline.link.startsWith("http://") || headline.link.startsWith("https://"))) {
+            domain = new URL(headline.link).hostname.replace("www.", "");
         }
     } catch (error) {
-        domain = '';
+        domain = "";
     }
 
-    // Check if this should use RTL based on headline/source content
-    const headlineIsRTL = checkRTL(headline.headline) || checkRTL(sourceName);
+    const headlineContent = (
+        <div className="relative">
+            <h3
+                className="w-full text-lg font-semibold break-words line-clamp-6"
+                style={{
+                    ...finalTypo,
+                    width: "100%",
+                    direction: headlineIsRTL ? "rtl" : "ltr"
+                }}
+            >
+                {headlineText}
+            </h3>
+        </div>
+    );
 
-    // Get random typography for this headline (matching SourceCard logic)
-    const typography = getTypographyOptions(country);
-    const options = typography.options;
-    const randomIndex = Math.floor(Math.random() * 100);
-    let selectedTypo = options[randomIndex % options.length];
+    const isInternalLink = headline.link && (
+        headline.link.includes("thehear.org") ||
+        headline.link.includes("www.thehear.org") ||
+        headline.link.startsWith("/")
+    );
 
-    // If typography direction doesn't match content, switch it
-    let finalTypo = selectedTypo;
-    if ((finalTypo.direction === 'rtl' && !headlineIsRTL) || (finalTypo.direction === 'ltr' && headlineIsRTL)) {
-        const otherOptions = getTypographyOptions(headlineIsRTL ? 'israel' : 'us').options;
-        finalTypo = otherOptions[randomIndex % otherOptions.length];
-    }
-    
     return (
-        <article className={`bg-neutral-100 hover:bg-white hover:shadow-xl transition-colors duration-200 ${headlineIsRTL ? 'direction-rtl' : 'direction-ltr'}`}>
+        <article className={`bg-neutral-100 hover:bg-white hover:shadow-xl transition-colors duration-200 ${headlineIsRTL ? "direction-rtl" : "direction-ltr"}`}>
             <div className="flex flex-col h-full">
                 <div className="flex flex-col gap-2 p-6">
-                    {/* Source Name - metadata, not a heading */}
-                    <div className="text-blue" style={{
-                        ...finalTypo,
-                        fontSize: finalTypo.fontFamily === 'var(--font-frank-re-tzar)' ? '1.5rem' : '1.2rem',
-                        margin: 0,
-                        fontWeight: finalTypo.fontWeight || 'inherit'
-                    }}>
+                    <div
+                        className="text-blue"
+                        style={{
+                            ...finalTypo,
+                            fontSize: finalTypo.fontFamily === "var(--font-frank-re-tzar)" ? "1.5rem" : "1.2rem",
+                            margin: 0,
+                            fontWeight: finalTypo.fontWeight || "inherit"
+                        }}
+                    >
                         {sourceName}
                     </div>
 
-                    {/* Use existing Headline component - this contains the h3 */}
                     <div className="mb-2">
-                        <Headline headline={headline} typography={finalTypo} isLoading={false} />
+                        {headline.link && !isInternalLink ? (
+                            <a href={headline.link} target="_blank" rel="noopener noreferrer">
+                                {headlineContent}
+                            </a>
+                        ) : (
+                            headlineContent
+                        )}
                     </div>
                 </div>
-                
-                {/* Use existing Subtitle component */}
-                <div className="px-6 -mx-4">
-                    <Subtitle headlineData={headline} isLoading={false} locale={locale} />
-                </div>
-                
-                {/* Footer with favicon and timestamp - matching SourceFooter style */}
+
+                {subtitleText ? (
+                    <div className="px-6 -mx-4">
+                        <div
+                            className={`px-4 pb-2 ${checkRTL(subtitleText) ? "text-right" : "text-left"}`}
+                            style={{ fontSize: "0.8rem" }}
+                        >
+                            {subtitleText}
+                        </div>
+                    </div>
+                ) : null}
+
                 <div className="flex justify-between items-center gap-4 py-2 my-2 px-6 mt-auto">
                     <div className="flex gap-2 items-center">
-                        {domain && (
+                        {domain ? (
                             <img
                                 src={`https://www.google.com/s2/favicons?sz=64&domain=${domain}`}
                                 width={16}
                                 height={16}
                                 alt=""
-                                style={{ verticalAlign: 'middle' }}
+                                style={{ verticalAlign: "middle" }}
                             />
-                        )}
+                        ) : null}
                     </div>
-                    <div className="text-[0.7em] text-gray-400 font-mono">{timeString}</div>
+                    <div className="text-[0.7em] text-gray-400 font-mono">
+                        {timeString}
+                        <FeedLocalTime
+                            timestamp={headline.timestamp}
+                            countryTimezone={countryTimezone}
+                            variant="verbose"
+                        />
+                    </div>
                 </div>
             </div>
         </article>
     );
 }
-

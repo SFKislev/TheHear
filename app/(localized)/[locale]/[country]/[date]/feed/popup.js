@@ -1,16 +1,13 @@
 'use client'
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import InnerLink from '@/components/InnerLink';
 import PopUpCleaner from '@/components/PopUp';
 import { countries } from '@/utils/sources/countries';
 import { format, isToday } from 'date-fns';
 
 export default function FeedPopup({ openAbout, country, locale, pageDate }) {
-    const router = useRouter();
     const [open, setOpen] = useState(false);
-    const [expanded, setExpanded] = useState(false);
 
     useEffect(() => {
         // Show on every page load
@@ -35,7 +32,6 @@ export default function FeedPopup({ openAbout, country, locale, pageDate }) {
     };
 
     const handleContentClick = () => {
-        // Navigate to the parent page (time machine view) using InnerLink
         const formattedDate = `${pageDate.getDate().toString().padStart(2, '0')}-${String(pageDate.getMonth() + 1).padStart(2, '0')}-${pageDate.getFullYear()}`;
         return `/${locale}/${country}/${formattedDate}`;
     };

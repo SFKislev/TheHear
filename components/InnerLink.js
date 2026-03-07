@@ -5,13 +5,17 @@ import { useEffect, useState, useRef } from "react";
 import { LinearProgress } from "@mui/material";
 import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
+import { useRouter as useCompatRouter } from "next/compat/router";
 import { trackEngagedUser, hasNavigatedAway } from "@/utils/analytics";
 
-export default function InnerLink({ href, locale, children, prefetch }) {
+export default function InnerLink({ href, locale, children, prefetch, className }) {
     const [showProgress, setShowProgress] = useState(false);
     const pathname = usePathname();
+    const compatRouter = useCompatRouter();
     const timeoutRef = useRef(null);
-    const initialPathnameRef = useRef(pathname);
+    const initialPathnameRef = useRef(pathname || compatRouter?.asPath || "");
+
+    const currentPath = pathname || compatRouter?.asPath || compatRouter?.pathname || initialPathnameRef.current;
 
     useEffect(() => {
         if (showProgress) {
@@ -34,10 +38,9 @@ export default function InnerLink({ href, locale, children, prefetch }) {
         }
     }, [showProgress]);
 
-    // Hide progress bar when pathname changes (navigation completed)
+    // Hide progress bar when App Router pathname changes.
     useEffect(() => {
-        if (showProgress && pathname !== initialPathnameRef.current) {
-            // Add a small delay to ensure the navigation is complete
+        if (showProgress && pathname && pathname !== initialPathnameRef.current) {
             const hideTimeout = setTimeout(() => {
                 setShowProgress(false);
             }, 200);
@@ -46,24 +49,41 @@ export default function InnerLink({ href, locale, children, prefetch }) {
         }
     }, [pathname, showProgress]);
 
-    const handleClick = (e) => {
+    // Hide progress bar when Pages Router navigation completes.
+    useEffect(() => {
+        if (!compatRouter?.events) return undefined;
+
+        const hideProgress = () => {
+            setShowProgress(false);
+        };
+
+        compatRouter.events.on("routeChangeComplete", hideProgress);
+        compatRouter.events.on("routeChangeError", hideProgress);
+
+        return () => {
+            compatRouter.events.off("routeChangeComplete", hideProgress);
+            compatRouter.events.off("routeChangeError", hideProgress);
+        };
+    }, [compatRouter]);
+
+    const handleClick = () => {
         // Track navigation if user is moving to a different page from their entry page
         if (hasNavigatedAway(href)) {
             trackEngagedUser('page_navigation', {
-                from: pathname,
+                from: currentPath,
                 to: href,
                 locale: locale || 'unknown'
             });
         }
 
         // Don't prevent default - let Next.js handle the navigation
-        initialPathnameRef.current = pathname;
+        initialPathnameRef.current = currentPath;
         setShowProgress(true);
     };
 
     return (
         <>
-            <span onClickCapture={handleClick} className="cursor-pointer inline-block">
+            <span onClickCapture={handleClick} className={className || "cursor-pointer inline-block"}>
                 <Link href={href} hrefLang={locale} prefetch={prefetch}>
                     {children}
                 </Link>
