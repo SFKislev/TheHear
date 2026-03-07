@@ -522,6 +522,53 @@ Use this block for ongoing conversation and memory updates.
 - Re-run GSC inspection/validation on a small set of previously failing exact `/feed` URLs.
 - Use the post-deploy recrawl window to judge whether the index-selection problem improves; if not, shift focus back to site-level trust/query-fit hypotheses rather than continuing micro-payload compression.
 
+### 2026-03-07 (Post-Deploy Verification: Live Feed Route + Full Feed IndexNow Refresh)
+- What changed:
+- Verified the live production feed page at `https://www.thehear.org/en/us/15-06-2025/feed` after deployment.
+- Confirmed production now serves the Pages Router feed implementation (no App Router Flight payload on feed pages).
+- Updated live feed JSON-LD to the cleaner middle-ground structure:
+- `CollectionPage`
+- inline publisher
+- one daily-summary `mainEntity`
+- lightweight `hasPart` `ItemList` for ongoing summaries
+- inline breadcrumb
+- no synthetic fragment IDs such as `#publisher` / `#daily-summary` / `#ongoing-summaries` / `#breadcrumb`
+- Submitted the entire live feed sitemap to IndexNow using the existing site key.
+- Why we changed it:
+- Needed to confirm the production site actually reflects the feed-route migration and schema update, not just localhost.
+- Needed a fresh crawler ping after the substantial feed architecture/payload changes.
+- What we observed (data/source):
+- Live audit on `2026-03-07` for `https://www.thehear.org/en/us/15-06-2025/feed` showed:
+- `200` response
+- total HTML around `406k` chars
+- `__next_f = 0`
+- `__NEXT_DATA__ ~ 74k`
+- JSON-LD around `4.5k` chars
+- JSON-LD structure confirmed:
+- top-level `CollectionPage`
+- `mainEntity = true`
+- `hasPart = true`
+- `hasPart.@type = ItemList`
+- `hasPart.numberOfItems = 7`
+- no synthetic fragment IDs
+- Phrase-level live audit for `"Iran Strikes Israel Again"` remained in the intended state:
+- once in visible HTML
+- once in `__NEXT_DATA__`
+- Full feed sitemap submission to IndexNow succeeded:
+- source sitemap: `https://www.thehear.org/sitemap-feed.xml`
+- total submitted URLs: `20,564`
+- batches:
+- `10,000` URLs -> HTTP `200`
+- `10,000` URLs -> HTTP `200`
+- `564` URLs -> HTTP `200`
+- Decision:
+- Treat production deployment as successful from the feed payload / schema / route-ownership perspective.
+- Keep the current cleaner JSON-LD; it is richer than the ultra-compact version while remaining controlled in size.
+- Keep using the local duplication auditor for post-deploy spot checks.
+- Next step:
+- Re-run GSC inspection/validation on exact previously failing `/feed` URLs after the fresh IndexNow ping and recrawl window.
+- Watch whether previously failing validation cases begin to clear; if not, continue diagnosis at the site-level trust/query-fit layer rather than further shrinking feed payload micro-details.
+
 ## Update Template
 Copy this template for each new entry:
 
