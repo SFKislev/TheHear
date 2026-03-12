@@ -1,6 +1,6 @@
 # SEO Context Memory
 
-Last updated: 2026-02-26
+Last updated: 2026-03-11
 Owner: ongoing team notes
 
 ## Purpose
@@ -10,6 +10,28 @@ Use it to track:
 - what problem each change was meant to solve
 - current state
 - next experiments
+
+### 2026-03-11 (Feed Archive Differentiation Pass: Metadata, Visible Copy, JSON-LD)
+- Feed pages were adjusted to present themselves more consistently as archive/collection pages rather than article-like or "live AI overview" pages.
+- In `utils/feedPage.js`, added `archiveInsights` derived from the actual headline set for the day:
+- headline count
+- source count
+- top sources
+- earliest captured headline/source/time
+- latest captured headline/source/time
+- Feed metadata descriptions now use archive-specific counts/sources and stop describing historical feed pages as "real-time AI overviews."
+- In `pages/[locale]/[country]/[date]/feed.js`, Open Graph type was changed from `article` to `website` and article-specific Open Graph meta tags were removed.
+- In `app/(localized)/[locale]/[country]/[date]/feed/FeedView.js`, added a second intro paragraph that exposes day-specific archive facts from the actual dataset, so the SSR HTML is less template-repetitive across dates.
+- In `app/(localized)/[locale]/[country]/[date]/feed/FeedJsonLd.js`, simplified schema back toward archive-oriented `CollectionPage` + `ItemList` and removed `AnalysisNewsArticle` / AI-summary framing from structured data.
+- Rationale:
+- "Crawled - currently not indexed" persisted on exact `/feed` URLs after canonical, redirect, payload, and prerender work.
+- Remaining plausible issue is quality/selection: many day pages may still look too template-like or semantically overclaimed relative to what they really are.
+- This pass increases visible and machine-readable page distinctiveness using the actual archived headline records.
+- Validation:
+- `npx eslint "utils/feedPage.js"`
+- `npx eslint "pages/[locale]/[country]/[date]/feed.js"`
+- `npx eslint "app/(localized)/[locale]/[country]/[date]/feed/FeedView.js" "app/(localized)/[locale]/[country]/[date]/feed/FeedJsonLd.js"`
+- `npm run lint` still fails at the repo/tooling level with `Cannot serialize key "parse" in parser`, which appears unrelated to these feed changes.
 
 ## Product Identity (Anchor for SEO Decisions)
 - The Hear is a news literacy tool.

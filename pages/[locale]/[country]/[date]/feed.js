@@ -56,7 +56,8 @@ export default function FeedPage(props) {
         locale: props.locale,
         country: props.country,
         date: props.date,
-        daySummary
+        daySummary,
+        archiveInsights: props.archiveInsights
     });
     const localeCode = props.locale === "heb" ? "he_IL" : "en_US";
     const canonicalUrl = getFeedUrl(props.locale, props.country, props.date);
@@ -81,17 +82,7 @@ export default function FeedPage(props) {
                 <meta property="og:image:width" content="192" />
                 <meta property="og:image:height" content="192" />
                 <meta property="og:image:alt" content="The Hear logo" />
-                <meta property="og:type" content="article" />
-                <meta property="article:published_time" content={parsedDate.toISOString()} />
-                <meta property="article:modified_time" content={parsedDate.toISOString()} />
-                <meta property="article:author" content="The Hear" />
-                <meta property="article:section" content="News Archive" />
-                <meta property="article:tag" content={countries[props.country]?.english || props.country} />
-                <meta property="article:tag" content="news" />
-                <meta property="article:tag" content="headlines" />
-                <meta property="article:tag" content={props.date.replace(/-/g, ".")} />
-                <meta property="article:tag" content="archive" />
-                <meta property="article:tag" content="chronological" />
+                <meta property="og:type" content="website" />
                 <meta name="twitter:card" content="summary_large_image" />
                 <meta name="twitter:site" content="@thehearnews" />
                 <meta name="twitter:creator" content="@thehearnews" />
@@ -109,11 +100,13 @@ export default function FeedPage(props) {
                     daySummary={daySummary}
                     headlines={props.headlines}
                     initialSummaries={props.initialSummaries}
+                    archiveInsights={props.archiveInsights}
                 />
                 <FeedView
                     headlines={props.headlines}
                     initialSummaries={props.initialSummaries}
                     daySummary={daySummary}
+                    archiveInsights={props.archiveInsights}
                     locale={props.locale}
                     country={props.country}
                     date={parsedDate}

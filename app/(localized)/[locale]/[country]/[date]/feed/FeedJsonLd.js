@@ -1,28 +1,29 @@
-import { getHeadline, getSummaryContent } from "@/utils/daily summary utils";
+import { getHeadline } from "@/utils/daily summary utils";
 import { countries } from "@/utils/sources/countries";
+import { getSourceData, getWebsiteName } from "@/utils/sources/getCountryData";
 import { format } from "date-fns";
 
 const countryFlags = {
-    israel: "ðŸ‡®ðŸ‡±",
-    china: "ðŸ‡¨ðŸ‡³",
-    finland: "ðŸ‡«ðŸ‡®",
-    france: "ðŸ‡«ðŸ‡·",
-    germany: "ðŸ‡©ðŸ‡ª",
-    india: "ðŸ‡®ðŸ‡³",
-    iran: "ðŸ‡®ðŸ‡·",
-    italy: "ðŸ‡®ðŸ‡¹",
-    japan: "ðŸ‡¯ðŸ‡µ",
-    lebanon: "ðŸ‡±ðŸ‡§",
-    netherlands: "ðŸ‡³ðŸ‡±",
-    palestine: "ðŸ‡µðŸ‡¸",
-    poland: "ðŸ‡µðŸ‡±",
-    russia: "ðŸ‡·ðŸ‡º",
-    spain: "ðŸ‡ªðŸ‡¸",
-    turkey: "ðŸ‡¹ðŸ‡·",
-    uk: "ðŸ‡¬ðŸ‡§",
-    us: "ðŸ‡ºðŸ‡¸",
-    ukraine: "ðŸ‡ºðŸ‡¦",
-    uae: "ðŸ‡¦ðŸ‡ª"
+    israel: "\uD83C\uDDEE\uD83C\uDDF1",
+    china: "\uD83C\uDDE8\uD83C\uDDF3",
+    finland: "\uD83C\uDDEB\uD83C\uDDEE",
+    france: "\uD83C\uDDEB\uD83C\uDDF7",
+    germany: "\uD83C\uDDE9\uD83C\uDDEA",
+    india: "\uD83C\uDDEE\uD83C\uDDF3",
+    iran: "\uD83C\uDDEE\uD83C\uDDF7",
+    italy: "\uD83C\uDDEE\uD83C\uDDF9",
+    japan: "\uD83C\uDDEF\uD83C\uDDF5",
+    lebanon: "\uD83C\uDDF1\uD83C\uDDE7",
+    netherlands: "\uD83C\uDDF3\uD83C\uDDF1",
+    palestine: "\uD83C\uDDF5\uD83C\uDDF8",
+    poland: "\uD83C\uDDF5\uD83C\uDDF1",
+    russia: "\uD83C\uDDF7\uD83C\uDDFA",
+    spain: "\uD83C\uDDEA\uD83C\uDDF8",
+    turkey: "\uD83C\uDDF9\uD83C\uDDF7",
+    uk: "\uD83C\uDDEC\uD83C\uDDE7",
+    us: "\uD83C\uDDFA\uD83C\uDDF8",
+    ukraine: "\uD83C\uDDFA\uD83C\uDDE6",
+    uae: "\uD83C\uDDE6\uD83C\uDDEA"
 };
 
 const TITLE_MAX_CHARS = 72;
@@ -60,13 +61,12 @@ function buildHebrewSeoTitle({ countryName, hebrewDate, headline }) {
     const cleanCountry = (countryName || "").replace(/\s+/g, " ").trim();
     const cleanDate = (hebrewDate || "").replace(/\s+/g, " ").trim();
     const cleanHeadline = (headline || "").replace(/\s+/g, " ").trim();
-    const separator = ": ";
-    const prefix = `${cleanCountry}, ${hebrewDate}`;
+    const prefix = `${cleanCountry}, ${cleanDate}`;
 
     let useArchiveSuffix = true;
 
     const compose = () =>
-        `${prefix}${cleanHeadline ? `${separator}${cleanHeadline}` : ""}${useArchiveSuffix ? HEBREW_ARCHIVE_SUFFIX : ""}`.trim();
+        `${prefix}${cleanHeadline ? `: ${cleanHeadline}` : ""}${useArchiveSuffix ? HEBREW_ARCHIVE_SUFFIX : ""}`.trim();
 
     let candidate = compose();
     if (candidate.length <= TITLE_MAX_CHARS) return candidate;
@@ -92,31 +92,45 @@ function buildPublisher() {
     };
 }
 
-function stripHtmlBreaks(text) {
-    return (text || "")
-        .replace(/<br\s*\/?>/gi, " ")
-        .replace(/\s+/g, " ")
-        .trim();
+function getHeadlineSourceName(country, headline) {
+    if (!headline?.website_id) return "";
+
+    try {
+        const normalizedWebsiteId = getWebsiteName(country, headline.website_id);
+        const sourceData = getSourceData(country, normalizedWebsiteId);
+        return sourceData?.name || headline.website_id;
+    } catch (error) {
+        return headline.website_id;
+    }
 }
 
-function buildDatedHeadline(dateValue, timezone, headline) {
-    if (!headline) return "";
+function buildHeadlineExamples(headlines, country, timezone) {
+    return (headlines || [])
+        .slice(0, 5)
+        .map((headline, index) => {
+            const headlineDate = new Date(headline.timestamp);
+            const sourceName = getHeadlineSourceName(country, headline);
+            const timeLabel = new Intl.DateTimeFormat("en-US", {
+                timeZone: timezone,
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false
+            }).format(headlineDate);
 
-    const parts = new Intl.DateTimeFormat("en-US", {
-        timeZone: timezone,
-        month: "short",
-        day: "numeric",
-        year: "numeric"
-    }).formatToParts(dateValue);
-
-    const month = parts.find((part) => part.type === "month")?.value || "";
-    const day = parts.find((part) => part.type === "day")?.value || "";
-    const year = parts.find((part) => part.type === "year")?.value || "";
-
-    return `${month} ${day} ${year} - ${headline}`.trim();
+            return {
+                "@type": "ListItem",
+                position: index + 1,
+                item: {
+                    "@type": "CreativeWork",
+                    name: sourceName ? `${sourceName}: ${headline.headline}` : headline.headline,
+                    datePublished: headlineDate.toISOString(),
+                    description: `${timeLabel}${sourceName ? ` - ${sourceName}` : ""}`
+                }
+            };
+        });
 }
 
-export default function FeedJsonLd({ country, locale, date, daySummary, headlines, initialSummaries = [] }) {
+export default function FeedJsonLd({ country, locale, date, daySummary, headlines, archiveInsights }) {
     const countryData = countries[country] || {};
     const countryName = locale === "heb" ? countryData.hebrew || country : countryData.english || country;
     const flagEmoji = countryFlags[country] || "";
@@ -138,52 +152,45 @@ export default function FeedJsonLd({ country, locale, date, daySummary, headline
         ? buildHebrewSeoTitle({ countryName, hebrewDate, headline: dailyHeadline })
         : buildSeoTitle({ flagEmoji, corePrefix: `${countryName} headlines, ${englishDate}`, headline: dailyHeadline });
     const pageUrl = `https://www.thehear.org/${locale}/${country}/${formattedDate}/feed`;
-    const totalHeadlines = headlines?.length || 0;
+    const headlineCount = archiveInsights?.headlineCount || headlines?.length || 0;
+    const sourceCount = archiveInsights?.sourceCount || 0;
+    const topSourcesText = archiveInsights?.topSources?.length ? archiveInsights.topSources.join(", ") : "";
     const pageDateIso = dateValue.toISOString();
     const pageDescription = locale === "heb"
-        ? `ארכיון מלא של כותרות חדשות מ-${countryName} ל-${formattedDateDisplay}, כולל סקירת יום וסיכומי התפתחות שוטפים לאורך היום.`
-        : `Complete chronological archive of news headlines from ${countryName} for ${formattedDateDisplay}, including a daily overview and ongoing AI-written summaries as the story evolved.`;
+        ? `\u05D0\u05E8\u05DB\u05D9\u05D5\u05DF \u05DB\u05D5\u05EA\u05E8\u05D5\u05EA \u05DE-${countryName} \u05DC-${formattedDateDisplay}${headlineCount ? `, \u05E2\u05DD ${headlineCount} \u05DB\u05D5\u05EA\u05E8\u05D5\u05EA` : ""}${sourceCount ? ` \u05DE-${sourceCount} \u05DE\u05E7\u05D5\u05E8\u05D5\u05EA` : ""}${topSourcesText ? `. \u05DE\u05E7\u05D5\u05E8\u05D5\u05EA \u05D1\u05D5\u05DC\u05D8\u05D9\u05DD: ${topSourcesText}` : ""}.`
+        : `Chronological archive of ${headlineCount || "daily"} headlines from ${countryName} for ${formattedDateDisplay}${sourceCount ? ` across ${sourceCount} sources` : ""}${topSourcesText ? `, including ${topSourcesText}` : ""}.`;
     const publisher = buildPublisher();
-    const dailySummaryText = stripHtmlBreaks(daySummary ? getSummaryContent(daySummary, locale) : "");
-    const datedHeadline = buildDatedHeadline(dateValue, timezone, dailyHeadline) || seoTitle;
-    const ongoingSummaries = initialSummaries
-        .filter((summary) => summary && (summary.englishHeadline || summary.hebrewHeadline || summary.headline))
-        .map((summary, index) => ({
-            "@type": "ListItem",
-            position: index + 1,
-            item: {
-                "@type": "AnalysisNewsArticle",
-                headline: locale === "heb"
-                    ? (summary.hebrewHeadline || summary.headline || summary.englishHeadline)
-                    : (summary.englishHeadline || summary.headline || summary.hebrewHeadline),
-                datePublished: summary.timestamp
-            }
-        }));
 
     const collectionPage = {
         "@type": "CollectionPage",
         url: pageUrl,
         name: seoTitle,
-        headline: datedHeadline,
         description: pageDescription,
         inLanguage: locale === "heb" ? "he" : "en",
         datePublished: pageDateIso,
-        dateModified: pageDateIso,
+        dateModified: archiveInsights?.lastHeadline?.timestamp || pageDateIso,
         publisher,
-        mainEntityOfPage: {
-            "@type": "ItemList",
-            name: `${countryName} headline timeline`,
-            numberOfItems: totalHeadlines
-        },
         about: {
             "@type": "Thing",
-            name: `${countryName} News Archive`,
-            description: `Historical news archive from ${countryName} for ${formattedDateDisplay}`
+            name: `${countryName} news archive`,
+            description: `Historical headline archive from ${countryName} for ${formattedDateDisplay}`
         },
         isPartOf: {
             "@type": "CreativeWorkSeries",
             name: `${countryName} News Archive`,
             url: `https://www.thehear.org/${locale}/${country}/history`
+        },
+        mainEntity: {
+            "@type": "ItemList",
+            name: `${countryName} headline timeline`,
+            numberOfItems: headlineCount,
+            itemListOrder: "https://schema.org/ItemListOrderAscending",
+            itemListElement: buildHeadlineExamples(
+                [...(headlines || [])]
+                    .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)),
+                country,
+                timezone
+            )
         },
         breadcrumb: {
             "@type": "BreadcrumbList",
@@ -209,37 +216,6 @@ export default function FeedJsonLd({ country, locale, date, daySummary, headline
             ]
         }
     };
-
-    if (dailySummaryText && dailyHeadline) {
-        collectionPage.mainEntity = {
-            "@type": "AnalysisNewsArticle",
-            headline: datedHeadline,
-            description: dailySummaryText,
-            datePublished: pageDateIso,
-            inLanguage: locale === "heb" ? "he" : "en",
-            author: {
-                "@type": "Organization",
-                name: "The Hear AI Analysis",
-                url: "https://www.thehear.org"
-            },
-            publisher,
-            about: {
-                "@type": "Thing",
-                name: `Daily news summary for ${countryName}`
-            }
-        };
-    }
-
-    if (ongoingSummaries.length > 0) {
-        collectionPage.hasPart = {
-            "@type": "ItemList",
-            name: locale === "heb"
-                ? `סיכומי התפתחות שוטפים עבור ${countryName} בתאריך ${formattedDateDisplay}`
-                : `Ongoing AI overviews for ${countryName} headlines on ${englishDate}`,
-            numberOfItems: ongoingSummaries.length,
-            itemListElement: ongoingSummaries
-        };
-    }
 
     const jsonLd = {
         "@context": "https://schema.org",
