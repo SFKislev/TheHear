@@ -50,6 +50,20 @@ function getCountryName(country, locale) {
     return locale === 'heb' ? (data.hebrew || country) : (data.english || country);
 }
 
+function getLiveCountryLabel(locale, country, countryName, isMonthlyArchive) {
+    if (locale === 'heb') {
+        return `${labels.liveHeadlinesFrom.heb}${countryName}`;
+    }
+
+    if (isMonthlyArchive) {
+        return country === 'us' || country === 'uk'
+            ? `${labels.liveHeadlinesFrom.en} the ${countryName}`
+            : `${labels.liveHeadlinesFrom.en} ${countryName}`;
+    }
+
+    return `Live ${countryName}`;
+}
+
 function formatDateLabel(date, locale) {
     if (!date) return '';
     if (locale === 'heb') {
@@ -175,9 +189,17 @@ export default function UniversalFooter({ locale, pageType, country, date, year,
             return isCountryAvailableForMonthlyArchive(code, year, month);
         });
     }, [isMonthlyArchive, year, month]);
-    const countryHref = (code) => isMonthlyArchive && year && month
-        ? `/${locale}/${code}/history/${year}/${month}`
-        : `/${locale}/${code}`;
+    const countryHref = (code) => {
+        if (isMonthlyArchive && year && month) {
+            return `/${locale}/${code}/history/${year}/${month}`;
+        }
+
+        if (pageType === 'country-archive-hub') {
+            return `/${locale}/${code}/history`;
+        }
+
+        return `/${locale}/${code}`;
+    };
     const archiveGroups = useMemo(() => {
         return months.reduce((groups, m) => {
             if (!groups[m.year]) groups[m.year] = [];
@@ -227,14 +249,11 @@ export default function UniversalFooter({ locale, pageType, country, date, year,
                         )}
                         {country && (
                             <InnerLink href={`/${locale}/${country}`} locale={locale}>
-                                <span className="underline underline-offset-2">
-                                    {isMonthlyArchive
-                                        ? (locale === 'heb'
-                                            ? `${labels.liveHeadlinesFrom.heb}${countryName}`
-                                            : (country === 'us' || country === 'uk'
-                                                ? `${labels.liveHeadlinesFrom.en} the ${countryName}`
-                                                : `${labels.liveHeadlinesFrom.en} ${countryName}`))
-                                        : `${getLabel('live', locale)} ${countryName}`}
+                                <span className="inline-flex items-center gap-1 underline underline-offset-2">
+                                    {getLiveCountryLabel(locale, country, countryName, isMonthlyArchive)}
+                                    <span className={locale === 'heb' ? 'mr-1' : 'ml-1'}>
+                                        <FlagIcon country={country} />
+                                    </span>
                                 </span>
                             </InnerLink>
                         )}
@@ -264,42 +283,50 @@ export default function UniversalFooter({ locale, pageType, country, date, year,
                             </span>
                         </InnerLink>
                     </div>
-                    {country && pageType !== 'search' && (
+                    {country && pageType !== 'search' && pageType !== 'country-archive-hub' && (
                         <details className="mt-3">
                             <summary className="cursor-pointer font-medium">
-                                {isMonthlyArchive ? getLabel('changeMonth', locale) : getLabel('archives', locale, countryName)}
-                            </summary>
-                            <div className="mt-2 space-y-2">
-                                {Object.keys(archiveGroupsEn).reverse().map(groupYear => (
-                                    <div key={groupYear}>
-                                        <div className="mb-1 font-bold text-gray-800">{groupYear}</div>
-                                        <div className="flex flex-wrap gap-2">
-                                            {archiveGroupsEn[groupYear].map(monthItem => (
-                                                <InnerLink
-                                                    key={`${monthItem.year}-${monthItem.month}`}
-                                                    href={`/${locale}/${country}/history/${monthItem.year}/${monthItem.month.toString().padStart(2, '0')}`}
-                                                    locale={locale}
-                                                >
-                                                    <span className="rounded bg-gray-100 px-2 py-1 text-xs text-gray-700 inline-block">
-                                                        <span className="mr-1">{monthItem.month.toString().padStart(2, '0')}</span>
-                                                        <span className="text-gray-400 text-[10px]">({monthItem.monthNameShort})</span>
-                                                    </span>
-                                                </InnerLink>
-                                            ))}
-                                        </div>
-                                    </div>
-                                ))}
-                                {date && (
-                                    <InnerLink
-                                        href={`/${locale}/${country}/${createDateString(date)}/feed`}
-                                        locale={locale}
-                                    >
-                                        <span className="inline-flex items-center rounded bg-gray-100 px-2 py-1 text-xs text-gray-700">
-                                            Daily archive
+                                {isMonthlyArchive ? (
+                                    <InnerLink href={`/${locale}/${country}/history`} locale={locale}>
+                                        <span className="underline underline-offset-2">
+                                            {getLabel('changeMonth', locale)}
                                         </span>
                                     </InnerLink>
-                                )}
-                            </div>
+                                ) : getLabel('archives', locale, countryName)}
+                            </summary>
+                            {!isMonthlyArchive && (
+                                <div className="mt-2 space-y-2">
+                                    {Object.keys(archiveGroupsEn).reverse().map(groupYear => (
+                                        <div key={groupYear}>
+                                            <div className="mb-1 font-bold text-gray-800">{groupYear}</div>
+                                            <div className="flex flex-wrap gap-2">
+                                                {archiveGroupsEn[groupYear].map(monthItem => (
+                                                    <InnerLink
+                                                        key={`${monthItem.year}-${monthItem.month}`}
+                                                        href={`/${locale}/${country}/history/${monthItem.year}/${monthItem.month.toString().padStart(2, '0')}`}
+                                                        locale={locale}
+                                                    >
+                                                        <span className="rounded bg-gray-100 px-2 py-1 text-xs text-gray-700 inline-block">
+                                                            <span className="mr-1">{monthItem.month.toString().padStart(2, '0')}</span>
+                                                            <span className="text-gray-400 text-[10px]">({monthItem.monthNameShort})</span>
+                                                        </span>
+                                                    </InnerLink>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {date && (
+                                        <InnerLink
+                                            href={`/${locale}/${country}/${createDateString(date)}/feed`}
+                                            locale={locale}
+                                        >
+                                            <span className="inline-flex items-center rounded bg-gray-100 px-2 py-1 text-xs text-gray-700">
+                                                Daily archive
+                                            </span>
+                                        </InnerLink>
+                                    )}
+                                </div>
+                            )}
                         </details>
                     )}
                     {!isGlobalPage && (
@@ -376,14 +403,11 @@ export default function UniversalFooter({ locale, pageType, country, date, year,
                     <>
                         <span className="text-gray-300">|</span>
                         <InnerLink href={`/${locale}/${country}`} locale={locale}>
-                            <span className="text-gray-700 hover:text-blue bg-gray-100 hover:bg-gray-200 rounded-lg px-2 py-1 inline-block">
-                                {isMonthlyArchive
-                                    ? (locale === 'heb'
-                                        ? `${labels.liveHeadlinesFrom.heb}${countryName}`
-                                        : (country === 'us' || country === 'uk'
-                                            ? `${labels.liveHeadlinesFrom.en} the ${countryName}`
-                                            : `${labels.liveHeadlinesFrom.en} ${countryName}`))
-                                    : `${getLabel('live', locale)} ${countryName}`}
+                            <span className="text-gray-700 hover:text-blue bg-gray-100 hover:bg-gray-200 rounded-lg px-2 py-1 inline-flex items-center gap-1">
+                                {getLiveCountryLabel(locale, country, countryName, isMonthlyArchive)}
+                                <span className={locale === 'heb' ? 'mr-1' : 'ml-1'}>
+                                    <FlagIcon country={country} />
+                                </span>
                             </span>
                         </InnerLink>
                     </>
@@ -433,76 +457,86 @@ export default function UniversalFooter({ locale, pageType, country, date, year,
                         </div>
                     </>
                 )}
-                {country && pageType !== 'search' && (
+                {country && pageType !== 'search' && pageType !== 'country-archive-hub' && (
                     <>
                         <span className="text-gray-300">|</span>
-                        <div className="relative z-40">
-                            <button
-                                type="button"
-                                className="cursor-pointer text-gray-700 hover:text-blue bg-gray-100 hover:bg-gray-200 rounded-lg px-2 py-1"
-                                aria-expanded={openMenu === 'archives'}
-                                aria-controls="footer-archives"
-                                onClick={() => setOpenMenu(openMenu === 'archives' ? null : 'archives')}
-                            >
-                            {isMonthlyArchive ? getLabel('changeMonth', locale) : getLabel('archives', locale, countryName)}
-                            </button>
-                        </div>
-                        <div
-                            id="footer-archives"
-                            className={`fixed inset-0 z-[100] flex items-center justify-center ${openMenu === 'archives' ? 'max-h-screen' : 'max-h-0 pointer-events-none'} overflow-hidden`}
-                            aria-hidden={openMenu !== 'archives'}
-                            onClick={() => setOpenMenu(null)}
-                        >
-                            <div
-                                className="min-w-[18rem] max-w-[80vw] w-fit rounded-xs border border-gray-100 bg-white p-4 shadow-lg text-sm font-['Geist']"
-                                dir="ltr"
-                                onClick={(e) => e.stopPropagation()}
-                            >
-                                <div className="w-64">
-                                    <div className="text-sm underline underline-offset-4 font-bold mb-4 flex justify-start items-start">
-                                        <Archive size={16} className="mr-2 mt-0.5" />
-                                        The Archives
-                                    </div>
-                                    <div className="max-h-80 overflow-y-auto">
-                                        {Object.keys(archiveGroupsEn).reverse().map(groupYear => (
-                                            <div key={groupYear} className="mb-3">
-                                                <div className="font-bold text-xs text-gray-800 mb-2">{groupYear}</div>
-                                                <div className="grid grid-cols-3 gap-1">
-                                                    {archiveGroupsEn[groupYear].map(monthItem => (
-                                                        <InnerLink
-                                                            key={`${monthItem.year}-${monthItem.month}`}
-                                                            href={`/${locale}/${country}/history/${monthItem.year}/${monthItem.month.toString().padStart(2, '0')}`}
-                                                            locale={locale}
-                                                        >
-                                                            <span
-                                                                className="flex items-center justify-center px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 hover:shadow-md rounded font-mono inline-block"
-                                                            >
-                                                                <span className="mr-1">{monthItem.month.toString().padStart(2, '0')}</span>
-                                                                <span className="text-gray-400 text-[10px]">({monthItem.monthNameShort})</span>
-                                                            </span>
-                                                        </InnerLink>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    {date && (
-                                        <div className="border-t pt-2 mt-2">
-                                            <InnerLink
-                                                href={`/${locale}/${country}/${createDateString(date)}/feed`}
-                                                locale={locale}
-                                            >
-                                                <span
-                                                    className="flex items-center justify-center px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 hover:shadow-md rounded inline-block"
-                                                >
-                                                    Daily archive
-                                                </span>
-                                            </InnerLink>
-                                        </div>
-                                    )}
+                        {isMonthlyArchive ? (
+                            <InnerLink href={`/${locale}/${country}/history`} locale={locale}>
+                                <span className="cursor-pointer text-gray-700 hover:text-blue bg-gray-100 hover:bg-gray-200 rounded-lg px-2 py-1 inline-block">
+                                    {getLabel('changeMonth', locale)}
+                                </span>
+                            </InnerLink>
+                        ) : (
+                            <>
+                                <div className="relative z-40">
+                                    <button
+                                        type="button"
+                                        className="cursor-pointer text-gray-700 hover:text-blue bg-gray-100 hover:bg-gray-200 rounded-lg px-2 py-1"
+                                        aria-expanded={openMenu === 'archives'}
+                                        aria-controls="footer-archives"
+                                        onClick={() => setOpenMenu(openMenu === 'archives' ? null : 'archives')}
+                                    >
+                                        {getLabel('archives', locale, countryName)}
+                                    </button>
                                 </div>
-                            </div>
-                        </div>
+                                <div
+                                    id="footer-archives"
+                                    className={`fixed inset-0 z-[100] flex items-center justify-center ${openMenu === 'archives' ? 'max-h-screen' : 'max-h-0 pointer-events-none'} overflow-hidden`}
+                                    aria-hidden={openMenu !== 'archives'}
+                                    onClick={() => setOpenMenu(null)}
+                                >
+                                    <div
+                                        className="min-w-[18rem] max-w-[80vw] w-fit rounded-xs border border-gray-100 bg-white p-4 shadow-lg text-sm font-['Geist']"
+                                        dir="ltr"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        <div className="w-64">
+                                            <div className="text-sm underline underline-offset-4 font-bold mb-4 flex justify-start items-start">
+                                                <Archive size={16} className="mr-2 mt-0.5" />
+                                                The Archives
+                                            </div>
+                                            <div className="max-h-80 overflow-y-auto">
+                                                {Object.keys(archiveGroupsEn).reverse().map(groupYear => (
+                                                    <div key={groupYear} className="mb-3">
+                                                        <div className="font-bold text-xs text-gray-800 mb-2">{groupYear}</div>
+                                                        <div className="grid grid-cols-3 gap-1">
+                                                            {archiveGroupsEn[groupYear].map(monthItem => (
+                                                                <InnerLink
+                                                                    key={`${monthItem.year}-${monthItem.month}`}
+                                                                    href={`/${locale}/${country}/history/${monthItem.year}/${monthItem.month.toString().padStart(2, '0')}`}
+                                                                    locale={locale}
+                                                                >
+                                                                    <span
+                                                                        className="flex items-center justify-center px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 hover:shadow-md rounded font-mono inline-block"
+                                                                    >
+                                                                        <span className="mr-1">{monthItem.month.toString().padStart(2, '0')}</span>
+                                                                        <span className="text-gray-400 text-[10px]">({monthItem.monthNameShort})</span>
+                                                                    </span>
+                                                                </InnerLink>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            {date && (
+                                                <div className="border-t pt-2 mt-2">
+                                                    <InnerLink
+                                                        href={`/${locale}/${country}/${createDateString(date)}/feed`}
+                                                        locale={locale}
+                                                    >
+                                                        <span
+                                                            className="flex items-center justify-center px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 hover:shadow-md rounded inline-block"
+                                                        >
+                                                            Daily archive
+                                                        </span>
+                                                    </InnerLink>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                        )}
                     </>
                 )}
                 <span className="text-gray-300">|</span>

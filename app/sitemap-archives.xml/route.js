@@ -10,7 +10,7 @@ export async function GET() {
     const today = new Date()
     const res = []
 
-    // Monthly archive pages - medium priority
+    // Country archive hub pages + monthly archive pages
     Object.keys(countries).forEach(country => {
         // Exclude Finland - no archive data available
         if (country === 'finland') return;
@@ -19,6 +19,14 @@ export async function GET() {
         if (!countryLaunchDate) return;
 
         locales.forEach(locale => {
+            // Country history hub - stable parent archive node
+            res.push({
+                url: `${baseUrl}/${locale}/${country}/history`,
+                lastModified: new Date(),
+                changeFrequency: 'weekly',
+                priority: 0.75
+            });
+
             // Generate all month/year combinations from launch date to current month
             let date = new Date(countryLaunchDate.getFullYear(), countryLaunchDate.getMonth(), 1);
             const currentMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);

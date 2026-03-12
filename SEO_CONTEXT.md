@@ -33,6 +33,55 @@ Use it to track:
 - `npx eslint "app/(localized)/[locale]/[country]/[date]/feed/FeedView.js" "app/(localized)/[locale]/[country]/[date]/feed/FeedJsonLd.js"`
 - `npm run lint` still fails at the repo/tooling level with `Cannot serialize key "parse" in parser`, which appears unrelated to these feed changes.
 
+### 2026-03-12 (Country Archive Hub Added at `/{locale}/{country}/history`)
+- Added a new country-level archive landing page:
+- `app/(localized)/[locale]/[country]/history/page.js`
+- Added matching metadata/JSON-LD helper:
+- `app/(localized)/[locale]/[country]/history/metadata.js`
+- Purpose:
+- Existing archive architecture had month pages (`/{locale}/{country}/history/{year}/{month}`) but no single durable country archive hub.
+- This made archive authority and internal linking more fragmented than intended.
+- The new page creates one stable parent node for each country's archive section.
+- Page structure:
+- archive intro / hub explanation
+- direct link back to the live country page
+- "Featured Days" section linking directly to `/{locale}/{country}/{date}/feed`
+- year-grouped month index linking to existing monthly archive pages
+- Featured-day selection:
+- generated automatically from the most recent archive months with available daily summaries
+- uses daily summary headline + summary text for presentation
+- does not require manual curation
+- Hebrew behavior:
+- if no featured Hebrew archive day is available for a country, `/heb/{country}/history` redirects to `/en/{country}/history`
+- Validation:
+- `npx eslint "app/(localized)/[locale]/[country]/history/page.js" "app/(localized)/[locale]/[country]/history/metadata.js"`
+- Verified locally on `http://localhost:3000/en/us/history`
+
+### 2026-03-12 (Country Archive Hub Finalized as Crawlable Archive Index)
+- Refined the new `/{locale}/{country}/history` page away from the earlier card-grid experiment into a compact, crawlable archive index modeled directly on the existing archive popover UI.
+- Final page shape:
+- centered `Logo-small` at top
+- single compact archive card
+- flag + archive icon + country archive title
+- year-grouped month links in a 3-column grid
+- short explanatory subtitle clarifying that month pages lead to daily archive pages
+- No featured days are currently shown on the country archive hub.
+- SEO/machine-readable alignment:
+- updated `app/(localized)/[locale]/[country]/history/metadata.js` so meta description / Open Graph / Twitter / JSON-LD now describe the page as a monthly archive index rather than mentioning featured days
+- current English description:
+- `The Hear archives {Country}'s main headlines by month. Open each month to reach its daily archive pages.`
+- Internal-linking/navigation changes:
+- in `components/UniversalFooter.js`, country switching from `/{locale}/{country}/history` now stays within the history hub (`/{locale}/{newCountry}/history`) instead of jumping to the live country page
+- on monthly archive pages, the footer `change month` control now links directly to the country archive hub (`/{locale}/{country}/history`) instead of opening the month popup
+- inside the country archive hub itself, the redundant footer archives control is hidden
+- Hebrew route behavior:
+- `/{locale}/{country}/history` on `heb` intentionally renders the same LTR / English archive card UI as English
+- month abbreviations and explanatory copy are kept in English on this page by design
+- Validation:
+- verified locally on `http://localhost:3000/en/france/history`
+- confirmed month links are present in SSR HTML
+- `npx eslint "app/(localized)/[locale]/[country]/history/page.js" "app/(localized)/[locale]/[country]/history/metadata.js" "components/UniversalFooter.js"`
+
 ## Product Identity (Anchor for SEO Decisions)
 - The Hear is a news literacy tool.
 - It is a live media dashboard and a headline archive.
