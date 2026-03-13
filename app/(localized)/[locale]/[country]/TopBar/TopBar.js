@@ -10,7 +10,6 @@ import { countries } from "@/utils/sources/countries";
 import FlagIcon from "@/components/FlagIcon";
 import { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
-import HebrewFonts from "@/utils/typography/HebrewFonts";
 import { getHeadline } from '@/utils/daily summary utils';
 import { trackEngagedUser } from "@/utils/analytics";
 
@@ -154,9 +153,6 @@ export default function TopBar({ locale, country, sources, currentSummary, initi
 
     return (
         <>
-            {/* Load Hebrew fonts when locale is Hebrew */}
-            {effectiveLocale === 'heb' && <HebrewFonts />}
-
             <nav className="sticky top-0 left-0 w-full bg-white z-40 border-b border-gray-200">
                 <div className="w-full mx-auto px-5">
                     <div className="flex items-center justify-between py-3">

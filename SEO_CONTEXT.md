@@ -1,6 +1,6 @@
 # SEO Context Memory
 
-Last updated: 2026-03-11
+Last updated: 2026-03-13
 Owner: ongoing team notes
 
 ## Purpose
@@ -10,6 +10,51 @@ Use it to track:
 - what problem each change was meant to solve
 - current state
 - next experiments
+
+### 2026-03-13 (Live Page Metadata Fix + Font Preload De-Duplication)
+- What changed:
+- Fixed `/[locale]/global` route metadata in `app/(localized)/[locale]/global/page.js` so page-level Open Graph and Twitter tags no longer inherit the generic localized-layout homepage defaults.
+- `/en/global` now emits page-specific:
+- `og:title`
+- `og:description`
+- `og:url`
+- `twitter:title`
+- `twitter:description`
+- Reduced repeated English/Hebrew font mounts across App Router pages by removing duplicate `EnglishFonts` / `HebrewFonts` renders from page content, top bar, archive grids, footer, and static content pages.
+- Kept root layouts as the main source of default English/Hebrew font definitions:
+- `app/(localized)/[locale]/layout.js`
+- `app/(static)/layout.js`
+- Made Hebrew font loading conditional in the localized layout (`heb` only).
+- Restored country-driven typography behavior on live country pages so `/en/israel` still loads Hebrew fonts via country typography, while `/en/us` stays lean.
+- Why we changed it:
+- Live `/en/global` had mismatched social metadata: page `<title>`/canonical were correct, but OG/Twitter tags still described the site homepage.
+- Live country/global pages were emitting repeated font preload tags and repeated inline `@font-face` blocks because font components were mounted in many nested places.
+- This created unnecessary head/body bloat and likely hurt crawl efficiency and performance.
+- What we observed (data/source):
+- Before the cleanup, localhost `/en/us` emitted `54` font preload tags.
+- After the cleanup, localhost `/en/us` emits `6` font preload tags.
+- After the cleanup, localhost `/en/global` emits `6` font preload tags.
+- Localhost `/en/global` metadata now aligns:
+- title: `Live global news - the headlines as they evolve`
+- og:title: `Live global news - the headlines as they evolve`
+- og:description: `Global overview of news from around the world`
+- og:url: `https://www.thehear.org/en/global`
+- twitter:title: `Live global news - the headlines as they evolve`
+- twitter:description: `Global overview of news from around the world`
+- Localhost `/en/israel` again includes Hebrew font references, while localhost `/en/us` includes no Hebrew font references.
+- Feed-page confirmation:
+- Feed pages already had explicit page-level metadata in `pages/[locale]/[country]/[date]/feed.js`; no metadata inheritance bug like `/global` was found there.
+- Localhost `/en/us/2026-03-12/feed` emits `6` font preload tags.
+- Feed pages use `FeedFonts -> CountryFonts` for country-specific supplemental fonts, while their base metadata remains explicit in the Pages Router feed route.
+- Decision:
+- Keep the `/global` metadata override.
+- Keep the App Router font de-duplication changes.
+- Treat feed pages as a separate architecture: they already have explicit metadata and a different font-loading path.
+- Next step:
+- After deploy, re-check production `/en/global`, `/en/us`, and one or two representative `/feed` URLs to confirm:
+- OG/Twitter metadata is live on `/global`
+- font preload counts stay low
+- no country-specific typography regressions appear on routes like `/en/israel`
 
 ### 2026-03-11 (Feed Archive Differentiation Pass: Metadata, Visible Copy, JSON-LD)
 - Feed pages were adjusted to present themselves more consistently as archive/collection pages rather than article-like or "live AI overview" pages.

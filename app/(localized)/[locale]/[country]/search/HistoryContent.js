@@ -9,8 +9,6 @@ import SearchComponent from './SearchComponent';
 import ArchiveMenu from '../TopBar/settings/ArchiveMenu';
 import AboutMenu from '../TopBar/AboutMenu';
 import HistoryCountryNavigator from './HistoryCountryNavigator';
-import EnglishFonts from '@/utils/typography/EnglishFonts';
-import HebrewFonts from '@/utils/typography/HebrewFonts';
 import { countries } from '@/utils/sources/countries';
 import { getCountryLaunchDate } from '@/utils/launchDates';
 import useMobile from '@/components/useMobile';
@@ -111,8 +109,6 @@ export default function HistoryContent({ locale, country }) {
                     <Loader />
                 </div>
             )}
-            <EnglishFonts />
-            <HebrewFonts />
             <div style={{ paddingBottom: "var(--footer-offset, 3rem)" }} className="min-h-screen bg-white">
                 {/* TopBar - copied from ArchiveTopBar.js */}
                 <nav className="sticky top-0 w-full bg-white z-50 py-1 direction-ltr border-b border-gray-200">

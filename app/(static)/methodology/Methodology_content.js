@@ -1,6 +1,6 @@
 // Fully SSR - static methodology content
 import React from 'react';
-import EnglishFonts, { Typography_English } from "@/utils/typography/EnglishFonts";
+import { Typography_English } from "@/utils/typography/EnglishFonts";
 import Image from 'next/image';
 import FlagIcon from "@/components/FlagIcon";
 import { countries } from "@/utils/sources/countries";
@@ -146,8 +146,6 @@ export default function LandingPageContent({ randomSeed }) {
 
   return (
     <div className="w-full bg-white overflow-x-hidden overflow-y-auto custom-scrollbar pt-12">
-      <EnglishFonts />
-      
       <div className="w-full md:w-[70%] md:min-w-[800px] md:max-w-[1200px] p-5 overflow-visible mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Logo - Centered and alone in its row */}

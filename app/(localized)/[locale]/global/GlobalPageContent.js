@@ -2,11 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import HebrewFonts from "@/utils/typography/HebrewFonts";
 import GlobalGrid from "./GlobalGrid";
 import GlobalSummarySection from "./GlobalSummarySection";
 import GlobalTopBar from "./GlobalTopBar";
-import EnglishFonts from "@/utils/typography/EnglishFonts";
 import useMobile from "@/components/useMobile";
 import Loader from "@/components/loader";
 import { useFont } from "@/utils/store";
@@ -24,9 +22,6 @@ export default function GlobalPageContent({ locale, AICountrySort, countrySummar
 
     return (
         <div style={{ paddingBottom: "var(--footer-offset, 3rem)" }} className={`absolute flex flex-col w-full h-full overflow-auto ${locale === 'heb' ? 'direction-rtl' : 'direction-ltr'}`}>
-            <HebrewFonts />
-            <EnglishFonts />
-
             {/* Mobile title bar - visible only on small screens via CSS */}
             <div className="md:hidden bg-white border-b border-gray-200 py-2 px-4 text-center">
                 {globalOverview && (

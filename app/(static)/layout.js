@@ -5,7 +5,6 @@ import PWAMeta from "@/components/PWAMeta";
 import ConditionalEmotionRegistry from "../ConditionalEmotionRegistry";
 import { fontVariables } from "../fonts";
 import EnglishFonts from "@/utils/typography/EnglishFonts";
-import HebrewFonts from "@/utils/typography/HebrewFonts";
 
 export const metadata = {
   title: "The Hear",
@@ -92,7 +91,6 @@ export default function StaticRootLayout({ children }) {
       </head>
       <body>
         <EnglishFonts />
-        <HebrewFonts />
         <ConditionalEmotionRegistry>
           <LazyAnalytics />
           <ServiceWorkerRegistration />

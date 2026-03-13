@@ -4,10 +4,8 @@ import { useState, useEffect, Suspense } from "react";
 import RightPanel from "./RightPanel";
 import SideSlider from "./SideSlider";
 import TopBar from "./TopBar/TopBar";
-import EnglishFonts from "@/utils/typography/EnglishFonts";
 import { getTypographyOptions } from "@/utils/typography/typography";
 import MainSection from "./MainSection";
-import HebrewFonts from "@/utils/typography/HebrewFonts";
 import useCurrentSummary from "@/utils/database/useCurrentSummary";
 import { useRightPanel, useFont, useOrder } from "@/utils/store";
 import useMobile from "@/components/useMobile";
@@ -57,6 +55,10 @@ export default function CountryPageContent({ sources, initialSummaries, yesterda
     const { setFont } = useFont();
     const { order, setOrder } = useOrder();
     const [aboutOpen, setAboutOpen] = useState(false);
+    const TypographyComponent = typography.component;
+    const shouldLoadTypographyComponent =
+        TypographyComponent?.name !== 'EnglishFonts' &&
+        !(locale === 'heb' && TypographyComponent?.name === 'HebrewFonts');
 
     // Force English behavior on mobile
     const effectiveLocale = isMobile ? 'en' : locale;
@@ -104,9 +106,7 @@ export default function CountryPageContent({ sources, initialSummaries, yesterda
             <FirstVisitModal openAbout={() => setAboutOpen(true)} country={country} locale={locale} pageDate={pageDate} />
             <AboutMenu open={aboutOpen} onClose={() => setAboutOpen(false)} />
             <div id='main' style={{ paddingBottom: "var(--footer-offset, 3rem)" }} className={`absolute flex flex-col sm:flex-row w-full h-full overflow-auto sm:overflow-hidden ${effectiveLocale === 'heb' ? 'direction-rtl' : 'direction-ltr'}`}>
-                <EnglishFonts />
-                {locale == 'heb' && <HebrewFonts />}
-                <typography.component />
+                {shouldLoadTypographyComponent && <TypographyComponent />}
                 {!isVerticalScreen && <SideSlider {...{ locale, country, pageDate }} />}
                 
                 {/* Right Panel - only show on desktop, not vertical screens */}

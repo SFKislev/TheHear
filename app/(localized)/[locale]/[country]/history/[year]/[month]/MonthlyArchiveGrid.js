@@ -6,7 +6,6 @@ import InnerLink from '@/components/InnerLink';
 import ArchiveCard from './ArchiveCard';
 import TitleCard from './TitleCard';
 import LiveCard from './LiveCard';
-import { getTypographyOptions } from '@/utils/typography/typography';
 import ArchiveTopBar from './ArchiveTopBar';
 
 
@@ -19,10 +18,6 @@ export default function MonthlyArchiveGrid({
     month, 
     monthName 
 }) {
-    // Use locale to determine typography and directionality instead of country
-    const localeCountry = locale === 'heb' ? 'israel' : 'us';
-    const typography = getTypographyOptions(localeCountry);
-
     const countryName = locale === 'heb' ? countries[country].hebrew : countries[country].english;
     const pageTitle = locale === 'heb' 
         ? `ארכיון חדשות ${countryName} - ${monthName}`
@@ -35,7 +30,6 @@ export default function MonthlyArchiveGrid({
     if (!dailySummaries || dailySummaries.length === 0) {
         return (
             <>
-                <typography.component />
                 <ArchiveTopBar {...{ country, locale, year, month, monthName }} />
                 <div className="flex flex-1 min-h-[80vh] items-center justify-center">
                     <div className="text-center">
@@ -53,7 +47,6 @@ export default function MonthlyArchiveGrid({
 
     return (
         <>
-            <typography.component />
             <ArchiveTopBar {...{ country, locale, year, month, monthName }} />
             <div style={{ paddingBottom: "var(--footer-offset, 3rem)" }} className={`custom-scrollbar 
                         gap-4 p-4

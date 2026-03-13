@@ -7,7 +7,6 @@ import InnerLink from '@/components/InnerLink';
 import GlobalArchiveCard from './GlobalArchiveCard';
 import GlobalTitleCard from './GlobalTitleCard';
 import GlobalLiveCard from './GlobalLiveCard';
-import { getTypographyOptions } from '@/utils/typography/typography';
 import GlobalArchiveTopBar from './GlobalArchiveTopBar';
 
 // Custom order for countries (non-alphabetical)
@@ -27,10 +26,6 @@ export default function GlobalDailyArchiveGrid({
     dateString 
 }) {
     const [isAlphabetical, setIsAlphabetical] = useState(false);
-
-    // Use locale to determine typography and directionality
-    const localeCountry = locale === 'heb' ? 'israel' : 'us';
-    const typography = getTypographyOptions(localeCountry);
 
     const pageTitle = locale === 'heb' 
         ? `ארכיון חדשות עולמי - ${dateString}`
@@ -75,7 +70,6 @@ export default function GlobalDailyArchiveGrid({
     if (!dailySummaries || dailySummaries.length === 0) {
         return (
             <>
-                <typography.component />
                 <GlobalArchiveTopBar 
                     {...{ locale, year, month, day, dateString, currentDate }} 
                     isAlphabetical={isAlphabetical}
@@ -99,7 +93,6 @@ export default function GlobalDailyArchiveGrid({
 
     return (
         <>
-            <typography.component />
             <GlobalArchiveTopBar 
                 {...{ locale, year, month, day, dateString, currentDate }} 
                 isAlphabetical={isAlphabetical}

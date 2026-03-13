@@ -7,7 +7,6 @@ import InnerLink from "@/components/InnerLink";
 import { countries } from "@/utils/sources/countries";
 import { createDateString } from "@/utils/utils";
 import FlagIcon from "@/components/FlagIcon";
-import HebrewFonts from "@/utils/typography/HebrewFonts";
 import { getCountryLaunchDate } from "@/utils/launchDates";
 import { Archive, Info, X } from "lucide-react";
 import MailIcon from "@mui/icons-material/Mail";
@@ -352,7 +351,6 @@ export default function UniversalFooter({ locale, pageType, country, date, year,
                     )}
                 </div>
             )}
-            {isHeb && <HebrewFonts />}
             <footer
                 className={`universal-footer-fixed fixed bottom-0 left-0 right-0 h-12 w-full border-t border-gray-200 bg-white px-3 ${textSizeClass} ${fontClass} ${openMenu ? 'z-[100]' : 'z-40'}`}
                 dir={isHeb ? 'rtl' : 'ltr'}

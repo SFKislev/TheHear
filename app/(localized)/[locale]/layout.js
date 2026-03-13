@@ -97,7 +97,7 @@ export default async function LocalizedRootLayout({ children, params }) {
       </head>
       <body>
         <EnglishFonts />
-        <HebrewFonts />
+        {isHebrew && <HebrewFonts />}
         <ConditionalEmotionRegistry>
           <LazyAnalytics />
           <ServiceWorkerRegistration />
