@@ -22,7 +22,7 @@ export default function FeedPopup({ openAbout, country, locale, pageDate }) {
     let shortText;
     if (pageDate && !isToday(pageDate)) {
         const formattedDate = format(pageDate, 'MMMM d, yyyy');
-        shortText = `<span class="font-medium">The Hear</span> is a raw news archive. <br/><br/> This page is an archive of the main headlines of many newspapers from ${countryName} on <span class="font-medium">${formattedDate}</span>. <br/> This archive is best viewed with the time-machine interface, <span style="color:rgb(0, 0, 255);">here</span>.`;
+        shortText = `<span class="font-medium">The Hear</span> is a news archive. <br/><br/> This page is an unfiltered collection of all the main headlines of many newspapers from ${countryName} on <span class="font-medium">${formattedDate}</span>. This archive is best viewed with a time-machine interface, <span style="color:rgb(0, 0, 255); text-decoration: underline; font-weight: 600;">here</span>.`;
     } else {
         shortText = `<span class="font-medium">The Hear</span> is an unfiltered news archive. <br/><br/> These are the current main headlines of many newspapers from ${countryName}. This archive is best viewed with the time-machine interface, here.`;
     }
