@@ -18,6 +18,9 @@ export async function generateMetadata({ params }) {
     const canonicalUrl = `https://www.thehear.org/${locale}/global`;
     const englishUrl = `https://www.thehear.org/en/global`;
     const hebrewUrl = `https://www.thehear.org/heb/global`;
+    const siteName = 'The Hear';
+    const image192 = 'https://www.thehear.org/logo192.png';
+    const image512 = 'https://www.thehear.org/logo512.png';
     
     const title = locale === 'heb' ? 'חדשות גלובליות בזמן אמת' : 'Live global news - the headlines as they evolve';
     const description = locale === 'heb' 
@@ -34,6 +37,36 @@ export async function generateMetadata({ params }) {
                 he: hebrewUrl,
                 "x-default": englishUrl
             }
+        },
+        openGraph: {
+            title,
+            description,
+            url: canonicalUrl,
+            siteName,
+            locale: locale === 'heb' ? 'he_IL' : 'en_US',
+            type: 'website',
+            images: [
+                {
+                    url: image192,
+                    width: 192,
+                    height: 192,
+                    alt: `${siteName} logo`,
+                },
+                {
+                    url: image512,
+                    width: 512,
+                    height: 512,
+                    alt: `${siteName} logo large`,
+                }
+            ],
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+            images: [image512],
+            site: '@thehearnews',
+            creator: '@thehearnews'
         },
     };
 }
