@@ -4,8 +4,7 @@ import EnglishFonts, { Typography_English } from "@/utils/typography/EnglishFont
 import Image from 'next/image';
 import FlagIcon from "@/components/FlagIcon";
 import { countries } from "@/utils/sources/countries";
-import DynamicLogo from "@/components/Logo";
-import RandomMobileLogo from "@/components/RandomMobileLogo";
+import DynamicLogoSmall from "@/components/Logo-small";
 import Link from 'next/link';
 // import { sources, RandomSampleCards } from "./SampleCards";  // Comment out this import
 import InnerLink from '@/components/InnerLink';
@@ -14,7 +13,7 @@ const styleTheHear = (text) => {
   return text.replace(/\bthe hear\b/gi, (match) => 
     `<span style='font-weight: 500;'>${match}</span>`
   ).replace(/<b>(.*?)<\/b>/g, (match, content) => 
-    `<b style='color:black; background-color: yellow; font-weight: 500;'>${content}</b>`
+    `<b style='color:black; background-color: ye; font-weight: 500;'>${content}</b>`
   );
 };
 
@@ -29,7 +28,7 @@ const imageCards = [
     image: "/landing/landscape-s.png",
     imageAlt: "Media Landscape",
     title: "The Landscape as a Whole",
-    subtitle: styleTheHear("The Hear is <b>not curated</b> and not personalized. Instead of trying to select the bits and pieces that might interest <i>you</i>, it attempts to give an overview of the landscape as a whole. Instead of making its own editorial decisions, it listens to the <b>decisions made by human editors</b> as to what constitutes 'the main story' worthy of your attention. <br><br> In this, the Hear is an objective news aggregator.")
+    subtitle: styleTheHear("The Hear is <b>not curated</b> and not personalized. Instead of trying to select the bits and pieces that might interest <i>you</i>, it attempts to give an overview of the landscape as a whole. Instead of making its own editorial decisions, it listens to the <b>decisions made by human editors</b> as to what constitutes 'the main story' worthy of your attention. <br> In this, the Hear is an objective news aggregator.")
   },
   {
     // image: "/landing/archive-s.png",
@@ -44,20 +43,20 @@ const imageCards = [
     subtitle: styleTheHear("The Hear doesn't just display the headlines, but also reads them: it is <b>embedded with AI</b> throughout. With continuously updating overviews, summaries and reports, the Hear helps the reader digest the many headlines as they unravel. With daily overviews, it also <b>chronicles history</b> as it unfolds. The Hear is a newsstand equipped with a brain.")
   },
   {
-    image: "/landing/babel.png",
-    imageAlt: "The Tower of Babel",
+    // image: "/landing/babel.png",
+    // imageAlt: "The Tower of Babel",
     title: "The Global Media",
     subtitle: styleTheHear("The Hear <b>translates headlines in real-time</b>. It makes the news landscape in many countries immediately accessible in English, without selection, manipulation or commentary. It gives an unfiltered view of what is currently being discussed by legacy media, around planet earth.")
   },
   {
-    image: "/landing/oneThing.png",
-    imageAlt: "The One-Thing",
+    // image: "/landing/oneThing.png",
+    // imageAlt: "The One-Thing",
     title: "The One-Thing",
     subtitle: styleTheHear("the Hear displays main headlines. In the fuss and hubbub of the world, the main headline is the editor's choice of the <b>single most important story</b> happening now: the main headline is the one-thing. The Hear is a meta-newspaper made solely of such one-things, organized and contextualized.")
   },
   {
-    image: "/landing/Bubble.png",
-    imageAlt: "A bubble",
+    // image: "/landing/Bubble.png",
+    // imageAlt: "A bubble",
     title: "A Negative Filter Bubble",
     subtitle: styleTheHear("The Hear is a collection of perspectives. It positions “far-right” and “radical left” headlines side by side, without judgement, creating a negative filter bubble. The Hear contextualizes the headlines through contrast.")
   },
@@ -135,7 +134,7 @@ export default function LandingPageContent({ randomSeed }) {
   };
 
   return (
-    <div className="w-full bg-white overflow-x-hidden overflow-y-auto custom-scrollbar pt-12">
+    <div className="w-full bg-white overflow-x-hidden overflow-y-auto custom-scrollbar pt-4">
       <EnglishFonts />
       
       <div className="w-full md:w-[70%] md:min-w-[800px] md:max-w-[1200px] p-5 overflow-visible mx-auto">
@@ -146,11 +145,11 @@ export default function LandingPageContent({ randomSeed }) {
               <div className="no-underline">
                 {/* Mobile Logo */}
                 <div className="block md:hidden">
-                  <RandomMobileLogo locale="en" desktopVariant="small" showDivider={false} mobileReducedPadding={true} />
+                  <DynamicLogoSmall locale="en" showDivider={false} mobileReducedPadding={true} alwaysVisible />
                 </div>
                 {/* Desktop Logo */}
                 <div className="hidden md:block">
-                  <DynamicLogo locale="en" showDivider={false} />
+                  <DynamicLogoSmall locale="en" showDivider={false} alwaysVisible />
                 </div>
               </div>
             </div>
