@@ -12,7 +12,7 @@ import JapaneseFonts from '@/utils/typography/JapaneseFonts';
 import IndiaFonts from '@/utils/typography/IndiaFonts';
 // Removed Japanese fonts: rocknRollOne, sawarabiGothic, pottaOne, kiwiMaru, delaGothicOne
 // Removed Chinese fonts: zcoolKuaiLe, zcoolQingKe
-import { oswald, rubik, amiri, lalezar, alexandria, notoSansSC, notoSansJP, notoSansDevanagari, palanquinDark } from '@/app/fonts';
+import { oswald, rubik, amiri, lalezar, alexandria, notoSansSC, notoSansJP, notoSansDevanagari, palanquinDark } from '@/app/countryFontVariables';
 import { useEffect } from 'react';
 
 // Map countries to their font components and CSS variables

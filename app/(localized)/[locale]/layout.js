@@ -3,7 +3,7 @@ import LazyAnalytics from "@/components/LazyAnalytics";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import PWAMeta from "@/components/PWAMeta";
 import ConditionalEmotionRegistry from "../../ConditionalEmotionRegistry";
-import { fontVariables } from "../../fonts";
+import { fontVariables } from "../../baseFonts";
 import EnglishFonts from "@/utils/typography/EnglishFonts";
 import HebrewFonts from "@/utils/typography/HebrewFonts";
 

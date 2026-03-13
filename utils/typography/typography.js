@@ -27,6 +27,20 @@ export function getTypographyOptions(country) {
     return countryTypographyOptions[country] || countryTypographyOptions['default'];
 }
 
+const countryScriptPatterns = {
+    china: /[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]/,
+    india: /[\u0900-\u097F]/,
+    japan: /[\u3040-\u30FF\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]/,
+    russia: /[\u0400-\u04FF]/,
+    ukraine: /[\u0400-\u04FF]/,
+};
+
+function matchesCountryScript(country, text) {
+    const pattern = countryScriptPatterns[country];
+    if (!pattern) return true;
+    return pattern.test(text || "");
+}
+
 function hashString(seed) {
     let hash = 2166136261;
 
@@ -38,16 +52,22 @@ function hashString(seed) {
     return hash >>> 0;
 }
 
-export function getDeterministicTypography({ country, fallbackCountry, seed, isRTL }) {
+export function getDeterministicTypography({ country, fallbackCountry, seed, isRTL, text = "" }) {
     const primaryOptions = getTypographyOptions(country).options;
     const effectiveFallback = fallbackCountry || (isRTL ? "israel" : "us");
     const fallbackOptions = getTypographyOptions(effectiveFallback).options;
     const primaryIndex = hashString(`${country}:${seed}:primary`) % primaryOptions.length;
     const fallbackIndex = hashString(`${effectiveFallback}:${seed}:fallback`) % fallbackOptions.length;
+    const shouldPreferFallbackScript = !matchesCountryScript(country, text);
 
     const candidate = primaryOptions[primaryIndex];
 
-    if (!candidate || (candidate.direction === "rtl" && !isRTL) || (candidate.direction === "ltr" && isRTL)) {
+    if (
+        !candidate ||
+        shouldPreferFallbackScript ||
+        (candidate.direction === "rtl" && !isRTL) ||
+        (candidate.direction === "ltr" && isRTL)
+    ) {
         return fallbackOptions[fallbackIndex];
     }
 

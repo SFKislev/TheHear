@@ -1,5 +1,5 @@
 import Document, { Head, Html, Main, NextScript } from "next/document";
-import { fontVariables } from "@/app/fonts";
+import { fontVariables } from "@/app/baseFonts";
 
 function getLocaleAttributes(pathname) {
     if (pathname.startsWith("/heb/")) {

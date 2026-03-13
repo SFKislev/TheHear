@@ -92,7 +92,7 @@ export default function FeedPage(props) {
             </Head>
 
             <div className="min-h-screen bg-gray-50 pb-4">
-                <FeedFonts country={props.country} />
+                <FeedFonts country={props.country} locale={props.locale} />
                 <FeedJsonLd
                     country={props.country}
                     locale={props.locale}

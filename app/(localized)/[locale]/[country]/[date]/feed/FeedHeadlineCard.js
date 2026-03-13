@@ -17,10 +17,12 @@ export default function HeadlineCard({ headline, country, countryTimezone }) {
         subtitleText,
         headline.timestamp?.toString?.() || ""
     ].join("|");
+    const typographyText = [sourceName, headlineText, subtitleText].join(" ");
     const finalTypo = getDeterministicTypography({
         country,
         seed: typographySeed,
-        isRTL: headlineIsRTL
+        isRTL: headlineIsRTL,
+        text: typographyText
     });
 
     let countryTimeString = "";

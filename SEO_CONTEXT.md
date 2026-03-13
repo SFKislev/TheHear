@@ -56,6 +56,61 @@ Use it to track:
 - font preload counts stay low
 - no country-specific typography regressions appear on routes like `/en/israel`
 
+### 2026-03-13 (Feed Font Loading Split: Base Fonts, Hebrew UI Font, Country-Specific Fonts)
+- What changed:
+- Cleaned up the Pages Router feed font architecture so feed pages no longer inherit the full Hebrew font pack by default.
+- In `pages/_app.js`, removed global `HebrewFonts`; feed routes now keep `EnglishFonts` as the default base only.
+- Added `utils/typography/HebrewUIFonts.js` to provide only the single Hebrew UI font needed by feed UI (`frank-re`).
+- Updated `app/(localized)/[locale]/[country]/[date]/feed/FeedFonts.js`:
+- full `HebrewFonts` only for `country === 'israel'`
+- `HebrewUIFonts` only for `locale === 'heb'` when the country is not Israel
+- `CountryFonts` still used for country-specific supplemental fonts (Russia/Arabic/Japan/China/India)
+- Split `next/font` declarations into:
+- `app/baseFonts.js` for always-on base fonts (`Roboto`, `Geist`)
+- `app/countryFontVariables.js` for optional country-specific `next/font` families
+- Updated `pages/_app.js`, `pages/_document.js`, App Router layouts, and `components/CountryFonts.js` to use the split modules.
+- Why we changed it:
+- Feed pages were still overloading fonts because `CountryFonts` pulled in the large `app/fonts.js` module, and Pages Router was preloading optional font families even on routes that did not need them.
+- Desired behavior:
+- `/en/russia/.../feed` should not load Hebrew fonts
+- `/heb/us/.../feed` should load only the Hebrew UI font, not the full Hebrew headline typography pack
+- `/en/israel/.../feed` should still load the full Hebrew font pack
+- What we observed (data/source):
+- Localhost validation after the change:
+- `/en/us/01-06-2025/feed` -> `9` font preloads, no Hebrew font references
+- `/en/russia/01-06-2025/feed` -> `9` font preloads, no Hebrew font references
+- `/heb/us/01-06-2025/feed` -> `10` font preloads, only `frank-re-medium-aaa.otf` from the Hebrew side
+- `/en/israel/01-06-2025/feed` -> `14` font preloads, full Hebrew font pack present
+- Decision:
+- Keep this feed-specific split: base English fonts globally, minimal Hebrew UI fonts only when locale is Hebrew, and full Hebrew typography only when the country route actually needs it.
+- Next step:
+- After deploy, verify production on the same representative routes and confirm feed font preload counts remain materially lower than before.
+
+### 2026-03-13 (Feed Headline Typography: Script-Aware Fallback for English Sources in Non-English Countries)
+- What changed:
+- Updated `utils/typography/typography.js` so `getDeterministicTypography(...)` now checks script compatibility, not only text direction.
+- Updated `app/(localized)/[locale]/[country]/[date]/feed/FeedHeadlineCard.js` to pass the actual source/headline/subtitle text into the typography chooser.
+- Added country-script matching for script-specific LTR countries:
+- `japan`
+- `china`
+- `russia`
+- `ukraine`
+- `india`
+- Why we changed it:
+- English-language sources inside non-English country feeds were incorrectly using the country font set when the country typography was also LTR.
+- Example issue: on Japan feed pages, English-source cards such as `The Japan Times` / `Kyodo News English` were rendered with Japanese headline fonts instead of English ones.
+- Israel appeared correct only because Hebrew typography is RTL, so English cards already fell back naturally under the older direction-only logic.
+- What we observed (data/source):
+- Before the fix, Japan feed pages could render Latin-script English-source cards with `Noto Sans JP`.
+- After the fix, script-specific countries now keep their native font set only when the actual card text matches the country script; Latin-script content falls back to English typography.
+- Decision:
+- Keep script-aware fallback as the correct rule for mixed-language source sets inside country feeds.
+- Next step:
+- After deploy, spot-check representative live feed pages for:
+- Japan (`The Japan Times`, `Kyodo News English`)
+- Russia/Ukraine (English-language sources vs Cyrillic sources)
+- China and India if/when mixed-script feed cards are present
+
 ### 2026-03-11 (Feed Archive Differentiation Pass: Metadata, Visible Copy, JSON-LD)
 - Feed pages were adjusted to present themselves more consistently as archive/collection pages rather than article-like or "live AI overview" pages.
 - In `utils/feedPage.js`, added `archiveInsights` derived from the actual headline set for the day:
