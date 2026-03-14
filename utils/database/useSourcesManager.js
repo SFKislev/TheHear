@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useFirebase from "./useFirebase";
 import { getWebsiteName } from "../sources/getCountryData";
 import { useTime } from "../store";
@@ -27,6 +27,7 @@ export default function useSourcesManager(country, initialSources, enabled = tru
     const firebase = useFirebase();
     const [loading, setLoading] = useState(enabled && !hasInitialSourceData(initialSources));
     const setDate = useTime(state => state.setDate);
+    const hasBackfilledHistoryRef = useRef(false);
 
     const updateSources = (newHeadlines) => {
         let changedCount = 0;
@@ -65,6 +66,7 @@ export default function useSourcesManager(country, initialSources, enabled = tru
     useEffect(() => {
         setSources(initialSources);
         setLoading(enabled && !hasInitialSourceData(initialSources));
+        hasBackfilledHistoryRef.current = false;
     }, [initialSources]);
 
     const getMaxKnownHeadlineTime = () => {
@@ -81,6 +83,10 @@ export default function useSourcesManager(country, initialSources, enabled = tru
         let unsubscribe = () => {};
         const cleanupIdle = scheduleWhenIdle(() => {
             getRecentHeadlines()
+            if (!hasBackfilledHistoryRef.current) {
+                hasBackfilledHistoryRef.current = true;
+                void getRecentHeadlines({ fullWindow: true });
+            }
 
             const headlinesCollection = firebase.getCountryCollectionRef(country, 'headlines');
             const recentWindowStart = sub(new Date(), { days: 2 });
@@ -108,7 +114,7 @@ export default function useSourcesManager(country, initialSources, enabled = tru
     }, [firebase.ready, country, enabled]);
 
 
-    const getRecentHeadlines = async () => {
+    const getRecentHeadlines = async ({ fullWindow = false } = {}) => {
         const shouldShowLoadingState = !hasInitialSourceData(sources);
         if (shouldShowLoadingState) {
             setLoading(true);
@@ -117,12 +123,16 @@ export default function useSourcesManager(country, initialSources, enabled = tru
         const maxKnownTime = getMaxKnownHeadlineTime();
         const fallbackWindowStart = sub(new Date(), { days: 2 });
         const headlinesCollection = firebase.getCountryCollectionRef(country, 'headlines');
-        const sinceTime = maxKnownTime ? sub(maxKnownTime, { minutes: 30 }) : fallbackWindowStart;
+        const sinceTime = fullWindow
+            ? fallbackWindowStart
+            : maxKnownTime
+                ? sub(maxKnownTime, { minutes: 30 })
+                : fallbackWindowStart;
         const q = firebase.firestore.query(
             headlinesCollection,
             firebase.firestore.where('timestamp', '>=', sinceTime),
             firebase.firestore.orderBy('timestamp', 'desc'),
-            firebase.firestore.limit(150),
+            firebase.firestore.limit(fullWindow ? 500 : 150),
         );
         let newHeadlines = await firebase.firestore.getDocs(q);
 

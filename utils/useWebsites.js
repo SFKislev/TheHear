@@ -10,6 +10,7 @@ export default function useWebsitesManager(country, sources) {
     const { isVerticalScreen } = useVerticalScreen();
     const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 0);
     const previousAvailableCountRef = useRef(0);
+    const previousOrderRef = useRef(order);
 
     const arraysEqual = (a, b) => {
         if (a.length !== b.length) return false;
@@ -48,8 +49,12 @@ export default function useWebsitesManager(country, sources) {
         const preferredSources = availableSources.slice(0, cardLimit);
         const previousAvailableCount = previousAvailableCountRef.current;
         const availableCountIncreased = availableSources.length > previousAvailableCount;
+        const orderChanged = previousOrderRef.current !== order;
 
         if (activeWebsites.length === 0) {
+            nextWebsites = preferredSources;
+        } else if (orderChanged) {
+            // A new order selection should rebuild the visible set from that order's top sources.
             nextWebsites = preferredSources;
         } else if (availableCountIncreased && activeWebsites.length === cardLimit) {
             // If sources recovered since last pass, refresh to preferred top sources.
@@ -68,6 +73,7 @@ export default function useWebsitesManager(country, sources) {
         }
 
         previousAvailableCountRef.current = availableSources.length;
+        previousOrderRef.current = order;
         if (!arraysEqual(activeWebsites, nextWebsites)) {
             setActiveWebsites(nextWebsites);
         }

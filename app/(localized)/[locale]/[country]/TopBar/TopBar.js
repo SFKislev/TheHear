@@ -39,7 +39,7 @@ export default function TopBar({ locale, country, sources, currentSummary, initi
     const { isMobile } = useMobile();
     const { isVerticalScreen } = useVerticalScreen();
     const date = useTime(state => state.date);
-    const [settingsOpen, setSettingsOpen] = useState(false);
+    const [settingsOpen, setSettingsOpen] = useState(true);
     const [isWideScreen, setIsWideScreen] = useState(false);
     const hasTrackedSettings = useRef(false);
 

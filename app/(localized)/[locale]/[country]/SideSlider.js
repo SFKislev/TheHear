@@ -13,8 +13,10 @@ import { redirect } from "next/navigation";
 import { createDateString } from "@/utils/utils";
 import CustomTooltip from "@/components/CustomTooltip";
 import { trackTimeExploration } from "@/utils/analytics";
+import { useSearchParams } from "next/navigation";
 
 export default function SideSlider({ locale, country, pageDate }) {
+    const searchParams = useSearchParams();
     const summaries = useDaySummaries(state => state.daySummaries);
     const date = useTime(state => state.date);
     const setDate = useTime(state => state.setDate);
@@ -64,19 +66,25 @@ export default function SideSlider({ locale, country, pageDate }) {
             // Check if user has already selected a specific time on this date
             const currentDate = date;
             const isSameDay = currentDate && currentDate.toDateString() === pageDate.toDateString();
+            const timeParam = searchParams.get('time');
+            const matchedTime = typeof timeParam === 'string' ? timeParam.match(/^(\d{1,2}):(\d{2})$/) : null;
 
-            if (isSameDay && currentDate.getHours() !== 16) {
+            if (isSameDay && currentDate.getHours() !== 16 && !matchedTime) {
                 // User has already selected a specific time, preserve it
                 return;
             }
 
             const newDate = new Date(pageDate);
-            newDate.setHours(16, 0, 0, 0); // Default to 16:00 for date pages
+            if (matchedTime) {
+                newDate.setHours(Number(matchedTime[1]), Number(matchedTime[2]), 0, 0);
+            } else {
+                newDate.setHours(16, 0, 0, 0); // Default to 16:00 for date pages
+            }
             setDate(newDate);
         } else {
             setDate(new Date())
         }
-    }, [pageDate, setDate]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [pageDate, setDate, searchParams, date]); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         if (isDatePage) return;
