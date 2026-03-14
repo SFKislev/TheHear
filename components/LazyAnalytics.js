@@ -7,6 +7,7 @@
 
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { usePathname } from 'next/navigation';
 
 // Dynamically import analytics with no SSR
 const Analytics = dynamic(() => import('@vercel/analytics/react').then(mod => mod.Analytics), {
@@ -26,18 +27,50 @@ const GoogleAnalytics = dynamic(() => import('./GoogleAnalytics'), {
 
 export default function LazyAnalytics() {
     const [isReady, setIsReady] = useState(false);
+    const pathname = usePathname();
 
     useEffect(() => {
-        // Defer analytics loading until after page is interactive
-        // Wait for idle callback or 3 seconds, whichever comes first
-        if (typeof window !== 'undefined') {
-            if ('requestIdleCallback' in window) {
-                requestIdleCallback(() => setIsReady(true), { timeout: 3000 });
-            } else {
-                setTimeout(() => setIsReady(true), 3000);
-            }
+        if (typeof window === 'undefined') return undefined;
+
+        const isFeedPage = pathname?.endsWith('/feed');
+        let timeoutId;
+        let idleId;
+
+        const markReady = () => {
+            setIsReady(true);
+        };
+
+        if (isFeedPage) {
+            const handleInteraction = () => {
+                cleanup();
+                markReady();
+            };
+
+            const cleanup = () => {
+                window.removeEventListener('pointerdown', handleInteraction);
+                window.removeEventListener('keydown', handleInteraction);
+                window.removeEventListener('scroll', handleInteraction);
+                if (timeoutId) {
+                    window.clearTimeout(timeoutId);
+                }
+            };
+
+            window.addEventListener('pointerdown', handleInteraction, { once: true, passive: true });
+            window.addEventListener('keydown', handleInteraction, { once: true });
+            window.addEventListener('scroll', handleInteraction, { once: true, passive: true });
+            timeoutId = window.setTimeout(markReady, 15000);
+
+            return cleanup;
         }
-    }, []);
+
+        if ('requestIdleCallback' in window) {
+            idleId = window.requestIdleCallback(markReady, { timeout: 3000 });
+            return () => window.cancelIdleCallback(idleId);
+        }
+
+        timeoutId = window.setTimeout(markReady, 3000);
+        return () => window.clearTimeout(timeoutId);
+    }, [pathname]);
 
     if (!isReady) {
         return null;

@@ -1,5 +1,6 @@
 'use client'
 
+import { useMemo } from "react";
 import AddSourceButton from "./Source/AddSourceButton";
 import SourceCard from "./Source/SourceCard";
 import MobileSummary from "./MobileSummary";
@@ -15,6 +16,14 @@ export default function MainSection({ sources, country, locale, pageDate, initia
     useWebsitesManager(country, managedSources)
     const { isMobile } = useMobile();
     const activeWebsites = useActiveWebsites(state => state.activeWebsites);
+    const visibleSources = useMemo(() => {
+        const sourceNames = Object.keys(managedSources || {});
+        if (activeWebsites.length === 0) {
+            return sourceNames;
+        }
+
+        return activeWebsites.filter((source) => Boolean(managedSources[source]));
+    }, [managedSources, activeWebsites]);
 
     return (
         <div className={`custom-scrollbar
@@ -31,7 +40,7 @@ export default function MainSection({ sources, country, locale, pageDate, initia
                 </div>
             )}
             
-            {Object.keys(managedSources).map((source) => (
+            {visibleSources.map((source) => (
                     <SourceCard
                         key={source}
                         headlines={managedSources[source].headlines}

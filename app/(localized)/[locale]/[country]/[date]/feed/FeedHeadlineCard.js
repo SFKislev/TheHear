@@ -1,9 +1,21 @@
 import { getSourceData, getWebsiteName } from "@/utils/sources/getCountryData";
-import { getDeterministicTypography } from "@/utils/typography/typography";
+import { getDeterministicTypography, getTypographyOptions } from "@/utils/typography/typography";
 import { checkRTL } from "@/utils/utils";
 import FeedLocalTime from "./FeedLocalTime";
 
-export default function HeadlineCard({ headline, country, countryTimezone }) {
+function getPriorityTypography(country, isRTL) {
+    const primaryOptions = getTypographyOptions(country).options;
+    const fallbackOptions = getTypographyOptions(isRTL ? "israel" : "us").options;
+    const firstMatchingPrimary = primaryOptions.find((option) => option?.direction === (isRTL ? "rtl" : "ltr"));
+
+    if (firstMatchingPrimary) {
+        return firstMatchingPrimary;
+    }
+
+    return fallbackOptions.find((option) => option?.direction === (isRTL ? "rtl" : "ltr")) || fallbackOptions[0];
+}
+
+export default function HeadlineCard({ headline, country, countryTimezone, isPriorityCard = false }) {
     const normalizedWebsiteId = getWebsiteName(country, headline.website_id);
     const sourceData = getSourceData(country, normalizedWebsiteId);
     const sourceName = sourceData?.name || headline.website_id;
@@ -18,12 +30,14 @@ export default function HeadlineCard({ headline, country, countryTimezone }) {
         headline.timestamp?.toString?.() || ""
     ].join("|");
     const typographyText = [sourceName, headlineText, subtitleText].join(" ");
-    const finalTypo = getDeterministicTypography({
-        country,
-        seed: typographySeed,
-        isRTL: headlineIsRTL,
-        text: typographyText
-    });
+    const finalTypo = isPriorityCard
+        ? getPriorityTypography(country, headlineIsRTL)
+        : getDeterministicTypography({
+            country,
+            seed: typographySeed,
+            isRTL: headlineIsRTL,
+            text: typographyText
+        });
 
     let countryTimeString = "";
     if (countryTimezone) {
@@ -118,17 +132,20 @@ export default function HeadlineCard({ headline, country, countryTimezone }) {
                                 width={16}
                                 height={16}
                                 alt=""
+                                loading="lazy"
                                 style={{ verticalAlign: "middle" }}
                             />
                         ) : null}
                     </div>
                     <div className="text-[0.7em] text-gray-400 font-mono">
                         {timeString}
-                        <FeedLocalTime
-                            timestamp={headline.timestamp}
-                            countryTimezone={countryTimezone}
-                            variant="verbose"
-                        />
+                        {!isPriorityCard ? (
+                            <FeedLocalTime
+                                timestamp={headline.timestamp}
+                                countryTimezone={countryTimezone}
+                                variant="verbose"
+                            />
+                        ) : null}
                     </div>
                 </div>
             </div>

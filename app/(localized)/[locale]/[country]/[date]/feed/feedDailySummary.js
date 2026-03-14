@@ -1,4 +1,4 @@
-import { getHeadline, getSummaryContent } from "@/utils/daily summary utils";
+import { getHeadline, getSummaryParagraphs } from "@/utils/daily summary utils";
 
 export default function FeedDailySummary({ locale, daySummary }) {
     if (!daySummary) return null;
@@ -12,7 +12,7 @@ export default function FeedDailySummary({ locale, daySummary }) {
         .replace(/\//g, ".");
 
     const headline = getHeadline(daySummary, locale);
-    const summaryContent = getSummaryContent(daySummary, locale);
+    const summaryParagraphs = getSummaryParagraphs(daySummary, locale);
     const disclaimer = locale === "heb"
         ? "סקירה יומית זו נכתבה בידי בינה"
         : "This daily overview was written by an AI";
@@ -41,7 +41,15 @@ export default function FeedDailySummary({ locale, daySummary }) {
                 >
                     ⌨
                 </span>
-                <span dangerouslySetInnerHTML={{ __html: summaryContent }} />
+                {summaryParagraphs.map((paragraph, index) => (
+                    <p
+                        key={index}
+                        className={index === 0 ? "inline" : "mt-4"}
+                        style={{ marginBottom: 0 }}
+                    >
+                        {paragraph}
+                    </p>
+                ))}
             </div>
         </div>
     );

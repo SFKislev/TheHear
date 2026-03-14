@@ -1,15 +1,3 @@
-'use client';
-
-import { useEffect, useState } from "react";
-
-function formatLocalTime(timestamp) {
-    return new Intl.DateTimeFormat("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false
-    }).format(timestamp);
-}
-
 function formatCountryTime(timestamp, countryTimezone) {
     if (!countryTimezone) return null;
 
@@ -26,28 +14,19 @@ function formatCountryTime(timestamp, countryTimezone) {
 }
 
 export default function FeedLocalTime({ timestamp, countryTimezone, variant = "compact" }) {
-    const [localTime, setLocalTime] = useState("");
+    if (!timestamp) return null;
 
-    useEffect(() => {
-        if (!timestamp) return;
+    const date = new Date(timestamp);
+    const countryTime = formatCountryTime(date, countryTimezone);
+    const timestampValue = date.toISOString();
 
-        const date = new Date(timestamp);
-        const browserTime = formatLocalTime(date);
-        const countryTime = formatCountryTime(date, countryTimezone);
-
-        if (!browserTime || browserTime === countryTime) {
-            setLocalTime("");
-            return;
-        }
-
-        setLocalTime(browserTime);
-    }, [countryTimezone, timestamp]);
-
-    if (!localTime) return null;
-
-    if (variant === "verbose") {
-        return <> ({localTime} in your timezone)</>;
-    }
-
-    return <> ({localTime})</>;
+    return (
+        <span
+            data-feed-local-time
+            data-feed-local-time-value={timestampValue}
+            data-feed-country-time={countryTime || ""}
+            data-feed-local-variant={variant}
+            suppressHydrationWarning
+        />
+    );
 }

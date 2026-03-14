@@ -4,11 +4,28 @@ import { getWebsiteName } from "../sources/getCountryData";
 import { useTime } from "../store";
 import { sub } from "date-fns";
 
+function scheduleWhenIdle(callback) {
+    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+        const handle = window.requestIdleCallback(callback, { timeout: 2000 });
+        return () => window.cancelIdleCallback(handle);
+    }
+
+    const timeoutId = setTimeout(callback, 500);
+    return () => clearTimeout(timeoutId);
+}
+
+function hasInitialSourceData(sourceMap) {
+    return Boolean(
+        sourceMap &&
+        Object.values(sourceMap).some((source) => Array.isArray(source?.headlines) && source.headlines.length > 0)
+    );
+}
+
 export default function useSourcesManager(country, initialSources, enabled = true) {
 
     const [sources, setSources] = useState(initialSources);
     const firebase = useFirebase();
-    const [loading, setLoading] = useState(enabled);
+    const [loading, setLoading] = useState(enabled && !hasInitialSourceData(initialSources));
     const setDate = useTime(state => state.setDate);
 
     const updateSources = (newHeadlines) => {
@@ -47,6 +64,7 @@ export default function useSourcesManager(country, initialSources, enabled = tru
 
     useEffect(() => {
         setSources(initialSources);
+        setLoading(enabled && !hasInitialSourceData(initialSources));
     }, [initialSources]);
 
     const getMaxKnownHeadlineTime = () => {
@@ -60,26 +78,30 @@ export default function useSourcesManager(country, initialSources, enabled = tru
         if (!enabled) return
         if (!firebase.ready) return
 
-        getRecentHeadlines()
+        let unsubscribe = () => {};
+        const cleanupIdle = scheduleWhenIdle(() => {
+            getRecentHeadlines()
 
-        const headlinesCollection = firebase.getCountryCollectionRef(country, 'headlines');
-        const recentWindowStart = sub(new Date(), { days: 2 });
-        const q = firebase.firestore.query(
-            headlinesCollection,
-            firebase.firestore.where('timestamp', '>=', recentWindowStart),
-            firebase.firestore.orderBy('timestamp', 'desc'),
-            firebase.firestore.limit(30),
-        );
-        const unsubscribe = firebase.firestore.onSnapshot(q, snapshot => {
-            if (snapshot.empty) return
-            const headlines = snapshot.docs.map(doc => firebase.prepareData(doc));
-            const changed = updateSources(headlines);
-            if (changed > 0) {
-                setDate(new Date());
-            }
+            const headlinesCollection = firebase.getCountryCollectionRef(country, 'headlines');
+            const recentWindowStart = sub(new Date(), { days: 2 });
+            const q = firebase.firestore.query(
+                headlinesCollection,
+                firebase.firestore.where('timestamp', '>=', recentWindowStart),
+                firebase.firestore.orderBy('timestamp', 'desc'),
+                firebase.firestore.limit(30),
+            );
+            unsubscribe = firebase.firestore.onSnapshot(q, snapshot => {
+                if (snapshot.empty) return
+                const headlines = snapshot.docs.map(doc => firebase.prepareData(doc));
+                const changed = updateSources(headlines);
+                if (changed > 0) {
+                    setDate(new Date());
+                }
+            });
         });
 
         return () => {
+            cleanupIdle();
             unsubscribe()
         };
 
@@ -87,7 +109,10 @@ export default function useSourcesManager(country, initialSources, enabled = tru
 
 
     const getRecentHeadlines = async () => {
-        setLoading(true);
+        const shouldShowLoadingState = !hasInitialSourceData(sources);
+        if (shouldShowLoadingState) {
+            setLoading(true);
+        }
 
         const maxKnownTime = getMaxKnownHeadlineTime();
         const fallbackWindowStart = sub(new Date(), { days: 2 });
@@ -101,7 +126,9 @@ export default function useSourcesManager(country, initialSources, enabled = tru
         );
         let newHeadlines = await firebase.firestore.getDocs(q);
 
-        setLoading(false);
+        if (shouldShowLoadingState) {
+            setLoading(false);
+        }
         if (newHeadlines.empty) return;
         newHeadlines = newHeadlines.docs.map(headline => firebase.prepareData(headline));
         const changed = updateSources(newHeadlines);

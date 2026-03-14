@@ -41,7 +41,7 @@ export default function FeedFooter({ locale, country, date }) {
                 </div>
                 <div className={`hidden sm:block ${dividerClass}`} aria-hidden="true" />
                 {/* 2. Date archives */}
-                <InnerLink href={dateArchivesUrl} locale={locale}>
+                <InnerLink href={dateArchivesUrl} locale={locale} prefetch={false}>
                     <div className="text-xs cursor-pointer bg-gray-100 px-4 py-1 rounded-xl font-['Geist'] hover:text-blue hover:bg-gray-50 hover:border-gray-300 whitespace-nowrap">
                         <span className="font-mono">{date.getDate().toString().padStart(2, '0')}.{String(date.getMonth() + 1).padStart(2, '0')}.{date.getFullYear()}</span> &nbsp;&nbsp;archives
                     </div>
@@ -49,7 +49,7 @@ export default function FeedFooter({ locale, country, date }) {
                 <div className={`hidden sm:block ${dividerClass}`} aria-hidden="true" />
                 {/* 3. Monthly archives - hidden on mobile */}
                 <div className="hidden sm:block">
-                    <InnerLink href={monthlyArchivesUrl} locale={locale}>
+                    <InnerLink href={monthlyArchivesUrl} locale={locale} prefetch={false}>
                         <div className="text-xs cursor-pointer bg-gray-100 px-4 py-1 rounded-xl font-['Geist'] hover:text-blue hover:bg-gray-50 hover:border-gray-300 whitespace-nowrap">
                             {new Date(date.getFullYear(), date.getMonth()).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })} news archives from {countryLabel}
                         </div>
@@ -57,7 +57,7 @@ export default function FeedFooter({ locale, country, date }) {
                 </div>
                 <div className={dividerClass} aria-hidden="true" />
                 {/* 4. Live headlines */}
-                <InnerLink href={liveHeadlinesUrl} locale={locale}>
+                <InnerLink href={liveHeadlinesUrl} locale={locale} prefetch={false}>
                     <div className="flex items-center gap-2 text-xs bg-gray-100 px-4 py-1 rounded-xl cursor-pointer font-['Geist'] hover:text-blue hover:bg-gray-50 hover:border-gray-300 whitespace-nowrap">
                         <FlagIcon country={country} />
                         <span className="sm:hidden">Live Headlines</span>
@@ -66,7 +66,7 @@ export default function FeedFooter({ locale, country, date }) {
                 </InnerLink>
                 <div className={dividerClass} aria-hidden="true" />
                 {/* 5. About */}
-                <InnerLink href="/about" locale={locale}>
+                <InnerLink href="/about" locale={locale} prefetch={false}>
                     <div className="flex items-center justify-center text-xs bg-gray-100 px-3 py-1 rounded-xl cursor-pointer font-['Geist'] hover:text-blue hover:bg-gray-50 hover:border-gray-300">
                         <Info size={10} />
                     </div>

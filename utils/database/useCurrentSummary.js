@@ -13,7 +13,7 @@ export default function useCurrentSummary() {
             return;
         }
 
-        const sortedSummaries = summaries.sort((a, b) => b.timestamp - a.timestamp);
+        const sortedSummaries = [...summaries].sort((a, b) => b.timestamp - a.timestamp);
         const activeSummary = sortedSummaries.find(summary => summary.timestamp <= date);
         setCurrentSummary(activeSummary || null);
     }, [date, summaries]);

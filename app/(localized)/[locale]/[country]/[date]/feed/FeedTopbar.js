@@ -35,7 +35,7 @@ export default function FeedTopbar({ locale, country, daySummary, date }) {
             <div className="flex items-center justify-center min-h-8">
                 <div className="flex items-center justify-center min-w-0 max-w-full gap-2 sm:gap-4">
                     {locale !== "heb" ? (
-                        <Link href={`/${locale}/global`} className="hover:text-blue transition-colors">
+                        <Link href={`/${locale}/global`} prefetch={false} className="hover:text-blue transition-colors">
                             <div className="text-sm font-medium cursor-pointer font-['Geist'] whitespace-nowrap">The Hear</div>
                         </Link>
                     ) : null}
@@ -51,7 +51,7 @@ export default function FeedTopbar({ locale, country, daySummary, date }) {
                     <div className="border-l border-dotted border-gray-300 h-5 flex-shrink-0"></div>
 
                     <div className="flex items-center gap-1 flex-shrink-0">
-                        <InnerLink href={`/${locale}/${country}/${prevDateUrl}/feed`} locale={locale}>
+                        <InnerLink href={`/${locale}/${country}/${prevDateUrl}/feed`} locale={locale} prefetch={false}>
                             <div className="text-gray-400 hover:text-gray-600 rounded hover:bg-gray-100">
                                 {locale === "heb" ? <ChevronRight /> : <ChevronLeft />}
                             </div>
@@ -59,7 +59,7 @@ export default function FeedTopbar({ locale, country, daySummary, date }) {
                         <div className="text-sm font-mono text-gray-600 whitespace-nowrap">
                             {date.getDate().toString().padStart(2, "0")}.{String(date.getMonth() + 1).padStart(2, "0")}.{date.getFullYear()}
                         </div>
-                        <InnerLink href={`/${locale}/${country}/${nextDateUrl}/feed`} locale={locale}>
+                        <InnerLink href={`/${locale}/${country}/${nextDateUrl}/feed`} locale={locale} prefetch={false}>
                             <div className="text-gray-400 hover:text-gray-600 rounded hover:bg-gray-100">
                                 {locale === "heb" ? <ChevronLeft /> : <ChevronRight />}
                             </div>

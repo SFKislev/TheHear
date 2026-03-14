@@ -10,9 +10,7 @@ import CustomTooltip from "@/components/CustomTooltip";
 import useSummariesManager from "@/utils/database/useSummariesManager";
 
 export default function RightPanel({ initialSummaries, locale, country, yesterdaySummary, daySummary, pageDate, onCollapsedChange, collapsed }) {
-    const [isCollapsed, setIsCollapsed] = useState(false);
-    const [isMounted, setIsMounted] = useState(false);
-    const [isSmallScreen, setIsSmallScreen] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(true);
     const isCollapsedRef = useRef(isCollapsed);
 
     // Manage summaries at the RightPanel level so it works when collapsed
@@ -40,18 +38,12 @@ export default function RightPanel({ initialSummaries, locale, country, yesterda
 
     // Set initial state based on screen size after component mounts
     useEffect(() => {
-        const shouldBeCollapsed = window.innerWidth < 1920;
-        setIsCollapsed(shouldBeCollapsed);
-        setIsMounted(true);
-        setIsSmallScreen(window.innerWidth < 1920);
-        // Notify parent of initial collapsed state
         if (onCollapsedChange) {
-            onCollapsedChange(shouldBeCollapsed);
+            onCollapsedChange(true);
         }
 
         const handleResize = () => {
             const shouldBeCollapsed = window.innerWidth < 1920;
-            setIsSmallScreen(window.innerWidth < 1920);
             // Only auto-collapse, don't auto-expand (let user control expansion)
             if (shouldBeCollapsed && !isCollapsedRef.current) {
                 setIsCollapsed(true);
@@ -64,11 +56,6 @@ export default function RightPanel({ initialSummaries, locale, country, yesterda
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, [onCollapsedChange]);
-
-    // Don't render until we know the screen size to prevent flash
-    if (!isMounted) {
-        return null;
-    }
 
     // Collapsed view - narrow bar similar to SideSlider
     if (isCollapsed) {
@@ -114,7 +101,7 @@ export default function RightPanel({ initialSummaries, locale, country, yesterda
                 </CustomTooltip>
             </div>
             <div>
-                {isSmallScreen ? <DynamicLogoSmall {...{ locale }} /> : <DynamicLogoSmall {...{ locale }} />}
+                <DynamicLogoSmall {...{ locale }} />
             </div>
             <SummariesSection {...{ locale, summaries, country, yesterdaySummary, daySummary, pageDate }} />
         </div>

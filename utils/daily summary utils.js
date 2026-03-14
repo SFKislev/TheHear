@@ -75,3 +75,17 @@ export const getSummaryContent = (dailySummary, locale) => {
     // Clean the content to remove language markers and everything after them
     return cleanSummaryText(rawContent);
 };
+
+export const getSummaryParagraphs = (dailySummary, locale) => {
+    const content = getSummaryContent(dailySummary, locale);
+
+    if (!content) {
+        return [];
+    }
+
+    return content
+        .replace(/<br\s*\/?>/gi, "\n")
+        .split(/\n{2,}/)
+        .map((paragraph) => paragraph.trim())
+        .filter(Boolean);
+};

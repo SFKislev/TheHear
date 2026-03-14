@@ -2,6 +2,16 @@ import { useEffect, useState } from "react";
 import useFirebase from "./useFirebase";
 import { create } from "zustand";
 
+function scheduleWhenIdle(callback) {
+    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+        const handle = window.requestIdleCallback(callback, { timeout: 2000 });
+        return () => window.cancelIdleCallback(handle);
+    }
+
+    const timeoutId = setTimeout(callback, 500);
+    return () => clearTimeout(timeoutId);
+}
+
 export const useDaySummaries = create(set => ({
     daySummaries: [],
     setDaySummaries: (newSummaries) => set({ daySummaries: newSummaries })
@@ -32,10 +42,13 @@ export default function useSummariesManager(country, initialSummaries, enabled =
         if (!enabled) return
         if (!firebase.ready) return
 
-        getRecentSummaries()
+        let unsubscribe = () => {};
+        const cleanupIdle = scheduleWhenIdle(() => {
+            getRecentSummaries()
 
-        const unsubscribe = firebase.subscribeToSummaries(country, (newSummary) => {
-            addSummaries(newSummary)
+            unsubscribe = firebase.subscribeToSummaries(country, (newSummary) => {
+                addSummaries(newSummary)
+            })
         })
 
         const handleVisibilityChange = () => {
@@ -43,6 +56,7 @@ export default function useSummariesManager(country, initialSummaries, enabled =
         }
         document.addEventListener("visibilitychange", handleVisibilityChange)
         return () => {
+            cleanupIdle()
             unsubscribe()
             document.removeEventListener("visibilitychange", handleVisibilityChange)
         }

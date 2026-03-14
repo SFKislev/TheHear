@@ -1,7 +1,6 @@
 export default function EnglishFonts() {
     return (
         <>
-            {/* Preload critical fonts for better performance */}
             <link rel="preload" href="/fonts/Futura_PT_Medium.otf" as="font" type="font/otf" crossOrigin="anonymous" />
             <link rel="preload" href="/fonts/Futura_PT_Bold.otf" as="font" type="font/otf" crossOrigin="anonymous" />
             <link rel="preload" href="/fonts/FuturaPT-bold-italic.otf" as="font" type="font/otf" crossOrigin="anonymous" />

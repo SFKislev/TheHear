@@ -1,11 +1,16 @@
 import Head from "next/head";
+import dynamic from "next/dynamic";
 import FeedFonts from "@/app/(localized)/[locale]/[country]/[date]/feed/FeedFonts";
 import FeedFooter from "@/app/(localized)/[locale]/[country]/[date]/feed/FeedFooter";
 import FeedJsonLd from "@/app/(localized)/[locale]/[country]/[date]/feed/FeedJsonLd";
-import FeedPopup from "@/app/(localized)/[locale]/[country]/[date]/feed/popup";
 import FeedView from "@/app/(localized)/[locale]/[country]/[date]/feed/FeedView";
-import { FEED_REVALIDATE_SECONDS, buildFeedMetadata, getFeedPageData, getFeedUrl } from "@/utils/feedPage";
+import { FEED_REVALIDATE_SECONDS, buildFeedMetadata, getFeedUrl } from "@/utils/feedPageShared";
 import { countries } from "@/utils/sources/countries";
+
+const FeedPopup = dynamic(() => import("@/app/(localized)/[locale]/[country]/[date]/feed/popup"), {
+    ssr: false,
+    loading: () => null
+});
 
 function toDate(value) {
     return value ? new Date(value) : null;
@@ -31,6 +36,7 @@ export async function getStaticProps({ params }) {
         };
     }
 
+    const { getFeedPageData } = await import("@/utils/feedPageServer");
     const feedData = await getFeedPageData({ locale, country, date });
 
     if (feedData.redirect) {

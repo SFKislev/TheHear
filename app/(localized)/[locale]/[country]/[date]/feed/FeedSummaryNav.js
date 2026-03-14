@@ -1,7 +1,5 @@
 'use client';
 
-import { useEffect, useState } from "react";
-
 const UP_SVG = (
     <svg
         width="20"
@@ -32,77 +30,52 @@ const DOWN_SVG = (
     </svg>
 );
 
-function getSummaryCards() {
-    return Array.from(document.querySelectorAll("[data-summary-card]"));
-}
+export default function FeedSummaryNav({ targetSummaryId, locale, direction }) {
+    if (!targetSummaryId) return null;
 
-export default function FeedSummaryNav({ summaryId, locale, direction }) {
-    const [hasPrevious, setHasPrevious] = useState(false);
-    const [hasNext, setHasNext] = useState(false);
+    const href = `#summary-${targetSummaryId}`;
+    const title = locale === "heb"
+        ? (direction === "previous" ? "גלול לסיכום הקודם" : "גלול לסיכום הבא")
+        : (direction === "previous" ? "Scroll to previous summary" : "Scroll to next summary");
 
-    useEffect(() => {
-        const syncNavigation = () => {
-            const summaryCards = getSummaryCards();
-            const currentIndex = summaryCards.findIndex((card) => card.getAttribute("data-summary-id") === String(summaryId));
+    const handleClick = (event) => {
+        const target = document.getElementById(`summary-${targetSummaryId}`);
+        if (!target) return;
 
-            if (currentIndex === -1) {
-                setHasPrevious(false);
-                setHasNext(false);
-                return;
-            }
-
-            setHasPrevious(currentIndex > 0);
-            setHasNext(currentIndex < summaryCards.length - 1);
-        };
-
-        syncNavigation();
-        const timeoutId = setTimeout(syncNavigation, 100);
-
-        return () => clearTimeout(timeoutId);
-    }, [summaryId]);
-
-    const scrollToOffset = (offset) => {
-        const summaryCards = getSummaryCards();
-        const currentIndex = summaryCards.findIndex((card) => card.getAttribute("data-summary-id") === String(summaryId));
-
-        if (currentIndex === -1 || summaryCards.length === 0) return;
-
-        const targetIndex = (currentIndex + offset + summaryCards.length) % summaryCards.length;
-        const targetCard = summaryCards[targetIndex];
-
-        if (targetCard) {
-            targetCard.scrollIntoView({
-                behavior: "smooth",
-                block: "center"
-            });
-        }
+        event.preventDefault();
+        target.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
     };
 
     if (direction === "previous") {
-        return hasPrevious ? (
+        return (
             <div className="flex justify-center mb-2 -mt-2">
-                <button
-                    onClick={() => scrollToOffset(-1)}
+                <a
+                    href={href}
+                    onClick={handleClick}
                     className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded hover:bg-gray-100"
-                    title={locale === "heb" ? "גלול לסיכום הקודם" : "Scroll to previous summary"}
-                    aria-label={locale === "heb" ? "גלול לסיכום הקודם" : "Scroll to previous summary"}
+                    title={title}
+                    aria-label={title}
                 >
                     {UP_SVG}
-                </button>
+                </a>
             </div>
-        ) : null;
+        );
     }
 
-    return hasNext ? (
+    return (
         <div className="flex justify-center mt-4 -mb-2">
-            <button
-                onClick={() => scrollToOffset(1)}
+            <a
+                href={href}
+                onClick={handleClick}
                 className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded hover:bg-gray-100"
-                title={locale === "heb" ? "גלול לסיכום הבא" : "Scroll to next summary"}
-                aria-label={locale === "heb" ? "גלול לסיכום הבא" : "Scroll to next summary"}
+                title={title}
+                aria-label={title}
             >
                 {DOWN_SVG}
-            </button>
+            </a>
         </div>
-    ) : null;
+    );
 }

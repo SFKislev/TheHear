@@ -140,8 +140,31 @@ body {
   animation: slowFade 2s infinite;
 }
 
+@keyframes inner-link-progress {
+  from {
+    transform: scaleX(0.08);
+    opacity: 0.9;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+}
+
 .source-card:hover > .close-button {
   opacity: 1;
+}
+
+.source-card {
+  contain: layout style paint;
+  content-visibility: auto;
+  contain-intrinsic-size: 520px;
+}
+
+.summary-section {
+  contain: layout style paint;
+  content-visibility: auto;
+  contain-intrinsic-size: 640px;
 }
 
 .frank-re {

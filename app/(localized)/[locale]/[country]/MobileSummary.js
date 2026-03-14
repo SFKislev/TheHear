@@ -74,7 +74,9 @@ export default function MobileSummary({ locale, country, pageDate, initialSummar
     const timestamp = currentSummary.timestamp.getHours().toString().padStart(2, '0') + ':' + 
                      currentSummary.timestamp.getMinutes().toString().padStart(2, '0');
 
-    const fontClass = locale === 'heb' ? 'frank-re' : 'font-["Geist"]';
+    const fontClass = locale === 'heb' ? 'frank-re' : '';
+    const englishFontStyle = locale === 'heb' ? undefined : { fontFamily: 'var(--font-geist), sans-serif' };
+    const monoFontStyle = locale === 'heb' ? undefined : { fontFamily: 'var(--font-geist), Consolas, monospace' };
 
     const handleInteraction = () => {
         setIsLogoHovered(true);
@@ -98,9 +100,10 @@ export default function MobileSummary({ locale, country, pageDate, initialSummar
                         style={{
                             lineHeight: '1.5',
                             direction: locale === 'heb' ? 'rtl' : 'ltr',
+                            ...englishFontStyle,
                         }}
                     >
-                        <span className={`font-['GeistMono', 'Consolas', 'monospace'] ${locale === 'heb' ? 'text-lg' : 'text-default'}`}>{timestamp}</span>
+                        <span className={locale === 'heb' ? 'text-lg' : 'text-default'} style={monoFontStyle}>{timestamp}</span>
                         <span className="mx-1">{locale == 'heb' ? '⇠' : '⇢'}</span>
                         <span>{headline}</span>
                     </h3>
@@ -116,6 +119,7 @@ export default function MobileSummary({ locale, country, pageDate, initialSummar
                             WebkitLineClamp: isExpanded ? 'unset' : 5,
                             direction: locale === 'heb' ? 'rtl' : 'ltr',
                             lineHeight: '1.4',
+                            ...englishFontStyle,
                         }}
                         onClick={() => setIsExpanded(!isExpanded)}
                     >
@@ -132,23 +136,10 @@ export default function MobileSummary({ locale, country, pageDate, initialSummar
                     {/* Expand/Collapse Button */}
                     <button
                         onClick={() => setIsExpanded(!isExpanded)}
-                        className="flex items-center justify-center w-full mt-2 mb-2 py-1 text-gray-500 hover:text-gray-700 transition-colors"
+                        className="flex items-center justify-center w-full mt-2 mb-2 py-1 min-h-6 text-gray-500 hover:text-gray-700 transition-colors"
+                        style={englishFontStyle}
                     >
-                        {isExpanded ? (
-                            <>
-                                <span className={`${locale === 'heb' ? 'text-sm' : 'text-xs'} mr-1 ${fontClass}`}>
-                                    {locale === 'heb' ? '' : ''}
-                                </span>
-                                <KeyboardArrowUp sx={{ fontSize: 16 }} />
-                            </>
-                        ) : (
-                            <>
-                                <span className={`${locale === 'heb' ? 'text-sm' : 'text-xs'} mr-1 ${fontClass}`}>
-                                    {locale === 'heb' ? '' : ''}
-                                </span>
-                                <KeyboardArrowDown sx={{ fontSize: 16 }} />
-                            </>
-                        )}
+                        {isExpanded ? <KeyboardArrowUp sx={{ fontSize: 16 }} /> : <KeyboardArrowDown sx={{ fontSize: 16 }} />}
                     </button>
                 </div>
             </div>

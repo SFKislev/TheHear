@@ -8,7 +8,7 @@ import Link from "next/link";
 import InnerLink from '@/components/InnerLink';
 import { countries } from "@/utils/sources/countries";
 import FlagIcon from "@/components/FlagIcon";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { getHeadline } from '@/utils/daily summary utils';
 import { trackEngagedUser } from "@/utils/analytics";
@@ -78,18 +78,16 @@ export default function TopBar({ locale, country, sources, currentSummary, initi
     const effectiveLocale = isMobile ? 'en' : locale;
 
     // Find the current summary from initialSummaries if currentSummary is not available
-    const findCurrentSummary = () => {
+    const actualCurrentSummary = useMemo(() => {
         if (currentSummary) return currentSummary;
         if (!initialSummaries || !date) return null;
 
-        const sortedSummaries = initialSummaries.sort((a, b) => b.timestamp - a.timestamp);
+        const sortedSummaries = [...initialSummaries].sort((a, b) => b.timestamp - a.timestamp);
         return sortedSummaries.find(summary => summary.timestamp <= date) || null;
-    };
-
-    const actualCurrentSummary = findCurrentSummary();
+    }, [currentSummary, initialSummaries, date]);
 
     // Get the appropriate headline based on locale and language settings
-    const getCurrentHeadline = () => {
+    const currentHeadline = useMemo(() => {
         if (!actualCurrentSummary) return null;
 
         let headline = actualCurrentSummary.englishHeadline;
@@ -100,9 +98,7 @@ export default function TopBar({ locale, country, sources, currentSummary, initi
             headline = actualCurrentSummary.translatedHeadline || actualCurrentSummary.headline;
         }
         return cleanSummaryText(headline);
-    };
-
-    const currentHeadline = getCurrentHeadline();
+    }, [actualCurrentSummary, effectiveLocale, useLocalLanguage]);
 
     const regions = {
         Europe: ['finland', 'france', 'germany', 'italy', 'netherlands', 'poland', 'russia', 'spain', 'turkey', 'uk', 'ukraine'],

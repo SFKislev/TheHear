@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import CloseButton from "./CloseButton";
 import Headline from "./Headine";
 import SourceName from "./SourceName";
@@ -12,9 +12,9 @@ import { useFont, useTime, useTranslate, useActiveWebsites } from "@/utils/store
 import { checkRTL, choose } from "@/utils/utils";
 import TranslatedLabel from "./TranslatedLabel";
 import { getSourceData } from "@/utils/sources/getCountryData";
-import RightClickMenu from "./RightClickMenu";
 
 const SourceSlider = dynamic(() => import('./SourceSlider'));
+const RightClickMenu = dynamic(() => import('./RightClickMenu'), { ssr: false, loading: () => null });
 
 const randomFontIndex = Math.floor(Math.random() * 100)
 
@@ -26,9 +26,12 @@ export default function SourceCard({ source, headlines, country, locale, isLoadi
     const [translations, setTranslations] = useState({});
     const websites = useActiveWebsites(state => state.activeWebsites);
     const [isPresent, setIsPresent] = useState(true);
-    // const [showLiveHint, setShowLiveHint] = useState(false);
-    // const liveHintStartedRef = useRef(false);
+    const [allowLiveHeadlineRefresh, setAllowLiveHeadlineRefresh] = useState(Boolean(pageDate));
+    const [showLiveHint, setShowLiveHint] = useState(false);
     const [contextMenu, setContextMenu] = useState({ open: false, x: 0, y: 0 });
+    const liveHintStartedRef = useRef(false);
+    const previousHeadlineIdRef = useRef(headline?.id ?? null);
+    const isCountryRTL = country?.toLowerCase() === 'israel';
 
     const index = websites.length > 0 ? websites.indexOf(source) : 1
     const shouldRender = headline && index !== -1;
@@ -43,12 +46,54 @@ export default function SourceCard({ source, headlines, country, locale, isLoadi
     }, []);
 
     useEffect(() => {
+        if (pageDate) {
+            setAllowLiveHeadlineRefresh(true);
+            return;
+        }
+
+        let cancelled = false;
+        const enableRefresh = () => {
+            if (!cancelled) {
+                setAllowLiveHeadlineRefresh(true);
+            }
+        };
+
+        if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+            const idleId = window.requestIdleCallback(enableRefresh, { timeout: 4000 });
+            return () => {
+                cancelled = true;
+                window.cancelIdleCallback(idleId);
+            };
+        }
+
+        const timeoutId = window.setTimeout(enableRefresh, 2500);
+        return () => {
+            cancelled = true;
+            window.clearTimeout(timeoutId);
+        };
+    }, [pageDate]);
+
+    useEffect(() => {
         if (!headlines || headlines.length === 0) return;
         if (!date) return;
+        if (!allowLiveHeadlineRefresh && headline) return;
         const foundHeadline = headlines.find(({ timestamp }) => timestamp <= date);
         setHeadline(foundHeadline || headlines[0]);
-    }, [headlines, date]);
+    }, [headlines, date, allowLiveHeadlineRefresh, headline]);
 
+    useEffect(() => {
+        if (pageDate || !headline?.id) {
+            previousHeadlineIdRef.current = headline?.id ?? null;
+            return;
+        }
+
+        const previousHeadlineId = previousHeadlineIdRef.current;
+        previousHeadlineIdRef.current = headline.id;
+
+        if (!previousHeadlineId || previousHeadlineId === headline.id) return;
+
+        setShowLiveHint(false);
+    }, [pageDate, headline?.id]);
 
     useEffect(() => {
         if (shouldTranslate && headline && headline.headline && headline.id) {
@@ -104,17 +149,23 @@ export default function SourceCard({ source, headlines, country, locale, isLoadi
         setIsPresent(new Date() - date < 60 * 1000 * 5);
     }, [date]);
 
-    // useEffect(() => {
-    //     if (pageDate) return;
-    //     if (!shouldRender) return;
-    //     if (isLoading) return;
-    //     if (liveHintStartedRef.current) return;
-    //     liveHintStartedRef.current = true;
-    //     setShowLiveHint(true);
-    //     const durationMs = Math.floor(3000 + Math.random() * 2000);
-    //     const timer = setTimeout(() => setShowLiveHint(false), durationMs);
-    //     return () => clearTimeout(timer);
-    // }, [pageDate, shouldRender, isLoading]);
+    useEffect(() => {
+        if (pageDate) {
+            setShowLiveHint(false);
+            return;
+        }
+        if (!shouldRender) return;
+        if (liveHintStartedRef.current) return;
+
+        liveHintStartedRef.current = true;
+        setShowLiveHint(true);
+
+        const durationMs = Math.floor(3000 + Math.random() * 2000);
+        const timer = window.setTimeout(() => setShowLiveHint(false), durationMs);
+        return () => window.clearTimeout(timer);
+    }, [pageDate, shouldRender]);
+
+    const shouldShowLiveHint = !pageDate && (isLoading || showLiveHint);
 
     // Early return if shouldn't render
     if (!shouldRender) {
@@ -138,18 +189,22 @@ export default function SourceCard({ source, headlines, country, locale, isLoadi
             <CloseButton name={source} isRTL={isRTL} className="z-[2]" />
             <div className="flex flex-col h-full justify-normal sm:justify-between">
                 <div className="flex flex-col gap-2 mb-2 p-4">
-                    <div className={`flex items-center gap-2 w-full ${isRTL ? 'flex-row-reverse' : ''}`}>
+                    <div className={`relative w-full ${shouldShowLiveHint ? (isCountryRTL ? 'pr-6' : 'pl-6') : ''}`}>
+                        {shouldShowLiveHint ? (
+                            <span
+                                className={`absolute top-1/2 -translate-y-1/2 inline-flex items-center justify-center h-4 w-4 shrink-0 rounded-full bg-white/80 shadow-sm border border-gray-200 ${isCountryRTL ? 'right-0' : 'left-0'}`}
+                                aria-label="Live updates syncing"
+                                title="Live updates syncing"
+                            >
+                                <span className="h-2.5 w-2.5 rounded-full border-2 border-gray-300 border-t-gray-600 animate-spin" />
+                            </span>
+                        ) : null}
                         <SourceName
                             name={displayName}
                             description={sourceData.description}
                             {...{ typography, date, isLoading }}
                             align={isRTL ? 'right' : 'left'}
                         />
-                        {/* {showLiveHint && (
-                            <span className="inline-flex items-center justify-center h-4 w-4 rounded-full bg-white/80 shadow-sm border border-gray-200">
-                                <span className="h-2.5 w-2.5 rounded-full border-2 border-gray-300 border-t-gray-600 animate-spin" />
-                            </span>
-                        )} */}
                     </div>
                     <Headline headline={displayHeadline}
                         {...{ typography, isLoading }} />
@@ -160,12 +215,14 @@ export default function SourceCard({ source, headlines, country, locale, isLoadi
                     <SourceFooter url={headlines && headlines.length > 0 ? headlines[0].link : ''} {...{ headline, headlines, source, pageDate }} />
                 </div>
             </div>
-            <RightClickMenu
-                open={contextMenu.open}
-                position={{ x: contextMenu.x, y: contextMenu.y }}
-                close={() => setContextMenu({ open: false, x: 0, y: 0 })}
-                {...{ country, locale, sources }}
-            />
+            {contextMenu.open ? (
+                <RightClickMenu
+                    open={contextMenu.open}
+                    position={{ x: contextMenu.x, y: contextMenu.y }}
+                    close={() => setContextMenu({ open: false, x: 0, y: 0 })}
+                    {...{ country, locale, sources }}
+                />
+            ) : null}
         </div>
     );
 }

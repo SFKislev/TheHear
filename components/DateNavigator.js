@@ -9,8 +9,20 @@ import useFirebase from "@/utils/database/useFirebase";
 import { getHeadline } from '@/utils/daily summary utils';
 
 function DateLink({ direction, country, targetDate, summary, locale }) {
+    const headlineWidth = locale === 'heb' ? 'w-[7.5rem] sm:w-[12rem]' : 'w-[8.5rem] sm:w-[14rem]';
+
     // Prepare headline (fallback to skeleton while loading)
-    let headline = summary ? getHeadline(summary, locale) : <Skeleton variant="text" width={160} sx={{ display: 'inline-block', verticalAlign: 'middle' }} />;
+    let headline = summary ? (
+        <span className={`block truncate whitespace-nowrap overflow-hidden text-ellipsis ${locale === 'heb' ? 'text-right' : 'text-left'}`}>
+            {getHeadline(summary, locale)}
+        </span>
+    ) : (
+        <Skeleton
+            variant="text"
+            width="100%"
+            sx={{ display: 'inline-block', verticalAlign: 'middle' }}
+        />
+    );
 
     const arrow = locale === 'heb' 
         ? (direction === 'previous' ? ' ⟵ ' : ' ⟶ ') 
@@ -18,24 +30,25 @@ function DateLink({ direction, country, targetDate, summary, locale }) {
 
     const dateString = <span className={`font-mono font-medium ${locale === 'heb' ? 'text-sm' : ''}`}>{targetDate.toLocaleDateString('en-GB').replace(/\//g, '.')}</span>;
 
-    // Layout: both previous and next = [date][arrow][headline], but for next, arrow points right
-    const flexDirection = 'flex-row';
-
     return (
-        <InnerLink href={`/${locale}/${country}/${createDateString(targetDate)}`}>
+        <InnerLink href={`/${locale}/${country}/${createDateString(targetDate)}`} className="min-w-0 flex-1">
             <h2
-                className={`py-1 px-2 cursor-pointer flex items-center gap-2 text-black hover:text-blue hover:underline hover:underline-offset-4 ${locale === 'en' ? 'font-["Geist"] text-sm' : 'frank-re text-[17px] bg-white rounded-xs py-1.5'} ${locale === 'heb' ? 'flex-row-reverse' : 'flex-row'}`}
+                className={`py-1 px-2 cursor-pointer flex items-center gap-2 min-w-0 min-h-[2.5rem] text-black hover:text-blue hover:underline hover:underline-offset-4 ${locale === 'en' ? 'font-["Geist"] text-sm' : 'frank-re text-[17px] bg-white rounded-xs py-1.5'} ${locale === 'heb' ? 'flex-row-reverse justify-start' : 'flex-row justify-start'}`}
                 style={{ lineHeight: '1.2em' }}
             >
                 {direction === 'previous' ? (
                     <>
                         {dateString}
                         <span>{arrow}</span>
-                        {headline}
+                        <span className={`min-w-0 ${headlineWidth}`}>
+                            {headline}
+                        </span>
                     </>
                 ) : (
                     <>
-                        {headline}
+                        <span className={`min-w-0 ${headlineWidth}`}>
+                            {headline}
+                        </span>
                         <span>{arrow}</span>
                         {dateString}
                     </>
@@ -57,18 +70,14 @@ export default function DateNavigator({ locale, country, pageDate }) {
 
         const fetchData = async () => {
             try {
-                const prev = await firebase.getCountryDailySummary(country, prevDate);
+                const [prev, next] = await Promise.all([
+                    firebase.getCountryDailySummary(country, prevDate),
+                    nextDate <= new Date() ? firebase.getCountryDailySummary(country, nextDate) : Promise.resolve(null)
+                ]);
                 setPrevSummary(prev);
+                setNextSummary(next);
             } catch (e) {
-                console.error('Failed loading previous day summary', e);
-            }
-            if (nextDate <= new Date()) {
-                try {
-                    const next = await firebase.getCountryDailySummary(country, nextDate);
-                    setNextSummary(next);
-                } catch (e) {
-                    console.error('Failed loading next day summary', e);
-                }
+                console.error('Failed loading date navigator summaries', e);
             }
         };
         fetchData();
@@ -88,7 +97,7 @@ export default function DateNavigator({ locale, country, pageDate }) {
 
     return (
         <div className={`flex justify-between border-t border-gray-200 px-2 py-3 w-auto bg-white bg-opacity-85 fixed bottom-0 z-5 backdrop-blur-sm shadow ${locale === 'heb' ? 'right-0 sm:right-[45px] left-0' : 'left-0 sm:left-[45px] right-0'}`}>
-            <div className={`flex justify-between w-full ${locale === 'heb' ? 'flex-row-reverse' : 'flex-row'}`}>
+            <div className={`flex justify-between gap-3 w-full ${locale === 'heb' ? 'flex-row-reverse' : 'flex-row'}`}>
                 <DateLink
                     direction="previous"
                     {...{ country, targetDate: prevDate, summary: prevSummary, locale }}

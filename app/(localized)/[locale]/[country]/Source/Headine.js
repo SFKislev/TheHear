@@ -75,7 +75,6 @@ export default function Headline({ headline, typography, isLoading, isPresent })
                     direction: isRTL ? 'rtl' : 'ltr',
                     animationDuration: isAnimating && animationDuration ? `${animationDuration}s` : '0s'
                 }}
-                key={textSignature}
             >
                 {txt}
             </h3>

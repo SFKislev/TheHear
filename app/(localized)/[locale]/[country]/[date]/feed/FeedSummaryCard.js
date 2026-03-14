@@ -18,7 +18,7 @@ function cleanSummaryText(text) {
     return cleanText;
 }
 
-export default function SummaryCard({ summary, locale, countryTimezone }) {
+export default function SummaryCard({ summary, locale, countryTimezone, previousSummaryId, nextSummaryId }) {
     const summaryContent = locale === "heb"
         ? cleanSummaryText(summary.hebrewSummary || summary.summary)
         : cleanSummaryText(summary.summary || summary.hebrewSummary);
@@ -56,8 +56,9 @@ export default function SummaryCard({ summary, locale, countryTimezone }) {
             className={`${fontClass} leading-none font-normal bg-white rounded-sm border border-gray-500 p-6 text-justify relative`}
             data-summary-card
             data-summary-id={summaryId}
+            id={`summary-${summaryId}`}
         >
-            <FeedSummaryNav summaryId={summaryId} locale={locale} direction="previous" />
+            <FeedSummaryNav targetSummaryId={previousSummaryId} locale={locale} direction="previous" />
 
             <h3
                 className={`mb-2 ${locale === "heb" ? "text-[17px]" : "text-base"} font-medium text-black`}
@@ -96,7 +97,7 @@ export default function SummaryCard({ summary, locale, countryTimezone }) {
                 ))}
             </div>
 
-            <FeedSummaryNav summaryId={summaryId} locale={locale} direction="next" />
+            <FeedSummaryNav targetSummaryId={nextSummaryId} locale={locale} direction="next" />
         </article>
     );
 }

@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect, Suspense } from "react";
-import RightPanel from "./RightPanel";
-import SideSlider from "./SideSlider";
+import dynamic from "next/dynamic";
 import TopBar from "./TopBar/TopBar";
 import { getTypographyOptions } from "@/utils/typography/typography";
 import MainSection from "./MainSection";
@@ -11,11 +10,14 @@ import { useRightPanel, useFont, useOrder } from "@/utils/store";
 import useMobile from "@/components/useMobile";
 import useVerticalScreen from "@/components/useVerticalScreen";
 import Loader from "@/components/loader";
-import FirstVisitModal from './FirstVisitModal';
-import AboutMenu from './TopBar/AboutMenu';
-import DateNavigator from '@/components/DateNavigator';
 import { useSearchParams } from "next/navigation";
 import { orderOptionLabels } from "@/utils/sources/getCountryData";
+
+const RightPanel = dynamic(() => import("./RightPanel"), { loading: () => null });
+const SideSlider = dynamic(() => import("./SideSlider"), { loading: () => null });
+const FirstVisitModal = dynamic(() => import("./FirstVisitModal"), { ssr: false, loading: () => null });
+const AboutMenu = dynamic(() => import("./TopBar/AboutMenu"), { ssr: false, loading: () => null });
+const DateNavigator = dynamic(() => import("@/components/DateNavigator"), { loading: () => null });
 
 function OrderParamSync({ country, order, setOrder }) {
     const searchParams = useSearchParams();
@@ -48,13 +50,14 @@ export default function CountryPageContent({ sources, initialSummaries, yesterda
     const [userCountryState, setUserCountryState] = useState(userCountry);
     const typography = getTypographyOptions(country);
     const currentSummary = useCurrentSummary();
-    const [isRightPanelCollapsed, setIsRightPanelCollapsed] = useState(false);
+    const [isRightPanelCollapsed, setIsRightPanelCollapsed] = useState(true);
     const { setCollapsed } = useRightPanel();
     const { isMobile, isHydrated } = useMobile();
     const { isVerticalScreen } = useVerticalScreen();
     const { setFont } = useFont();
     const { order, setOrder } = useOrder();
     const [aboutOpen, setAboutOpen] = useState(false);
+    const [showDeferredUi, setShowDeferredUi] = useState(Boolean(pageDate));
     const TypographyComponent = typography.component;
     const shouldLoadTypographyComponent =
         TypographyComponent?.name !== 'EnglishFonts' &&
@@ -78,20 +81,58 @@ export default function CountryPageContent({ sources, initialSummaries, yesterda
     useEffect(() => {
         if (userCountryState) return;
         let cancelled = false;
+        const fetchUserCountry = () => {
+            fetch('/api/user-country')
+                .then(res => res.ok ? res.json() : null)
+                .then(data => {
+                    if (!cancelled && data?.country) {
+                        setUserCountryState(data.country);
+                    }
+                })
+                .catch(() => { });
+        };
 
-        fetch('/api/user-country')
-            .then(res => res.ok ? res.json() : null)
-            .then(data => {
-                if (!cancelled && data?.country) {
-                    setUserCountryState(data.country);
-                }
-            })
-            .catch(() => { });
+        let cleanup = null;
+        if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+            const idleId = window.requestIdleCallback(fetchUserCountry, { timeout: 2000 });
+            cleanup = () => window.cancelIdleCallback(idleId);
+        } else {
+            const timeoutId = window.setTimeout(fetchUserCountry, 800);
+            cleanup = () => window.clearTimeout(timeoutId);
+        }
 
         return () => {
             cancelled = true;
+            cleanup?.();
         };
     }, [userCountryState]);
+
+    useEffect(() => {
+        if (pageDate) {
+            return;
+        }
+
+        let cancelled = false;
+        const enableDeferredUi = () => {
+            if (!cancelled) {
+                setShowDeferredUi(true);
+            }
+        };
+
+        if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+            const idleId = window.requestIdleCallback(enableDeferredUi, { timeout: 1500 });
+            return () => {
+                cancelled = true;
+                window.cancelIdleCallback(idleId);
+            };
+        }
+
+        const timeoutId = window.setTimeout(enableDeferredUi, 800);
+        return () => {
+            cancelled = true;
+            window.clearTimeout(timeoutId);
+        };
+    }, [pageDate]);
 
     return (
         <>
@@ -107,10 +148,10 @@ export default function CountryPageContent({ sources, initialSummaries, yesterda
             <AboutMenu open={aboutOpen} onClose={() => setAboutOpen(false)} />
             <div id='main' style={{ paddingBottom: "var(--footer-offset, 3rem)" }} className={`absolute flex flex-col sm:flex-row w-full h-full overflow-auto sm:overflow-hidden ${effectiveLocale === 'heb' ? 'direction-rtl' : 'direction-ltr'}`}>
                 {shouldLoadTypographyComponent && <TypographyComponent />}
-                {!isVerticalScreen && <SideSlider {...{ locale, country, pageDate }} />}
+                {showDeferredUi && !isVerticalScreen && <SideSlider {...{ locale, country, pageDate }} />}
                 
                 {/* Right Panel - only show on desktop, not vertical screens */}
-                {!isVerticalScreen && (
+                {showDeferredUi && !isVerticalScreen && (
                     <div className={`hidden sm:flex flex-[1 sm:border-l sm:border-r border-gray-200 max-w-[400px] `}>
                     <RightPanel
                         {...{ initialSummaries, locale, country, yesterdaySummary, daySummary, pageDate }}
@@ -129,7 +170,7 @@ export default function CountryPageContent({ sources, initialSummaries, yesterda
                         onExpandPanel={() => setIsRightPanelCollapsed(false)}
                     />
                     <MainSection {...{ country, sources, locale, pageDate, initialSummaries, yesterdaySummary, daySummary, isVerticalScreen }} />
-                    {pageDate && (
+                    {showDeferredUi && pageDate && (
                         <DateNavigator {...{ locale, country, pageDate }} />
                     )}
                 </div>

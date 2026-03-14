@@ -3,6 +3,7 @@ import HeadlineCard from "./FeedHeadlineCard";
 import SummaryCard from "./FeedSummaryCard";
 import FeedTopbar from "./FeedTopbar";
 import FeedDailySummary from "./feedDailySummary";
+import FeedLocalTimeEnhancer from "./FeedLocalTimeEnhancer";
 import Link from "next/link";
 import Image from "next/image";
 import logoA from "@/components/logo/thehear-round.webp";
@@ -29,6 +30,7 @@ export default function FeedView({ headlines, initialSummaries, daySummary, arch
     const isRTL = locale === "heb";
     const dateString = `${String(date.getDate()).padStart(2, "0")}.${String(date.getMonth() + 1).padStart(2, "0")}.${date.getFullYear()}`;
     const timelineItems = [];
+    let visibleHeadlineIndex = 0;
 
     headlines.forEach((headline) => {
         timelineItems.push({
@@ -47,9 +49,25 @@ export default function FeedView({ headlines, initialSummaries, daySummary, arch
     });
 
     timelineItems.sort((a, b) => a.timestamp - b.timestamp);
+    const orderedSummaryIds = timelineItems
+        .filter((item) => item.type === "hourly-summary")
+        .map((item) => {
+            const timestampValue = item.data.timestamp ? new Date(item.data.timestamp) : null;
+            return timestampValue ? timestampValue.getTime() : (item.data.headline || item.data.summary || item.data.hebrewSummary);
+        });
+    const summaryNavMap = new Map(
+        orderedSummaryIds.map((summaryId, index) => [
+            summaryId,
+            {
+                previousSummaryId: orderedSummaryIds[index - 1] ?? null,
+                nextSummaryId: orderedSummaryIds[index + 1] ?? null
+            }
+        ])
+    );
 
     return (
         <div style={{ paddingBottom: "var(--footer-offset, 3rem)" }} className={`min-h-screen ${isRTL ? "direction-rtl" : "direction-ltr"}`}>
+            <FeedLocalTimeEnhancer />
             <FeedTopbar locale={locale} country={country} daySummary={daySummary} date={date} />
 
             <div className="py-2">
@@ -64,7 +82,7 @@ export default function FeedView({ headlines, initialSummaries, daySummary, arch
                     >
                         THE
                     </div>
-                    <Link href={`/${locale}/global`} hrefLang={locale}>
+                    <Link href={`/${locale}/global`} hrefLang={locale} prefetch={false}>
                         <Image
                             className={`relative z-20 h-[85px] ${locale === "heb" ? "scale-x-[1]" : "scale-x-[-1]"} object-contain pb-2 cursor-pointer`}
                             width={200}
@@ -132,9 +150,19 @@ export default function FeedView({ headlines, initialSummaries, daySummary, arch
                                     <div className="flex justify-center">
                                         <div className="w-full max-w-md">
                                             {item.type === "headline" ? (
-                                                <HeadlineCard headline={item.data} country={country} countryTimezone={countryTimezone} />
+                                                <HeadlineCard
+                                                    headline={item.data}
+                                                    country={country}
+                                                    countryTimezone={countryTimezone}
+                                                    isPriorityCard={visibleHeadlineIndex++ === 0}
+                                                />
                                             ) : (
-                                                <SummaryCard summary={item.data} locale={locale} countryTimezone={countryTimezone} />
+                                                <SummaryCard
+                                                    summary={item.data}
+                                                    locale={locale}
+                                                    countryTimezone={countryTimezone}
+                                                    {...summaryNavMap.get(item.timestamp.getTime())}
+                                                />
                                             )}
                                         </div>
                                     </div>
@@ -224,9 +252,19 @@ export default function FeedView({ headlines, initialSummaries, daySummary, arch
                                     <div className={`flex ${isSummary ? "justify-center" : (isLeft ? "justify-start pr-1/2" : "justify-end pl-1/2")}`}>
                                         <div className={isSummary ? "w-2/4" : "w-5/12"}>
                                             {item.type === "headline" ? (
-                                                <HeadlineCard headline={item.data} country={country} countryTimezone={countryTimezone} />
+                                                <HeadlineCard
+                                                    headline={item.data}
+                                                    country={country}
+                                                    countryTimezone={countryTimezone}
+                                                    isPriorityCard={visibleHeadlineIndex++ === 0}
+                                                />
                                             ) : (
-                                                <SummaryCard summary={item.data} locale={locale} countryTimezone={countryTimezone} />
+                                                <SummaryCard
+                                                    summary={item.data}
+                                                    locale={locale}
+                                                    countryTimezone={countryTimezone}
+                                                    {...summaryNavMap.get(item.timestamp.getTime())}
+                                                />
                                             )}
                                         </div>
                                     </div>

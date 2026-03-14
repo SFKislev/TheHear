@@ -8,11 +8,34 @@ import { format, isToday } from 'date-fns';
 
 export default function FeedPopup({ openAbout, country, locale, pageDate }) {
     const [open, setOpen] = useState(false);
+    const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
 
     useEffect(() => {
         // Show on every page load
         setOpen(true);
     }, []);
+
+    useEffect(() => {
+        if (!open) {
+            setShouldLoadVideo(false);
+            return;
+        }
+
+        let timeoutId;
+        let idleId;
+
+        const enableVideo = () => {
+            setShouldLoadVideo(true);
+        };
+
+        if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+            idleId = window.requestIdleCallback(enableVideo, { timeout: 12000 });
+            return () => window.cancelIdleCallback(idleId);
+        }
+
+        timeoutId = window.setTimeout(enableVideo, 8000);
+        return () => window.clearTimeout(timeoutId);
+    }, [open]);
 
     if (!open) return null;
 
@@ -58,16 +81,20 @@ export default function FeedPopup({ openAbout, country, locale, pageDate }) {
                             }}
                         >
                     <div className="font-['Geist'] text-sm leading-6 mb-4" dangerouslySetInnerHTML={{ __html: shortText }} />
-                    <video
-                        className="w-full mb-4 rounded-sm"
-                        autoPlay
-                        loop
-                        muted
-                        preload="metadata"
-                    >
-                        <source src="/landing/TheHear-Scroll-11s-700px.webm" type="video/webm" />
-                        Your browser does not support the video tag.
-                    </video>
+                    {shouldLoadVideo ? (
+                        <video
+                            className="w-full mb-4 rounded-sm"
+                            autoPlay
+                            loop
+                            muted
+                            preload="metadata"
+                        >
+                            <source src="/landing/TheHear-Scroll-11s-700px.webm" type="video/webm" />
+                            Your browser does not support the video tag.
+                        </video>
+                    ) : (
+                        <div className="w-full mb-4 rounded-sm aspect-[7/4] bg-neutral-100 border border-gray-100" />
+                    )}
                         </div>
                     </InnerLink>
                 </div>
