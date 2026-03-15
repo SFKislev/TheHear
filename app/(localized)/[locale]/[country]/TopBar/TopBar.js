@@ -39,9 +39,18 @@ export default function TopBar({ locale, country, sources, currentSummary, initi
     const { isMobile } = useMobile();
     const { isVerticalScreen } = useVerticalScreen();
     const date = useTime(state => state.date);
-    const [settingsOpen, setSettingsOpen] = useState(true);
+    const [settingsOpen, setSettingsOpen] = useState(false);
     const [isWideScreen, setIsWideScreen] = useState(false);
     const hasTrackedSettings = useRef(false);
+    const hasSetDesktopDefault = useRef(false);
+
+    // Expand settings by default on desktop only (useMobile is mobile-first, so we sync after hydration)
+    useEffect(() => {
+        if (!isMobile && !hasSetDesktopDefault.current) {
+            hasSetDesktopDefault.current = true;
+            setSettingsOpen(true);
+        }
+    }, [isMobile]);
 
     // Track when settings are opened (once per session)
     useEffect(() => {
