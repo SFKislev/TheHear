@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { IconButton, Slider, styled } from "@mui/material";
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
@@ -8,62 +8,48 @@ import { useTime } from "@/utils/store";
 import { createDateString } from "@/utils/utils";
 import { usePathname, useRouter } from "next/navigation";
 import CustomTooltip from "@/components/CustomTooltip";
-import { countries } from "@/utils/sources/countries";
-
-function getCountryDateParts(date, timezone) {
-    const parts = new Intl.DateTimeFormat("en-US", {
-        timeZone: timezone,
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-    }).formatToParts(date);
-
-    const get = (type) => parts.find((part) => part.type === type)?.value;
-    return {
-        year: get("year"),
-        month: get("month"),
-        day: get("day"),
-        hour: Number(get("hour")),
-        minute: Number(get("minute")),
-    };
-}
+import { getCountryTimezone, getDateKeyInTimezone, getMinutesInTimezone } from "@/utils/timezones";
 
 export default function SourceSlider({ locale, country, headlines, pageDate }) {
     const date = useTime((state) => state.date);
     const setDate = useTime((state) => state.setDate);
+    const setManualDate = useTime((state) => state.setManualDate);
     const router = useRouter();
     const pathname = usePathname();
     const [showProgress, setShowProgress] = useState(false);
     const [portalReady, setPortalReady] = useState(false);
     const timeoutRef = useRef(null);
-    const anchorHeadline = headlines[0] || null;
-    const sliderDay = pageDate || anchorHeadline?.timestamp || date;
-    const timezone = countries[country]?.timezone || "UTC";
-
-    const sliderDayParts = getCountryDateParts(new Date(sliderDay), timezone);
-    const sliderDayKey = `${sliderDayParts.year}-${sliderDayParts.month}-${sliderDayParts.day}`;
-    const uniqueMarks = [...new Set(
-        headlines
-            .map(({ timestamp }) => new Date(timestamp))
-            .filter((timestamp) => {
-                const parts = getCountryDateParts(timestamp, timezone);
-                return `${parts.year}-${parts.month}-${parts.day}` === sliderDayKey;
-            })
-            .map((timestamp) => {
-                const parts = getCountryDateParts(timestamp, timezone);
-                return parts.hour * 60 + parts.minute;
-            })
-    )].sort((a, b) => a - b);
-    const marks = uniqueMarks.map(mark => ({ value: mark, label: null }));
+    const sliderDay = pageDate || date;
+    const timezone = getCountryTimezone(country);
 
     const minutes = date.getHours() * 60 + date.getMinutes();
 
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
     const isToday = date.toDateString() === now.toDateString();
+
+    const marks = useMemo(() => {
+        const uniqueMarks = [...new Set(
+            headlines
+                .map(({ timestamp }) => new Date(timestamp))
+                .filter((timestamp) => {
+                    if (pageDate) {
+                        return getDateKeyInTimezone(timestamp, timezone) === getDateKeyInTimezone(sliderDay, timezone);
+                    }
+
+                    return timestamp.toDateString() === sliderDay.toDateString() && (!isToday || timestamp <= now);
+                })
+                .map((timestamp) => {
+                    if (pageDate) {
+                        return getMinutesInTimezone(timestamp, timezone);
+                    }
+
+                    return timestamp.getHours() * 60 + timestamp.getMinutes();
+                })
+        )].sort((a, b) => a - b);
+
+        return uniqueMarks.map((mark) => ({ value: mark, label: null }));
+    }, [headlines, pageDate, sliderDay, timezone, isToday, now]);
 
     const nextHeadline = headlines.filter(({ timestamp }) => timestamp > date && (!isToday || timestamp <= now)).pop();
     const prevHeadline = headlines.find(({ timestamp }) => timestamp < date);
@@ -90,7 +76,7 @@ export default function SourceSlider({ locale, country, headlines, pageDate }) {
     const goToHeadline = (headline) => {
         if (!headline) return;
         if (date.toDateString() === headline.timestamp.toDateString()) {
-            setDate(headline.timestamp);
+            setManualDate(headline.timestamp);
         } else {
             const hours = String(headline.timestamp.getHours()).padStart(2, '0');
             const minuteString = String(headline.timestamp.getMinutes()).padStart(2, '0');
@@ -116,7 +102,7 @@ export default function SourceSlider({ locale, country, headlines, pageDate }) {
 
         const updatedDate = new Date(sliderDay);
         updatedDate.setHours(Math.floor(nextMinutes / 60), nextMinutes % 60, 0, 0);
-        setDate(updatedDate);
+        setManualDate(updatedDate);
     };
 
     return (
