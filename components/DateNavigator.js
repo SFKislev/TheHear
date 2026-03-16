@@ -9,11 +9,12 @@ import useFirebase from "@/utils/database/useFirebase";
 import { getHeadline } from '@/utils/daily summary utils';
 
 function DateLink({ direction, country, targetDate, summary, locale }) {
-    const headlineWidth = locale === 'heb' ? 'w-[7.5rem] sm:w-[12rem]' : 'w-[8.5rem] sm:w-[14rem]';
+    const headlineMaxWidth = locale === 'heb' ? 'max-w-[7.5rem] sm:max-w-[16rem]' : 'max-w-[8.5rem] sm:max-w-[16rem]';
 
-    // Prepare headline (fallback to skeleton while loading)
+    // Prepare headline (fallback to skeleton while loading); end-aligned when direction is 'next' (use logical end for RTL)
+    const headlineAlign = direction === 'next' ? 'text-end' : (locale === 'heb' ? 'text-right' : 'text-left');
     let headline = summary ? (
-        <span className={`block truncate whitespace-nowrap overflow-hidden text-ellipsis ${locale === 'heb' ? 'text-right' : 'text-left'}`}>
+        <span className={`block truncate whitespace-nowrap overflow-hidden text-ellipsis ${headlineAlign}`}>
             {getHeadline(summary, locale)}
         </span>
     ) : (
@@ -31,22 +32,22 @@ function DateLink({ direction, country, targetDate, summary, locale }) {
     const dateString = <span className={`font-mono font-medium ${locale === 'heb' ? 'text-sm' : ''}`}>{targetDate.toLocaleDateString('en-GB').replace(/\//g, '.')}</span>;
 
     return (
-        <InnerLink href={`/${locale}/${country}/${createDateString(targetDate)}`} className="min-w-0 flex-1">
+        <InnerLink href={`/${locale}/${country}/${createDateString(targetDate)}`} className="min-w-0">
             <h2
-                className={`py-1 px-2 cursor-pointer flex items-center gap-2 min-w-0 min-h-[2.5rem] text-black hover:text-blue hover:underline hover:underline-offset-4 ${locale === 'en' ? 'font-["Geist"] text-sm' : 'frank-re text-[17px] bg-white rounded-xs py-1.5'} ${locale === 'heb' ? 'flex-row-reverse justify-start' : 'flex-row justify-start'}`}
+                className={`py-1 px-2 cursor-pointer flex items-center gap-2 min-w-0 min-h-[2.5rem] text-black hover:text-blue ${locale === 'en' ? 'font-["Geist"] text-sm' : 'frank-re text-[17px] bg-white rounded-xs py-1.5'} ${locale === 'heb' ? 'flex-row-reverse' : 'flex-row'} ${direction === 'next' ? 'justify-end' : 'justify-start'}`}
                 style={{ lineHeight: '1.2em' }}
             >
                 {direction === 'previous' ? (
                     <>
                         {dateString}
                         <span>{arrow}</span>
-                        <span className={`min-w-0 ${headlineWidth}`}>
+                        <span className={`min-w-0 ${headlineMaxWidth}`}>
                             {headline}
                         </span>
                     </>
                 ) : (
                     <>
-                        <span className={`min-w-0 ${headlineWidth}`}>
+                        <span className={`min-w-0 ${headlineMaxWidth}`}>
                             {headline}
                         </span>
                         <span>{arrow}</span>
@@ -96,7 +97,7 @@ export default function DateNavigator({ locale, country, pageDate }) {
     const isYesterdayPage = new Date(pageDate).toDateString() === yesterday.toDateString();
 
     return (
-        <div className={`flex justify-between border-t border-gray-200 px-2 py-3 w-auto bg-white bg-opacity-85 fixed bottom-0 z-5 backdrop-blur-sm shadow ${locale === 'heb' ? 'right-0 sm:right-[45px] left-0' : 'left-0 sm:left-[45px] right-0'}`}>
+        <div className={`flex justify-between border-t border-gray-200 px-2 py-1 w-auto bg-white bg-opacity-85 fixed bottom-0 z-5 backdrop-blur-sm shadow ${locale === 'heb' ? 'right-0 sm:right-[49px] left-0' : 'left-0 sm:left-[49px] right-0'}`}>
             <div className={`flex justify-between gap-3 w-full ${locale === 'heb' ? 'flex-row-reverse' : 'flex-row'}`}>
                 <DateLink
                     direction="previous"
