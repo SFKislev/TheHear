@@ -15,13 +15,15 @@ function getMobileVariantForPageLoad() {
         return window[WINDOW_CACHE_KEY];
     }
 
-    const variants = ['large', 'small'];
+    // Weight mobile variants: small appears twice as often as large.
+    const variants = ['large', 'small', 'small'];
     let nextVariant = variants[Math.floor(Math.random() * variants.length)];
 
     try {
         const previousVariant = window.localStorage.getItem(STORAGE_KEY);
         if ((previousVariant === 'large' || previousVariant === 'small') && previousVariant === nextVariant) {
-            nextVariant = previousVariant === 'large' ? 'small' : 'large';
+            const alternatives = variants.filter((variant) => variant !== previousVariant);
+            nextVariant = alternatives[Math.floor(Math.random() * alternatives.length)];
         }
         window.localStorage.setItem(STORAGE_KEY, nextVariant);
     } catch {

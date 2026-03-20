@@ -740,6 +740,80 @@ Use this block for ongoing conversation and memory updates.
 - Re-run GSC inspection/validation on exact previously failing `/feed` URLs after the fresh IndexNow ping and recrawl window.
 - Watch whether previously failing validation cases begin to clear; if not, continue diagnosis at the site-level trust/query-fit layer rather than further shrinking feed payload micro-details.
 
+### 2026-03-19 (Sample-Based Reassessment: Feed Pages Likely Not Failing on Obvious Page-Level Technical Signals)
+- What changed:
+- Performed a manual/live comparison of user-provided sample `/feed` URLs from two GSC buckets:
+- sample `Crawled - currently not indexed` feed URLs
+- sample indexed feed URLs
+- Fetched live pages and compared crawler-visible signals:
+- status/final URL
+- canonical
+- robots/googlebot meta
+- hreflang alternates
+- prerender/cache headers
+- HTML size / visible text / serialized data size
+- presence of day summary, headline counts, source counts, and summary counts from `__NEXT_DATA__`
+- Also inspected one live monthly archive page directly:
+- `https://www.thehear.org/en/us/history/2025/09`
+- Reviewed recent Bing Webmaster query examples supplied by the user, which mapped The Hear to date-specific archive-intent searches.
+- Why we changed it:
+- Needed to test whether the current evidence supports another page-level/feed-level technical tuning cycle, or whether the remaining issue is more plausibly site-level index selection / trust / classification.
+- The discussion had become stuck between sitemap/crawl-budget theories and page-quality theories; a direct live comparison was needed.
+- What we observed (data/source):
+- On the tested sample, indexed and nonindexed `/feed` pages looked materially similar on core crawler-facing technical signals:
+- all tested feed URLs returned `200`
+- self-canonical to the exact `/feed` URL
+- `meta robots = index, follow`
+- `meta googlebot = index, follow, ...`
+- stable `hreflang` alternates
+- prerender signal present
+- no App Router Flight payload on tested feed pages
+- All tested feed pages had day summaries present.
+- The tested nonindexed sample did **not** look obviously thinner than the indexed sample. On this limited sample:
+- nonindexed feeds averaged more headlines and more summaries than the indexed sample
+- nonindexed feeds also often had larger total HTML / visible text / serialized payloads than indexed feeds
+- Working interpretation from the limited sample:
+- this comparison did **not** reveal a clear page-level separator such as missing metadata, missing summaries, low source count, or obviously weaker page substance
+- therefore, a working hypothesis is that persistent `Crawled - currently not indexed` on feed pages may now be driven more by site-level selection / trust / classification than by an obvious remaining per-page technical defect
+- Important caution:
+- this is a hypothesis from a small manual sample, not proof of root cause
+- a larger sample from GSC would still be needed before treating the conclusion as high confidence
+- Bing signal supplied by the user:
+- impressions remain low, but Bing appears to map The Hear to sensible archive-intent/date-intent queries
+- example patterns reported:
+- date-only queries
+- country + month/year queries
+- "what happened on [date]" style queries
+- Working interpretation:
+- this suggests the feed-page concept itself may still be the correct search object for archival intent
+- therefore, broad feed-page deindexation should **not** be treated as obviously safe just because Google is currently under-indexing them
+- Monthly archive page inspection (`/en/us/history/2025/09`):
+- live page was `200`, self-canonical, `index, follow`, with aligned title/description
+- visible month-level content was substantial rather than truly thin
+- however, the page still carried a large App Router / Flight payload and substantial duplicated text between visible content and JSON-LD
+- Working interpretation:
+- monthly archive pages may be more plausible archive-level ranking objects than arbitrary daily leaves, but current evidence does **not** show that they are a complete near-term solution to the current site-wide indexing crisis
+- Decision:
+- Treat the current diagnosis as unresolved but narrowed:
+- feed-page crawlability/indexability mechanics appear largely healthy on the tested sample
+- no strong page-level technical separator was found in the tested feed samples
+- keep open the hypothesis that Google currently understands the pages technically but does not sufficiently trust or prioritize the domain/archive corpus for sustained large-scale retention
+- keep open the parallel hypothesis that some archive-level page types may eventually be stronger ranking objects, but do **not** assume they can replace feed pages without product/search-fit loss
+- Do **not** treat sitemap trimming alone as a likely primary fix for already crawled-and-rejected feed pages.
+- Do **not** treat broad feed-page deindexation as a default next step; current Bing evidence suggests feed pages match real archive-intent queries and remain strategically important.
+- Next step:
+- If more diagnosis time is spent, prefer larger-sample cohort analysis over more feed micro-tuning:
+- indexed `/feed` URLs vs `Crawled - currently not indexed` `/feed` URLs only
+- check whether surviving indexed pages are simply older "survivors" vs newer reevaluated losses
+- check whether deindexing appears to happen in site-level waves rather than by clear page-feature thresholds
+- Keep future strategy discussions explicit about confidence level:
+- "site-level distrust / authority / classification problem" is currently a leading hypothesis from the evidence, not a settled fact
+- "feed pages are the wrong search object" is currently **not** supported by the limited Bing query-fit evidence reviewed here
+- Avoid repeating earlier generic recommendations unless tied to a concrete new test:
+- sitemap trimming alone
+- additional feed payload micro-compression
+- generic internal-linking advice without a demonstrated missing signal
+
 ## Update Template
 Copy this template for each new entry:
 

@@ -193,7 +193,11 @@ export default function CountryPageContent({ sources, initialSummaries, yesterda
             <AboutMenu open={aboutOpen} onClose={() => setAboutOpen(false)} />
             <div id='main' style={{ paddingBottom: "var(--footer-offset, 3rem)" }} className={`absolute flex flex-col sm:flex-row w-full h-full overflow-auto sm:overflow-hidden ${effectiveLocale === 'heb' ? 'direction-rtl' : 'direction-ltr'}`}>
                 {shouldLoadTypographyComponent && <TypographyComponent />}
-                {!isVerticalScreen && (
+                {isMobile && (
+                    <SideSlider {...{ locale, country, pageDate }} />
+                )}
+
+                {!isVerticalScreen && !isMobile && (
                     <>
                         <div className="hidden sm:flex shrink-0 w-[48px]">
                             {showDeferredUi ? (

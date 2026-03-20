@@ -4,7 +4,15 @@
       "Bash(dir:*)",
       "Bash(powershell -File:*)",
       "Bash(grep:*)",
-      "WebFetch(domain:www.thehear.org)"
+      "WebFetch(domain:www.thehear.org)",
+      "Bash(find /c/Users/SFKislev.Fancy-Laptop/Code/the-Hear/thehear.org/app/\\\\\\(localized\\\\\\)/[locale]/[country]/[date]/feed -type f)",
+      "Bash(grep -n \"robots\" /c/Users/SFKislev.Fancy-Laptop/Code/the-Hear/thehear.org/app/\\\\\\(localized\\\\\\)/[locale]/[country]/[date]/metadata.js)",
+      "Bash(curl -sI \"https://www.thehear.org/en/germany/14-03-2026/feed\")",
+      "Bash(curl -s \"https://www.thehear.org/en/germany/14-03-2026/feed\")",
+      "Bash(curl -s https://www.thehear.org/en/germany/14-03-2026/feed)",
+      "Bash(grep -n \"feed\" /c/Users/SFKislev.Fancy-Laptop/Code/the-Hear/thehear.org/app/\\\\\\(localized\\\\\\)/[locale]/[country]/history/[year]/[month]/ArchiveCard.js)",
+      "Bash(grep -n \"index\\\\|robots\\\\|noindex\" /c/Users/SFKislev.Fancy-Laptop/Code/the-Hear/thehear.org/app/\\\\\\(localized\\\\\\)/[locale]/[country]/history/[year]/[month]/metadata.js)",
+      "Bash(curl -s \"https://www.thehear.org/en/ukraine/16-10-2024/feed\")"
     ],
     "deny": [],
     "ask": []
