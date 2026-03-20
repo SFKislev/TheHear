@@ -288,6 +288,18 @@ export const getCountryDailySummariesForMonth = unstable_cache(async (countryNam
   return filteredResults;
 }, ['getCountryDailySummariesForMonth'], { tags: ['getCountryDailySummariesForMonth'], revalidate: CACHE_1_DAY })
 
+export const getCountryMonthlyTitles = unstable_cache(async (countryName) => {
+  const countryConfig = countries[countryName];
+  if (!countryConfig?.id) return {};
+
+  const monthlyTitlesRef = doc(db, 'monthlyTitles', countryConfig.id);
+  const snapshot = await getDoc(monthlyTitlesRef);
+  if (!snapshot.exists()) return {};
+
+  const data = snapshot.data();
+  return data?.months || {};
+}, ['getCountryMonthlyTitles'], { tags: ['getCountryMonthlyTitles'], revalidate: CACHE_10_MINUTES })
+
 export const getGlobalDailySummariesForDate = unstable_cache(async (year, month, date) => {
   const dateString = `${year}-${String(month).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
   

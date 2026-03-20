@@ -1,9 +1,9 @@
 import { countries } from "@/utils/sources/countries";
-import { getCountryDailySummariesForMonth } from "@/utils/database/countryData";
+import { getCountryDailySummariesForMonth, getCountryMonthlyTitles } from "@/utils/database/countryData";
 import { isHebrewContentAvailable } from "@/utils/daily summary utils";
 import MonthlyArchiveGrid from "./MonthlyArchiveGrid";
 import { createMetadata, LdJson } from "./metadata";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import UniversalFooter from "@/components/UniversalFooter";
 import { COUNTRY_LAUNCH_DATES } from "@/utils/launchDates";
 
@@ -55,9 +55,18 @@ export default async function MonthlyArchivePage({ params }) {
 
     // Fetch all daily summaries for this month
     const dailySummaries = await getCountryDailySummariesForMonth(country, parseInt(year), parseInt(month));
+    const monthlyTitles = await getCountryMonthlyTitles(country);
+    const monthKey = `${year}-${month}`;
+    const monthlyHeadline = locale === 'heb'
+        ? (monthlyTitles?.[monthKey]?.headlineHebrew || "")
+        : (monthlyTitles?.[monthKey]?.headline || "");
+
+    if (dailySummaries.length === 0) {
+        notFound();
+    }
 
     // Check if Hebrew content is available for Hebrew locale
-    if (locale === 'heb' && dailySummaries.length > 0) {
+    if (locale === 'heb') {
         const hasHebrewContent = dailySummaries.some(summary => isHebrewContentAvailable(summary));
 
         // If no Hebrew content is available, redirect to English
@@ -92,6 +101,7 @@ export default async function MonthlyArchivePage({ params }) {
                 locale={locale}
                 year={year}
                 month={month}
+                monthlyHeadline={monthlyHeadline}
                 monthName={monthName}
             />
 

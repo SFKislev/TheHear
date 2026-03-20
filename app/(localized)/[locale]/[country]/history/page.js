@@ -2,7 +2,7 @@ import DynamicLogoSmall from "@/components/Logo-small";
 import FlagIcon from "@/components/FlagIcon";
 import UniversalFooter from "@/components/UniversalFooter";
 import { Archive } from "lucide-react";
-import { getCountryDailySummariesForMonth } from "@/utils/database/countryData";
+import { getCountryDailySummariesForMonth, getCountryMonthlyTitles } from "@/utils/database/countryData";
 import { isHebrewContentAvailable } from "@/utils/daily summary utils";
 import { COUNTRY_LAUNCH_DATES } from "@/utils/launchDates";
 import { countries } from "@/utils/sources/countries";
@@ -82,7 +82,7 @@ function groupMonthsByYear(monthCards) {
     }, {});
 }
 
-async function getMonthCards(country, locale, months) {
+async function getMonthCards(country, locale, months, monthlyTitles) {
     const cards = [];
 
     for (const monthEntry of months) {
@@ -96,13 +96,16 @@ async function getMonthCards(country, locale, months) {
             ? monthlySummaries.filter((summary) => isHebrewContentAvailable(summary))
             : monthlySummaries;
 
-        if (locale === "heb" && validSummaries.length === 0) {
+        if (validSummaries.length === 0) {
             continue;
         }
 
         cards.push({
             ...monthEntry,
-            totalDays: validSummaries.length
+            totalDays: validSummaries.length,
+            monthlyTitle: locale === "heb"
+                ? (monthlyTitles?.[monthEntry.monthKey]?.headlineHebrew || "")
+                : (monthlyTitles?.[monthEntry.monthKey]?.headline || "")
         });
     }
 
@@ -132,7 +135,8 @@ export async function generateMetadata({ params }) {
 export default async function CountryHistoryHubPage({ params }) {
     const { country, locale } = await params;
     const months = buildMonthEntries(country, locale);
-    const monthCards = await getMonthCards(country, locale, months);
+    const monthlyTitles = await getCountryMonthlyTitles(country);
+    const monthCards = await getMonthCards(country, locale, months, monthlyTitles);
     const launchDate = COUNTRY_LAUNCH_DATES[country];
 
     if (locale === "heb" && monthCards.length === 0) {
@@ -156,8 +160,8 @@ export default async function CountryHistoryHubPage({ params }) {
                 <div className="flex flex-col items-center" dir="ltr">
                     <DynamicLogoSmall locale={locale} showDivider={false} alwaysVisible={true} mobileReducedPadding={true} />
 
-                    <div className="bg-white rounded-xs p-6 pt-4 pointer-events-auto mt-4" dir="ltr">
-                        <div className="w-64 bg-white rounded-sm text-sm" dir="ltr">
+                    <div className="bg-white border-b border-gray-500 rounded-xs p-6 pt-4 pointer-events-auto mt-4" dir="ltr">
+                        <div className="w-[450px] max-w-[calc(100vw-2rem)] h-auto md:h-[65vh] bg-white rounded-sm text-sm flex flex-col" dir="ltr">
                             <div className='text-sm underline underline-offset-4 font-bold mb-4 font-["Geist"] flex justify-start items-start'>
                                 <div className="mr-2 mt-0.5 flex items-center gap-2">
                                     <FlagIcon country={country} />
@@ -166,32 +170,41 @@ export default async function CountryHistoryHubPage({ params }) {
                                 {archiveTitle}
                             </div>
 
-                            <div className="max-h-80 overflow-y-auto">
+                            <div className="flex-1 overflow-y-auto pr-3">
                                 {years.map((year) => (
                                     <div key={year} className="mb-3">
                                         <div className='font-["Geist"] font-bold text-xs text-gray-800 mb-2'>
                                             {year}
                                         </div>
-                                        <div className="grid grid-cols-3 gap-1">
+                                        <div className="flex flex-col gap-1">
                                             {yearGroups[year].map((monthCard) => (
                                                 <InnerLink
                                                     key={monthCard.monthKey}
                                                     href={monthCard.href}
                                                     locale={locale}
-                                                    className="flex items-center justify-center px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 hover:shadow-md rounded font-mono"
+                                                    className='block rounded bg-gray-100 px-3 py-2 hover:bg-gray-200 hover:shadow-md cursor-pointer font-["Geist"] text-xs text-black'
                                                 >
-                                                    <span className="mr-1">{String(monthCard.month).padStart(2, "0")}</span>
-                                                    <span className="text-gray-400 text-[10px]">({monthCard.monthShort})</span>
+                                                    <span className="font-mono">
+                                                        {String(monthCard.month).padStart(2, "0")} <span className="text-gray-300">({monthCard.monthShort})</span>
+                                                    </span>
+                                                    {monthCard.monthlyTitle ? (
+                                                        <>
+                                                            <span className="mx-2 text-gray-400">|</span>
+                                                            <span className={`leading-snug text-gray-800 ${locale === "heb" ? "frank-re text-sm" : ""}`}>
+                                                                {monthCard.monthlyTitle}
+                                                            </span>
+                                                        </>
+                                                    ) : null}
                                                 </InnerLink>
                                             ))}
                                         </div>
                                     </div>
                                 ))}
-                            </div>
 
-                            <div className="border-t pt-2 mt-2">
-                                <div className='font-["Geist"] text-xs text-gray-500'>
-                                    {`The Hear archives main headlines as they unfolded. It started tracking ${countryName} in ${launchLabel}. Click a month for a list of daily archive pages.`}
+                                <div className="border-t pt-2 mt-2">
+                                    <div className='font-["Geist"] text-xs text-gray-500'>
+                                        {`The Hear archives main headlines as they unfolded. It started tracking ${countryName} in ${launchLabel}. Click a month for a list of daily archive pages.`}
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -85,13 +85,14 @@ function MonthNavigation({ country, locale, year, month, monthName, position = '
     }
 }
 
-export default function ArchiveTopBar({ country, locale, year, month, monthName }) {
+export default function ArchiveTopBar({ country, locale, year, month, monthName, monthlyHeadline }) {
     const { isMobile } = useMobile();
     const countryData = countries[country] || {};
     const countryName = locale === 'heb' ? countryData.hebrew : countryData.english;
+    const countryNameWithArticle = country === 'us' || country === 'uk' ? `the ${countryName}` : countryName;
     const fullTitle = locale === 'heb'
         ? `ארכיון כותרות מ־${countryName}, ${monthName}`
-        : `Headlines archive from ${countryName}, ${monthName}`;
+        : `Headlines archive from ${countryNameWithArticle}, ${monthName}`;
 
     return (
         <nav className="sticky top-0 w-full bg-white z-50 py-1 direction-ltr border-b border-gray-200">
@@ -104,12 +105,26 @@ export default function ArchiveTopBar({ country, locale, year, month, monthName 
 
                     {/* Center: Flag • Month/Year • Headlines Archive with Navigation on sides */}
                     <div className="flex items-center gap-2 flex-1 justify-center">
-                        <MonthNavigation {...{ country, locale, year, month, monthName }} position="left" />
-                        <ArchiveCountryNavigator country={country} locale={locale} year={year} month={month} />
-                        <div className={`${locale === 'heb' ? 'frank-re text-right text-[16px]' : 'font-[\"Geist\"] text-left text-sm'} flex items-center gap-2`}>
-                            <span className="text-sm">{fullTitle}</span>
+                        {!isMobile && <MonthNavigation {...{ country, locale, year, month, monthName }} position="left" />}
+                        {!isMobile && <ArchiveCountryNavigator country={country} locale={locale} year={year} month={month} />}
+                        <div className={`${locale === 'heb' ? 'frank-re text-right text-[16px]' : 'font-[\"Geist\"] text-left text-sm'} hidden sm:flex items-center gap-2`}>
+                            {monthlyHeadline ? (
+                                <>
+                                    <h1 className="text-sm font-normal">
+                                        {monthlyHeadline}
+                                    </h1>
+                                    <span className="hidden sm:inline text-sm font-normal">|</span>
+                                    <h2 className="hidden sm:block text-sm font-normal">
+                                        {fullTitle}
+                                    </h2>
+                                </>
+                            ) : (
+                                <h1 className="text-sm font-normal">
+                                    {fullTitle}
+                                </h1>
+                            )}
                         </div>
-                        <MonthNavigation {...{ country, locale, year, month, monthName }} position="right" />
+                        {!isMobile && <MonthNavigation {...{ country, locale, year, month, monthName }} position="right" />}
                     </div>
 
                     {/* Right: Empty space for balance */}

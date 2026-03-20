@@ -16,6 +16,7 @@ export default function MonthlyArchiveGrid({
     locale, 
     year, 
     month, 
+    monthlyHeadline,
     monthName 
 }) {
     const countryName = locale === 'heb' ? countries[country].hebrew : countries[country].english;
@@ -30,7 +31,7 @@ export default function MonthlyArchiveGrid({
     if (!dailySummaries || dailySummaries.length === 0) {
         return (
             <>
-                <ArchiveTopBar {...{ country, locale, year, month, monthName }} />
+                <ArchiveTopBar {...{ country, locale, year, month, monthName, monthlyHeadline }} />
                 <div className="flex flex-1 min-h-[80vh] items-center justify-center">
                     <div className="text-center">
                         <p className={`text-gray-700 ${locale === 'heb' ? 'frank-re' : 'font-[\"Geist\"] text-sm'}`}>
@@ -47,7 +48,7 @@ export default function MonthlyArchiveGrid({
 
     return (
         <>
-            <ArchiveTopBar {...{ country, locale, year, month, monthName }} />
+            <ArchiveTopBar {...{ country, locale, year, month, monthName, monthlyHeadline }} />
             <div style={{ paddingBottom: "var(--footer-offset, 3rem)" }} className={`custom-scrollbar 
                         gap-4 p-4
                         flex flex-col sm:grid 

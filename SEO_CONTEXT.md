@@ -11,6 +11,90 @@ Use it to track:
 - current state
 - next experiments
 
+### 2026-03-20 (Monthly Archive Headline Layer Added to Country History Hubs + Monthly Archive Top Bars)
+- What changed:
+- Added `monthlyTitles` Firestore support to the country archive hub at `/{locale}/{country}/history`.
+- New server helper in `utils/database/countryData.js`:
+- `getCountryMonthlyTitles(country)`
+- English history hubs now read:
+- `monthlyTitles/{Country}.months["YYYY-MM"].headline`
+- Hebrew history hubs now read:
+- `monthlyTitles/{Country}.months["YYYY-MM"].headlineHebrew`
+- Country history hub month rows now render as inline archive labels such as:
+- `02 (Feb) | The Month the Iran War Began`
+- Empty archive months are no longer shown on the country history hub.
+- Monthly archive routes with no daily summaries now return `notFound()` instead of rendering the old "Nothing to see here" placeholder.
+- Monthly archive pages at `/{locale}/{country}/history/{year}/{month}` now also read `monthlyTitles` and surface the monthly title inline in the top bar.
+- Current top-bar behavior:
+- visible monthly title first
+- existing archive label retained inline after a `|` divider on larger screens
+- on mobile, the monthly title/archive label block is hidden
+- on mobile, monthly chevrons and the archive-country flag navigator are also hidden
+- For English archive labels, article handling was added so the top bar says:
+- `Headlines archive from the US, ...`
+- `Headlines archive from the UK, ...`
+- Why we changed it:
+- Country history hubs were still semantically thin despite being crawlable archive indexes.
+- Monthly archive pages were substantial, but their top-level framing remained generic (`Headlines archive from US, February 2026`) even when a stronger month-specific headline existed.
+- We wanted a reusable archive-level semantic layer that is:
+- visible in SSR HTML
+- consistent with the archive corpus
+- more specific than generic month/archive labels
+- What we observed (data/source):
+- Local validation on `http://localhost:3001/en/us/history` showed monthly titles rendering in SSR HTML, for example:
+- `02 (Feb) | The Month the Federal Government Was Dismantled`
+- Direct Firestore probe confirmed `monthlyTitles/Israel` exists and contains month keys.
+- Initial Israel missing-title behavior was caused by stale `unstable_cache` results, not missing Firestore data.
+- `getCountryMonthlyTitles` cache window was reduced from 1 day to 10 minutes to shorten stale-empty behavior after new monthly-title writes.
+- Current mobile behavior on monthly archive top bars is intentionally simplified by hiding:
+- monthly title/archive text block
+- month chevrons
+- archive country navigator / flag
+- Decision:
+- Keep monthly titles as a reusable archive-semantic layer on both country history hubs and monthly archive pages.
+- Treat this as a meaningful page-specificity / archive-quality improvement, but not as a standalone fix for the broader index-selection problem.
+- Keep monthly archive page styling conservative: the monthly title is inline and does not replace the overall visual design language.
+- Next step:
+- After deploy, verify representative live URLs for:
+- `/en/us/history`
+- `/heb/israel/history`
+- one or two monthly archive pages such as `/en/us/history/2026/02`
+- Confirm:
+- monthly titles appear in live SSR HTML
+- Hebrew titles use the intended Hebrew field / font treatment
+- empty months are no longer linked from hub pages
+- empty month routes 404 instead of showing placeholder content
+
+### 2026-03-20 (Monthly Title Generator Added as Archive-Content Layer)
+- What changed:
+- A new Firebase function was added to generate monthly archive titles month-by-month and write them into:
+- `monthlyTitles/{Country}`
+- field shape:
+- `months["YYYY-MM"].headline`
+- `months["YYYY-MM"].headlineHebrew`
+- These generated monthly titles now feed both:
+- country history hubs at `/{locale}/{country}/history`
+- monthly archive top bars at `/{locale}/{country}/history/{year}/{month}`
+- Why we changed it:
+- A core archive weakness was that some archive entry pages functioned mostly as navigational indexes with limited page-specific framing.
+- The monthly-title generator creates a reusable content layer so archive pages are not framed only by generic month/country labels.
+- This is intended to improve archive specificity and reduce the “just an index without content” problem, especially on country history hubs.
+- What we observed (data/source):
+- The generated monthly titles are now visible in SSR HTML on history hubs and monthly archive pages.
+- Example pattern:
+- `02 (Feb) | The Month the Iran War Began`
+- On monthly archive pages, the generated monthly title now appears inline in the top bar next to the archive label on larger screens.
+- Decision:
+- Keep the monthly-title generator as part of the archive SEO architecture.
+- Treat these titles as page-specific archive content, not just decorative labels.
+- Use the generated monthly-title corpus as the canonical month-level framing layer across archive surfaces.
+- Next step:
+- Deploy the change.
+- After deploy, validate a few representative live URLs to confirm:
+- generated monthly titles appear in production SSR HTML
+- the correct English/Hebrew field is used
+- the new generator is keeping pace with newly completed months
+
 ### 2026-03-13 (Live Page Metadata Fix + Font Preload De-Duplication)
 - What changed:
 - Fixed `/[locale]/global` route metadata in `app/(localized)/[locale]/global/page.js` so page-level Open Graph and Twitter tags no longer inherit the generic localized-layout homepage defaults.
