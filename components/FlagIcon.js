@@ -1,24 +1,25 @@
 import { countryToAlpha2 } from "country-to-iso";
 
 const getFlagUrl = (country, size = '16x12') => {
-    const isoCountry = countryToAlpha2(country).toLowerCase();
+    const isoCountry = countryToAlpha2(country);
     if (!isoCountry) return '';
-    return `https://flagcdn.com/${size}/${isoCountry}.png`;
+    return `https://flagcdn.com/${size}/${isoCountry.toLowerCase()}.png`;
 };
 
-export default function FlagIcon({ country }) {
-    const flagUrl = getFlagUrl(country);
+export default function FlagIcon({ country, size = '16x12', width = 16, height = 12, className = '', style = {} }) {
+    const flagUrl = getFlagUrl(country, size);
     return (
         <img
             src={flagUrl}
             alt={`Flag of ${country}`}
-            width={16}
-            height={12}
+            width={width}
+            height={height}
+            className={className}
             style={{
-                width: '1rem',
-                height: '0.75rem',
+                width: `${width / 16}rem`,
+                height: `${height / 16}rem`,
                 verticalAlign: 'middle',
-                cursor: 'pointer'
+                ...style,
             }}
         />
     )

@@ -268,3 +268,43 @@ body {
     transform: translateY(0);
   }
 }
+
+@keyframes skeletonWidthPulse {
+  0% {
+    transform: scaleX(0.96);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(0.92);
+    opacity: 0.82;
+  }
+}
+
+.animate-skeleton-width {
+  animation: skeletonWidthPulse 1.35s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.skeleton-origin-ltr {
+  transform-origin: left center;
+}
+
+.skeleton-origin-rtl {
+  transform-origin: right center;
+}
+
+.animation-delay-100 {
+  animation-delay: 0.1s;
+}
+
+.animation-delay-150 {
+  animation-delay: 0.15s;
+}
+
+.animation-delay-200 {
+  animation-delay: 0.2s;
+}

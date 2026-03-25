@@ -1,8 +1,19 @@
 import { checkRTL } from "@/utils/utils";
-import { Skeleton } from "@mui/material";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-export default function Headline({ headline, typography, isLoading, isPresent }) {
+function TranslationSkeleton({ skeletonIsRTL = false }) {
+    const directionClassName = skeletonIsRTL ? 'skeleton-origin-rtl' : 'skeleton-origin-ltr';
+
+    return (
+        <div className="space-y-1.5 pt-0.5">
+            <div className={`h-[1.05rem] rounded-sm bg-neutral-200/90 animate-skeleton-width ${directionClassName}`} style={{ width: '90%' }} />
+            <div className={`h-[1.05rem] rounded-sm bg-neutral-200/90 animate-skeleton-width animation-delay-100 ${directionClassName}`} style={{ width: '78%' }} />
+            <div className={`h-[1.05rem] rounded-sm bg-neutral-200/90 animate-skeleton-width animation-delay-200 ${directionClassName}`} style={{ width: '64%' }} />
+        </div>
+    );
+}
+
+export default function Headline({ headline, typography, isLoading, isPresent, skeletonIsRTL = false }) {
     const [animationDuration, setAnimationDuration] = useState(0);
     const [isAnimating, setIsAnimating] = useState(false);
     const prevTextRef = useRef(null);
@@ -45,13 +56,7 @@ export default function Headline({ headline, typography, isLoading, isPresent })
     }, []);
 
     if (isLoading) {
-        return (
-            <div className="space-y-2">
-                <Skeleton variant="text" width="95%" height="1.5rem" />
-                <Skeleton variant="text" width="80%" height="3rem" />
-                <Skeleton variant="text" width="60%" height="1.5rem" />
-            </div>
-        );
+        return <TranslationSkeleton skeletonIsRTL={skeletonIsRTL} />;
     }
 
     if (!headline.headline || headline.headline == '') return null;

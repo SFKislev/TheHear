@@ -154,6 +154,15 @@ export async function middleware(request) {
   if (segments.length >= 2 && isLocale(segments[0])) {
     const locale = segments[0];
     const countryCandidate = segments[1];
+    const localizedStaticRoots = new Set(['mix']);
+
+    if (localizedStaticRoots.has(countryCandidate)) {
+      const userCountry = getUserCountry(request);
+      const response = NextResponse.next();
+      response.headers.set('x-user-country', userCountry);
+      return response;
+    }
+
     const valid = await getCountry(countryCandidate);
     if (valid) {
       // Validate date for archive pages (before hitting expensive page functions)

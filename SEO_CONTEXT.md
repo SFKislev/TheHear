@@ -1,6 +1,6 @@
 # SEO Context Memory
 
-Last updated: 2026-03-13
+Last updated: 2026-03-20
 Owner: ongoing team notes
 
 ## Purpose
@@ -10,6 +10,91 @@ Use it to track:
 - what problem each change was meant to solve
 - current state
 - next experiments
+
+### 2026-03-20 (Search Console Stale Snapshot Diagnosis for `/en/us/history`)
+- What changed:
+- Added a diagnosis note based on a live production check of `https://www.thehear.org/en/us/history` versus the URL Inspection screenshot in Google Search Console.
+- Confirmed current live behavior for `/en/us/history`:
+- returns `200 OK`
+- does not issue an HTTP redirect
+- emits `robots: index, follow`
+- emits a self-canonical to `https://www.thehear.org/en/us/history`
+- emits matching `hreflang` alternates
+- Confirmed the history-hub route is now a first-class page in the codebase:
+- `app/(localized)/[locale]/[country]/history/page.js`
+- `app/(localized)/[locale]/[country]/history/metadata.js`
+- Why we changed it:
+- Search Console showed `/en/us/history` as `Page is not indexed: Page with redirect`, with:
+- last crawl: `2026-03-02`
+- user-declared canonical: `https://www.thehear.org/en/us`
+- This appeared inconsistent with the current live page and needed to be reconciled as part of the broader indexing diagnosis.
+- What we observed (data/source):
+- Live production check on `2026-03-20` showed `/en/us/history` is currently a standalone crawlable page, not a redirect.
+- Repo history in this file shows the country archive hub was added later, on `2026-03-12`.
+- That means the Search Console inspection snapshot predates the introduction of the dedicated country history hub.
+- Working interpretation:
+- at crawl time on `2026-03-02`, Google was still seeing an older version of site behavior/signals for `/en/us/history`
+- the reported canonical-to-`/en/us` state likely reflects the pre-history-hub architecture rather than the current deployment
+- this is evidence that Google is, at least for some URLs, evaluating stale snapshots rather than the latest architecture
+- Decision:
+- Treat this as a meaningful partial explanation for Google's difficulty understanding the site.
+- Do not treat it as a full root cause by itself.
+- The more precise diagnosis is:
+- Google may be carrying forward outdated URL understanding on parts of the site
+- repeated changes in route semantics / canonicals / archive structure likely slow re-interpretation
+- some Search Console reports may therefore lag behind the current live architecture by days or weeks
+- Next step:
+- Request reindexing for representative history hubs such as `/en/us/history`.
+- When reviewing Search Console inspection data, always compare the reported crawl date to the date a route or canonical behavior changed.
+- Continue separating:
+- stale-snapshot explanations
+- genuine current-state architecture problems
+
+### 2026-03-20 (SEO Propagation Model After Large Refactors)
+- What changed:
+- Added a general diagnosis note about how Google likely re-processes this site after major architectural SEO changes.
+- Why we changed it:
+- Recent inspection evidence suggests Google is not re-evaluating the site as one atomic deployment state.
+- Instead, it appears to be updating its understanding URL-by-URL and cluster-by-cluster as pages are re-crawled.
+- This changes how we should interpret both improvements and failures after refactors.
+- What we observed (data/source):
+- `/en/us/history` was inspected in Search Console using a crawl snapshot from `2026-03-02`, even though the dedicated history hub was added later on `2026-03-12`.
+- Current live behavior can therefore differ materially from what Search Console is still reporting for a given URL.
+- The site architecture contains many interdependent URL families:
+- live country pages
+- date pages
+- `/feed` pages
+- country history hubs
+- monthly archive pages
+- global archive pages
+- These page types influence one another through:
+- canonicals
+- `hreflang`
+- internal links
+- sitemap inclusion
+- redirect behavior
+- Working interpretation:
+- For a large refactor, the order in which Google re-crawls pages matters.
+- Google may refresh one part of the URL graph while still holding older assumptions about related pages.
+- That means:
+- individual fixes do not propagate instantly across the architecture
+- canonical and indexing decisions can remain tied to older cluster understanding
+- Search Console can show a mixed state where some URLs reflect the new architecture and others still reflect the old one
+- Practical implication:
+- Major structural changes should be expected to take weeks, not days, to propagate meaningfully across the site.
+- The relevant unit is not only the single changed URL, but the surrounding cluster of linked/canonicalized/archive-related URLs that Google must reprocess.
+- Repeated architecture changes before the previous state has settled may prolong confusion by giving Google moving targets rather than a stable graph.
+- Decision:
+- Interpret post-refactor indexing lag with a crawl-order / graph-propagation model, not a simple deploy-date model.
+- Avoid over-reading short-term Search Console states immediately after major SEO changes.
+- Evaluate changes over multi-week windows, especially for changes affecting canonical clusters or archive structure.
+- Next step:
+- When diagnosing future indexing anomalies, record:
+- deploy/change date
+- first confirmed live behavior
+- Search Console last-crawl date
+- whether adjacent linked/canonical URLs have also been re-crawled
+- Prefer fewer, more stable architectural shifts over frequent SEO reversals while the current graph is still being reprocessed.
 
 ### 2026-03-20 (Monthly Archive Headline Layer Added to Country History Hubs + Monthly Archive Top Bars)
 - What changed:

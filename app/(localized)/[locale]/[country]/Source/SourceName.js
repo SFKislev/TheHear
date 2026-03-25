@@ -22,12 +22,14 @@ export default function SourceName({ name, description, typography, date, isLoad
     return (
         <div className={`flex items-center gap-2 flex-1 min-w-0 ${isRight ? 'justify-end' : ''}`}>
             <CustomTooltip title={description} placement="top">
-                <h2 className={`text-sm cursor-help w-full ${isRight ? 'text-right' : ''} ${isPresent ? 'text-blue' : 'text-gray-500'}`} style={{ 
-                    ...typography, 
-                    fontSize: typography.fontFamily === 'var(--font-frank-re-tzar)' ? '2.1rem' : '1.5rem' 
-                }}>
-                    {name}
-                </h2>
+                <span className={`inline-flex max-w-full ${isRight ? 'ml-auto' : ''}`}>
+                    <h2 className={`text-sm cursor-help inline-block max-w-full ${isRight ? 'text-right' : ''} ${isPresent ? 'text-blue' : 'text-gray-500'}`} style={{ 
+                        ...typography, 
+                        fontSize: typography.fontFamily === 'var(--font-frank-re-tzar)' ? '2.1rem' : '1.5rem' 
+                    }}>
+                        {name}
+                    </h2>
+                </span>
             </CustomTooltip>
         </div>
     )

@@ -5,7 +5,7 @@ import CloseButton from "./CloseButton";
 import Headline from "./Headine";
 import SourceName from "./SourceName";
 import { SourceFooter } from "./SourceFooter";
-import { getTypographyOptions } from "@/utils/typography/typography";
+import { getDeterministicTypography, getTypographyOptions } from "@/utils/typography/typography";
 import Subtitle from "./Subtitle";
 import dynamic from "next/dynamic";
 import { useFont, useTime, useTranslate, useActiveWebsites } from "@/utils/store";
@@ -18,13 +18,31 @@ const RightClickMenu = dynamic(() => import('./RightClickMenu'), { ssr: false, l
 
 const randomFontIndex = Math.floor(Math.random() * 100)
 
-export default function SourceCard({ source, headlines, country, locale, isLoading, pageDate, isVerticalScreen, sources }) {
+export default function SourceCard({
+    source,
+    headlines,
+    country,
+    locale,
+    isLoading,
+    pageDate,
+    isVerticalScreen,
+    sources,
+    sourceKey = source,
+    activeWebsitesOverride = null,
+    sourceDataOverride = null,
+    onClose = null,
+    disableContextMenu = false,
+    renderWhenEmpty = false,
+    preferRandomTypography = false,
+}) {
     const translate = useTranslate((state) => state.translate);
+    const isTranslationTemporarilyPaused = useTranslate((state) => state.isTemporarilyPaused);
     const date = useTime((state) => state.date);
     const font = useFont((state) => state.font);
     const [headline, setHeadline] = useState(headlines && headlines.length > 0 ? headlines[0] : null);
     const [translations, setTranslations] = useState({});
-    const websites = useActiveWebsites(state => state.activeWebsites);
+    const storeWebsites = useActiveWebsites(state => state.activeWebsites);
+    const websites = activeWebsitesOverride || storeWebsites;
     const [isPresent, setIsPresent] = useState(true);
     const [allowLiveHeadlineRefresh, setAllowLiveHeadlineRefresh] = useState(Boolean(pageDate));
     const [showLiveHint, setShowLiveHint] = useState(false);
@@ -33,12 +51,15 @@ export default function SourceCard({ source, headlines, country, locale, isLoadi
     const previousHeadlineIdRef = useRef(headline?.id ?? null);
     const isCountryRTL = country?.toLowerCase() === 'israel';
 
-    const index = websites.length > 0 ? websites.indexOf(source) : 1
-    const shouldRender = headline && index !== -1;
+    const index = websites.length > 0 ? websites.indexOf(sourceKey) : 1
+    const shouldRender = index !== -1 && (headline || renderWhenEmpty);
 
-    const sourceData = useMemo(() => getSourceData(country, source), [country, source])
+    const sourceData = useMemo(() => sourceDataOverride || getSourceData(country, source), [sourceDataOverride, country, source])
 
-    const shouldTranslate = useMemo(() => translate.includes(source) || translate.includes('ALL'), [translate, source]);
+    const shouldTranslate = useMemo(
+        () => !isTranslationTemporarilyPaused && (translate.includes(sourceKey) || translate.includes('ALL')),
+        [translate, sourceKey, isTranslationTemporarilyPaused]
+    );
 
     const randomBgOpacity = useMemo(() => {
         const opacities = ['bg-opacity-20', 'bg-opacity-30', 'bg-opacity-40', 'bg-opacity-50', 'bg-opacity-60', 'bg-opacity-70', 'bg-opacity-80', 'bg-opacity-90'];
@@ -99,7 +120,7 @@ export default function SourceCard({ source, headlines, country, locale, isLoadi
         if (shouldTranslate && headline && headline.headline && headline.id) {
             if (translations[headline.id]) return;
             (async () => {
-                const res = await fetch('/api/translate', {
+                const res = await fetch('/api/deepseek-translate', {
                     method: 'POST',
                     body: JSON.stringify({ headline: headline.headline, subtitle: headline.subtitle, locale }),
                     headers: { 'Content-Type': 'application/json' }
@@ -110,23 +131,37 @@ export default function SourceCard({ source, headlines, country, locale, isLoadi
         }
     }, [shouldTranslate, headline, source, translations, locale]);
 
-    let displayHeadline = headline ? { ...headline } : null;
+    let displayHeadline = headline ? { ...headline } : { headline: '', subtitle: '' };
     let displayName = sourceData.name
-    if (shouldRender && shouldTranslate && headline.id && translations[headline.id]) {
+    if (shouldRender && shouldTranslate && headline?.id && translations[headline.id]) {
         displayHeadline.headline = translations[headline.id].headline;
         displayHeadline.subtitle = translations[headline.id].subtitle;
         displayName = checkRTL(translations[headline.id].headline) ? sourceData.translations.he : sourceData.translations.en
-    } else if (shouldRender && shouldTranslate && (!headline.id || !translations[headline.id])) {
+    } else if (shouldRender && shouldTranslate && (!headline?.id || !translations[headline.id])) {
         displayHeadline = { headline: '', subtitle: '' }
     }
 
     const isRTL = useMemo(() => {
         if (!shouldRender) return false;
-        return (displayHeadline.headline && checkRTL(displayHeadline.headline)) || checkRTL(displayName)
+        return (displayHeadline?.headline && checkRTL(displayHeadline.headline)) || checkRTL(displayName)
     }, [shouldRender, displayHeadline?.headline, displayName]);
 
     const typography = useMemo(() => {
         if (!shouldRender) return null;
+
+        if (preferRandomTypography) {
+            const typographyCountry = shouldTranslate
+                ? (locale == 'heb' ? 'israel' : 'us')
+                : country;
+
+            return getDeterministicTypography({
+                country: typographyCountry,
+                seed: String(sourceKey || source),
+                isRTL,
+                text: displayHeadline?.headline || displayName,
+            });
+        }
+
         let typo = font
         const options = getTypographyOptions(country).options
         if (typeof font === 'number') typo = options[font % options.length]
@@ -143,7 +178,7 @@ export default function SourceCard({ source, headlines, country, locale, isLoadi
         }
 
         return typo;
-    }, [shouldRender, font, country, isRTL, shouldTranslate, locale]);
+    }, [shouldRender, preferRandomTypography, font, country, isRTL, shouldTranslate, locale, sourceKey, source, displayHeadline?.headline, displayName]);
 
     useEffect(() => {
         setIsPresent(new Date() - date < 60 * 1000 * 5);
@@ -166,6 +201,7 @@ export default function SourceCard({ source, headlines, country, locale, isLoadi
     }, [pageDate, shouldRender]);
 
     const shouldShowLiveHint = !pageDate && (isLoading || showLiveHint);
+    const isTranslationLoading = shouldRender && shouldTranslate && Boolean(headline?.id) && !translations[headline.id];
 
     // Early return if shouldn't render
     if (!shouldRender) {
@@ -175,6 +211,7 @@ export default function SourceCard({ source, headlines, country, locale, isLoadi
     return (
         <div style={{ order: index }}
             onContextMenu={(e) => {
+                if (disableContextMenu) return;
                 e.preventDefault();
                 setContextMenu({ open: true, x: e.clientX, y: e.clientY });
             }}
@@ -186,7 +223,7 @@ export default function SourceCard({ source, headlines, country, locale, isLoadi
             ${shouldTranslate ? 'bg-white shadow-lg border border-dotted' : ''}
         `}>
             <TranslatedLabel locale={locale} active={shouldTranslate} className="group-hover:opacity-0" />
-            <CloseButton name={source} isRTL={isRTL} className="z-[2]" />
+            <CloseButton name={sourceKey} isRTL={isRTL} className="z-[2]" onClose={onClose} />
             <div className="flex flex-col h-full justify-normal sm:justify-between">
                 <div className="flex flex-col gap-2 mb-2 p-4">
                     <div className={`relative w-full ${shouldShowLiveHint ? (isCountryRTL ? 'pr-6' : 'pl-6') : ''}`}>
@@ -207,15 +244,17 @@ export default function SourceCard({ source, headlines, country, locale, isLoadi
                         />
                     </div>
                     <Headline headline={displayHeadline}
-                        {...{ typography, isLoading }} />
+                        typography={typography}
+                        isLoading={isLoading || isTranslationLoading}
+                        skeletonIsRTL={isRTL} />
                 </div>
                 <div>
-                    <Subtitle headlineData={displayHeadline} {...{ isLoading }} />
+                    <Subtitle headlineData={displayHeadline} isLoading={isLoading || isTranslationLoading} skeletonIsRTL={isRTL} />
                     <SourceSlider {...{ locale, country, headlines, pageDate }} />
-                    <SourceFooter url={headlines && headlines.length > 0 ? headlines[0].link : ''} {...{ headline, headlines, source, pageDate }} />
+                    <SourceFooter url={headlines && headlines.length > 0 ? headlines[0].link : ''} headline={headline} headlines={headlines} source={sourceKey} pageDate={pageDate} flagCountry={sourceDataOverride ? country : null} sourceCountry={country} />
                 </div>
             </div>
-            {contextMenu.open ? (
+            {!disableContextMenu && contextMenu.open ? (
                 <RightClickMenu
                     open={contextMenu.open}
                     position={{ x: contextMenu.x, y: contextMenu.y }}

@@ -25,15 +25,16 @@ export default function TranslateToggle({ sources, pageDate, tooltipTitle = "Tra
     // Color scheme: blue for regular pages, amber-800 for date pages when active
     const isDatePage = !!pageDate;
     const activeColor = isDatePage ? '#92400e' : '#0000FF';
+    const shouldKeepTooltipOpen = tooltipAlwaysOpen && !on;
     
     return (
         <CustomTooltip
             title={tooltipTitle}
             placement="bottom"
-            open={tooltipAlwaysOpen ? true : undefined}
-            disableHoverListener={tooltipAlwaysOpen}
-            disableFocusListener={tooltipAlwaysOpen}
-            disableTouchListener={tooltipAlwaysOpen}
+            open={shouldKeepTooltipOpen ? true : undefined}
+            disableHoverListener={shouldKeepTooltipOpen}
+            disableFocusListener={shouldKeepTooltipOpen}
+            disableTouchListener={shouldKeepTooltipOpen}
             slotProps={tooltipSlotProps}
         >
             <TopBarButton onClick={handleClick}>

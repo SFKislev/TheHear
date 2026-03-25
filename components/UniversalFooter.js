@@ -24,6 +24,7 @@ const labels = {
     live: { en: 'Live', heb: '\u05d7\u05d9' },
     liveHeadlinesFrom: { en: 'live headlines from', heb: '\u05db\u05d5\u05ea\u05e8\u05d5\u05ea \u05d7\u05d9\u05d5\u05ea \u05de' },
     liveGlobalNews: { en: 'live global news', heb: '\u05d7\u05d3\u05e9\u05d5\u05ea \u05d7\u05d9\u05d5\u05ea \u05de\u05d4\u05e2\u05d5\u05dc\u05dd' },
+    customView: { en: 'Custom Dashboard', heb: '' },
     closeMenu: { en: 'Close footer menu', heb: '\u05e1\u05d2\u05d5\u05e8 \u05ea\u05e4\u05e8\u05d9\u05d8' },
     hideFooter: { en: 'Hide footer', heb: '\u05d4\u05e1\u05ea\u05e8 \u05ea\u05d7\u05ea\u05d9\u05ea' },
 };
@@ -125,6 +126,9 @@ function getH1Text({ locale, pageType, country, date, year, month, day }) {
     if (pageType === 'global-live') {
         return locale === 'heb' ? '\u05d7\u05d3\u05e9\u05d5\u05ea \u05d7\u05d9\u05d5\u05ea \u05de\u05d4\u05e2\u05d5\u05dc\u05dd' : 'Live Global News';
     }
+    if (pageType === 'mix-live' || pageType === 'mix-date') {
+        return locale === 'heb' ? labels.customView.heb : labels.customView.en;
+    }
     if (pageType === 'global-archive') {
         const dateObj = date || new Date(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10));
         const dateLabel = formatDateLabel(dateObj, locale);
@@ -176,6 +180,7 @@ export default function UniversalFooter({ locale, pageType, country, date, year,
 
     const h1Text = getH1Text({ locale, pageType, country, date, year, month, day });
     const isGlobalPage = pageType === 'global-live' || pageType === 'global-archive';
+    const isMixPage = pageType === 'mix-live' || pageType === 'mix-date';
     const isMonthlyArchive = pageType === 'monthly-archive';
     const countryName = country ? getCountryName(country, locale) : '';
     const months = useMemo(() => {
@@ -222,6 +227,8 @@ export default function UniversalFooter({ locale, pageType, country, date, year,
     const isHeb = locale === 'heb';
     const fontClass = isHeb ? 'frank-re' : 'font-[\'Geist\']';
     const textSizeClass = isHeb ? 'text-[13px]' : 'text-xs';
+    const footerLinkClass = `text-gray-700 hover:text-blue bg-white hover:bg-blue-50 rounded-lg ${isHeb ? 'px-1.5' : 'px-2'} py-1 inline-block`;
+    const footerIconLinkClass = `flex items-center justify-center text-gray-700 hover:text-blue bg-white hover:bg-blue-50 rounded-lg ${isHeb ? 'px-1.5' : 'px-2'} py-1 inline-block`;
 
     return (
         <>
@@ -246,7 +253,7 @@ export default function UniversalFooter({ locale, pageType, country, date, year,
                                 <span className="underline underline-offset-2">{getLabel('global', locale)}</span>
                             </InnerLink>
                         )}
-                        {country && (
+                        {country && !isMixPage && (
                             <InnerLink href={`/${locale}/${country}`} locale={locale}>
                                 <span className="inline-flex items-center gap-1 underline underline-offset-2">
                                     {getLiveCountryLabel(locale, country, countryName, isMonthlyArchive)}
@@ -264,25 +271,27 @@ export default function UniversalFooter({ locale, pageType, country, date, year,
                                 {getLabel('about', locale)}
                             </span>
                         </InnerLink>
-                        {pageType !== 'live' && !isGlobalPage && !isMonthlyArchive && pageType !== 'search' && (
+                        {pageType !== 'live' && pageType !== 'mix-live' && pageType !== 'mix-date' && !isGlobalPage && !isMonthlyArchive && pageType !== 'search' && (
                             <InnerLink href="/methodology" locale={locale}>
                                 <span className="underline underline-offset-2">
                                     {getLabel('methodology', locale)}
                                 </span>
                             </InnerLink>
                         )}
-                        <InnerLink href="/contact" locale={locale}>
-                            <span className="underline underline-offset-2">
-                                {getLabel('contact', locale)}
-                            </span>
-                        </InnerLink>
+                        {pageType !== 'mix-live' && pageType !== 'mix-date' && (
+                            <InnerLink href="/contact" locale={locale}>
+                                <span className="underline underline-offset-2">
+                                    {getLabel('contact', locale)}
+                                </span>
+                            </InnerLink>
+                        )}
                         <InnerLink href="/legal" locale={locale}>
                             <span className="underline underline-offset-2">
                                 {getLabel('legal', locale)}
                             </span>
                         </InnerLink>
                     </div>
-                    {country && pageType !== 'search' && pageType !== 'country-archive-hub' && (
+                    {country && !isMixPage && pageType !== 'search' && pageType !== 'country-archive-hub' && (
                         <details className="mt-3">
                             <summary className="cursor-pointer font-medium">
                                 {isMonthlyArchive ? (
@@ -362,7 +371,7 @@ export default function UniversalFooter({ locale, pageType, country, date, year,
                     </span>
                 )}
                 {isHeb && <div className="flex-1 min-w-0" />}
-                <div className={isHeb ? 'flex h-full flex-wrap items-center gap-4' : 'contents'} dir={isHeb ? 'rtl' : undefined}>
+                <div className={isHeb ? 'flex h-full flex-wrap items-center gap-2' : 'contents'} dir={isHeb ? 'rtl' : undefined}>
                 <div className="flex h-full flex-wrap items-center gap-2" dir={isHeb ? 'rtl' : undefined}>
                 {openMenu && (
                     <button
@@ -397,7 +406,7 @@ export default function UniversalFooter({ locale, pageType, country, date, year,
                         </InnerLink>
                     </>
                 )}
-                {country && pageType !== 'live' && (
+                {country && !isMixPage && pageType !== 'live' && (
                     <>
                         <span className="text-gray-300">|</span>
                         <InnerLink href={`/${locale}/${country}`} locale={locale}>
@@ -455,7 +464,7 @@ export default function UniversalFooter({ locale, pageType, country, date, year,
                         </div>
                     </>
                 )}
-                {country && pageType !== 'search' && pageType !== 'country-archive-hub' && (
+                {country && !isMixPage && pageType !== 'search' && pageType !== 'country-archive-hub' && (
                     <>
                         <span className="text-gray-300">|</span>
                         {isMonthlyArchive ? (
@@ -545,22 +554,30 @@ export default function UniversalFooter({ locale, pageType, country, date, year,
                 <span className="text-gray-500 font-mono" dir="ltr">@{currentYear}</span>
                 </div>
                 <div className="flex h-full flex-wrap items-center gap-2" dir={isHeb ? 'rtl' : undefined}>
-                    {pageType !== 'live' && !isGlobalPage && !isMonthlyArchive && pageType !== 'search' && (
+                    {pageType !== 'live' && pageType !== 'mix-live' && pageType !== 'mix-date' && !isGlobalPage && !isMonthlyArchive && pageType !== 'search' && (
                         <>
                         <span className="text-gray-300">|</span>
-                        <Link href="/methodology" hrefLang={locale} className="text-gray-700 hover:text-blue bg-white hover:bg-blue-50 rounded-lg px-2 py-1 inline-block">
+                        <Link href="/methodology" hrefLang={locale} className={footerLinkClass}>
                             {getLabel('methodology', locale)}
                         </Link>
                         </>
                     )}
-                    <span className="text-gray-300">|</span>
-                    <Link href="/contact" hrefLang={locale} className="flex items-center justify-center text-gray-700 hover:text-blue bg-white hover:bg-blue-50 rounded-lg px-2 py-1 inline-block" aria-label={getLabel('contact', locale)}>
-                        <MailIcon fontSize="inherit" />
-                    </Link>
-                    <span className="text-gray-300">|</span>
-                    <Link href="/legal" hrefLang={locale} className="text-gray-700 hover:text-blue bg-white hover:bg-blue-50 rounded-lg px-2 py-1 inline-block">
-                        {getLabel('legal', locale)}
-                    </Link>
+                    {pageType !== 'mix-live' && pageType !== 'mix-date' && (
+                        <>
+                            <span className="text-gray-300">|</span>
+                            <Link href="/contact" hrefLang={locale} className={footerIconLinkClass} aria-label={getLabel('contact', locale)}>
+                                <MailIcon fontSize="inherit" />
+                            </Link>
+                        </>
+                    )}
+                    {pageType !== 'mix-live' && pageType !== 'mix-date' && (
+                        <>
+                            <span className="text-gray-300">|</span>
+                            <Link href="/legal" hrefLang={locale} className={footerLinkClass}>
+                                {getLabel('legal', locale)}
+                            </Link>
+                        </>
+                    )}
                     {!isHeb && (
                         <button
                             type="button"

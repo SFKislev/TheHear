@@ -5,7 +5,7 @@ import { IconButton, Slider, styled } from "@mui/material";
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import ResetTimerButton from "./Slider/ResetTimerButton";
 import PlaySpeedPopup from "./Slider/PlaySpeedPopup";
-import { useTime } from "@/utils/store";
+import { useTime, useTranslate } from "@/utils/store";
 import { useDaySummaries } from "@/utils/database/useSummariesManager";
 import { CustomSlider_Source } from "./Source/SourceSlider";
 import useMobile from "@/components/useMobile";
@@ -22,6 +22,7 @@ export default function SideSlider({ locale, country, pageDate }) {
     const setDate = useTime(state => state.setDate);
     const setManualDate = useTime(state => state.setManualDate);
     const lastManualInteractionAt = useTime(state => state.lastManualInteractionAt);
+    const pauseTranslations = useTranslate(state => state.pauseTemporarily);
     const { isMobile } = useMobile();
     const [isPlaying, setIsPlaying] = useState(false);
     const [playSpeed, setPlaySpeed] = useState(4); // Speed multiplier (1x, 2x, 4x, 8x, 16x)
@@ -143,6 +144,8 @@ export default function SideSlider({ locale, country, pageDate }) {
             minutes = currentMinutes;
         }
 
+        pauseTranslations(1000);
+
         const updatedDate = new Date(day + ' ' + Math.floor(minutes / 60) + ':' + (minutes % 60));
         setManualDate(updatedDate);
 
@@ -159,7 +162,7 @@ export default function SideSlider({ locale, country, pageDate }) {
         if (pausePlay && isPlaying) {
             setIsPlaying(false);
         }
-    }, [isToday, currentMinutes, day, setManualDate, isPlaying, setIsPlaying, country, locale, isDatePage]);
+    }, [isToday, currentMinutes, day, setManualDate, isPlaying, setIsPlaying, country, locale, isDatePage, pauseTranslations]);
 
     // Auto-play functionality
     useEffect(() => {

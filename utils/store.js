@@ -1,5 +1,7 @@
 import { create } from "zustand";
 
+let translationPauseTimeout = null;
+
 export const useTime = create(set => ({
     date: new Date(),
     lastManualInteractionAt: null,
@@ -35,6 +37,18 @@ export const useTranslate = create(set => ({
         return { translate: [...state.translate, sourceName] }
     }),
     clearTranslations: () => set({ translate: [] }),
+    isTemporarilyPaused: false,
+    pauseTemporarily: (duration = 1000) => {
+        if (translationPauseTimeout) {
+            clearTimeout(translationPauseTimeout);
+        }
+
+        set({ isTemporarilyPaused: true });
+        translationPauseTimeout = setTimeout(() => {
+            set({ isTemporarilyPaused: false });
+            translationPauseTimeout = null;
+        }, duration);
+    },
 
     useLocalLanguage: false,
     toggleLocalLanguage: () => set(state => ({ useLocalLanguage: !state.useLocalLanguage })),
