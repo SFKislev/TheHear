@@ -11,6 +11,16 @@ const nextConfig = {
   },
   reactStrictMode: false,
 
+  async redirects() {
+    return [
+      {
+        source: '/:locale(en|heb)/iranwar',
+        destination: '/:locale/mix/iranwar',
+        permanent: false,
+      },
+    ];
+  },
+
   async headers() {
     return [
       {

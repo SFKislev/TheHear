@@ -18,6 +18,22 @@ export const mixBundles = {
             { country: "israel", source: "haaretz" },
         ],
     },
+    iranwar: {
+        title: {
+            en: "Iran War",
+            heb: "מלחמת איראן",
+        },
+        sources: [
+            { country: "us", source: "nytimes" },
+            { country: "us", source: "foxnews" },
+            { country: "iran", source: "iranintl" },
+            { country: "iran", source: "tasnimnews" },
+            { country: "israel", source: "haaretz" },
+            { country: "israel", source: "ynet" },
+            { country: "lebanon", source: "lbci" },
+            { country: "lebanon", source: "almanar" },
+        ],
+    },
 };
 
 export const DEFAULT_MIX_SELECTIONS = [

@@ -12,7 +12,9 @@
       "Bash(curl -s https://www.thehear.org/en/germany/14-03-2026/feed)",
       "Bash(grep -n \"feed\" /c/Users/SFKislev.Fancy-Laptop/Code/the-Hear/thehear.org/app/\\\\\\(localized\\\\\\)/[locale]/[country]/history/[year]/[month]/ArchiveCard.js)",
       "Bash(grep -n \"index\\\\|robots\\\\|noindex\" /c/Users/SFKislev.Fancy-Laptop/Code/the-Hear/thehear.org/app/\\\\\\(localized\\\\\\)/[locale]/[country]/history/[year]/[month]/metadata.js)",
-      "Bash(curl -s \"https://www.thehear.org/en/ukraine/16-10-2024/feed\")"
+      "Bash(curl -s \"https://www.thehear.org/en/ukraine/16-10-2024/feed\")",
+      "Bash(ls c:/Users/SFKislev.Fancy-Laptop/Code/the-Hear/thehear.org/next.config*)",
+      "Bash(ls c:/Users/SFKislev.Fancy-Laptop/Code/the-Hear/thehear.org/*.config*)"
     ],
     "deny": [],
     "ask": []
